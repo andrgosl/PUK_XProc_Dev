@@ -44,10 +44,7 @@
     <xsl:template match="epigraph/text()"/>
     
     <xsl:template match="para/@role[. = 'noindent']"/>
-    <xsl:template match="emphasis[@role='dropcap']">
-        <xsl:apply-templates select="node()"/>
-    </xsl:template>
-    
+
     <xsl:template  match="para[@role='spacebreak']/emphasis[@role='smallcaps'][position() = 1]">
         <phrase role='leadin'><xsl:apply-templates/></phrase>
     </xsl:template>
@@ -77,6 +74,10 @@
 
     <xsl:template match="pbl:line">
         <line><xsl:apply-templates select='@*|node()'/></line>
+    </xsl:template>
+    
+    <xsl:template match="emphasis[@role='dropcap']">
+        <phrase role='firstChar'><xsl:apply-templates/></phrase>
     </xsl:template>
     
     <!-- fix up links - handle links to the info element and links that should be empty -->

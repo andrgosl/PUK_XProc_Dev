@@ -84,5 +84,18 @@
         <p:option name="fail-on-error" select="'true'"/>              <!-- boolean -->
     </p:declare-step>
     
-    
+    <p:declare-step type="cxf:copy">
+        <p:output port="result" primary="false"/>
+        <p:option name="href" required="true"/>                       <!-- anyURI -->
+        <p:option name="target" required="true"/>                     <!-- boolean -->
+        <p:option name="fail-on-error" select="'true'"/>              <!-- boolean -->
+    </p:declare-step>
+
+    <p:declare-step type="cxf:mkdir">
+        <p:output port="result" primary="false"/>
+        <p:option name="href" required="true"/>                       <!-- anyURI -->
+        <p:option name="fail-on-error" select="'true'"/>              <!-- boolean -->
+    </p:declare-step>
+
 </p:library>
+

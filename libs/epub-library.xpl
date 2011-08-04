@@ -6,6 +6,10 @@
 
     <p:documentation>
         <div xmlns="http://www.w3.org/1999/xhtml">
+            <p>This module can be used to generate an EPUB zip file from the ouput of an XSLT
+            transformation. It works on the files generated from transforming XML to HTMl and the
+            various manifest files for EPUB. There is an assumption that no further transformation
+            is required and that the files on disk fully represent the final EPUB.</p>
             <h2>External options used by steps in this module.</h2>
             <h3>epub-path</h3>
             <p>This is the full filesystem path to the epub file. This has to be a path rather than
