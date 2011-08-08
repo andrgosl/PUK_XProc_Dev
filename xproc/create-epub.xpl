@@ -22,12 +22,9 @@
     <p:option name="styles-dir-name" select="'styles'"/>
 
 
-    <!-- import to get the calabas extension steps -->
-    <p:import href="../libs/library-1.0.xpl"/>
-
-
-
-
+    <p:import href="../libs/ng-library.xpl"/>
+    <p:import href="../libs/pstd-library.xpl"/>
+    <p:import href="../libs/create-epub-library.xpl"/>
 
     <p:declare-step name="s_create-ncx" type="cstep:create-ncx">
 
@@ -59,13 +56,7 @@
                 <p:document href="playorder.xslt"/>
             </p:input>
         </p:xslt>
-        
-        
-        <cx:message>
-            <p:with-option name="message" select="concat('STORE NCX: ', $href)"/>
-        </cx:message>
-        
-
+               
         <p:store name="store-toc">
             <p:with-option name="href" select="$href"/>
             <p:input port="source">
@@ -87,7 +78,7 @@
                 <p:empty/>
             </p:input>
             <p:input port="stylesheet">
-                <p:document href="create-opf.xslt"/>
+                <p:document href="../xslt/create-epub/create-opf.xslt"/>
             </p:input>
         </p:xslt>
 
@@ -112,16 +103,6 @@
     <p:variable name="opf-path" select="concat($root, '/',  $content-dir-name, '/', $package-file)"/>
     <p:variable name="ncx-path" select="concat($root, '/', $content-dir-name, '/', $daisy-file)"/>
     <p:variable name="xhtml-path" select="concat($root, '/', $content-dir-name,'/', $xhtml-dir-name)"/>
-
-
-
-
-
-    <p:store href="file:///Users/nicg/Projects/penguin/ArtemisFowl/temp.xml">
-        <p:input port="source">
-            <p:pipe port="source" step="create-epub"/>
-        </p:input>
-    </p:store>
 
 
     <!-- metadata files -->
@@ -149,7 +130,7 @@
             <p:pipe port="source" step="create-epub"/>
         </p:input>
         <p:input port="stylesheet">
-            <p:document href="xml-to-html.xslt"/>
+            <p:document href="../xslt/create-epub/xml-to-html.xslt"/>
         </p:input>
     </p:xslt>
     

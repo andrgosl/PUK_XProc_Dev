@@ -29,13 +29,7 @@
     <xsl:template match="bibliomixed/citetitle/emphasis">
         <xsl:apply-templates/>
     </xsl:template>
-    
-    <xsl:template match="preface[@role='introduction']">
-        <chapter>
-            <xsl:apply-templates select='@*|node()'/>
-        </chapter>
-    </xsl:template>
-    
+        
     <xsl:template match="book/info/publisher"/>
     <xsl:template match="book/info/bibliomisc"/>
     <xsl:template match="book/info/legalnotice"/>
@@ -93,7 +87,7 @@
         </xsl:choose>
     </xsl:template>
 
-    <xsl:template match="link[. = @xlink:href]">
+    <xsl:template match="link[ends-with(@xlink:href, .)]">
         <xsl:copy>
             <xsl:apply-templates select='@*'/>
         </xsl:copy>    

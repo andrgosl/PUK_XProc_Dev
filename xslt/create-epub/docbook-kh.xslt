@@ -17,7 +17,9 @@
 
   version="1.0">
 
-  <xsl:import href="../xhtml-1_1/chunk.xsl"/>
+  <xsl:import href="../xhtml-1_1/chunkfast.xsl"/>
+
+  
 
 
   <!-- We want a separate TOC file, please -->
