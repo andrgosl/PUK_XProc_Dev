@@ -413,13 +413,13 @@
         </p:output>
         
         <p:option name="href" required="true"/>
-        <p:option name="html-dir-name" required="true"/>
+        <p:option name="xhtml-dir-name" required="true"/>
 
         <!-- generate the NCX file -->
         <p:xslt name="convert-ncx">
 
             <p:input port="parameters">
-                <p:pipe port="parameters" step="convert-ncx"/>
+                <p:empty/>
             </p:input>
 
             <p:input port="stylesheet">

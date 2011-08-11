@@ -3,7 +3,7 @@
     xmlns:epub="http://www.corbas.net/ns/epub"
     xmlns:cxo="http://xmlcalabash.com/ns/extensions/osutils"
     xmlns:c="http://www.w3.org/ns/xproc-step" version="1.0"
-    name="create-and-render-test">
+    name="create-epub-test-1">
     
     <p:input port="source" primary="true"/>
     <p:output port="result" primary="true">
@@ -42,11 +42,13 @@
     <p:import href="../libs/pstd-library.xpl"/>
     
     <!-- set up some paths -->
-    <p:variable name="xhtml-path" select="concat($root, '/', $content-dir-name,'/', $xhtml-dir-name)"/>
+    <p:variable name="opf-path" select="concat($root, $path-sep,  $content-dir-name, $path-sep, $package-file)"/>
+    <p:variable name="ncx-path" select="concat($root, $path-sep, $content-dir-name, $path-sep, $daisy-file)"/>    
+    <p:variable name="xhtml-path" select="concat($root, $path-sep, $content-dir-name, $path-sep, $xhtml-dir-name)"/>
     
     <!-- set up base URLs for relative access to images and css from HTML -->
-    <p:variable name="css-uri-base" select="concat('../', styles-dir-name)"/>
-    <p:variable name="image-uri-base" select="concat('../', $images-dir-name)"/>
+    <p:variable name="css-uri-base" select="concat('..', $path-sep, styles-dir-name)"/>
+    <p:variable name="image-uri-base" select="concat('..', $path-sep, $images-dir-name)"/>
     
 
     <!-- create the paths -->
@@ -61,7 +63,7 @@
     
     <epub:copy-images name="copy-image-files">
         <p:input port="source">
-            <p:pipe port="source" step="create-and-render-test"/>
+            <p:pipe port="source" step="create-epub-test-1"/>
         </p:input>
         <p:with-option name="image-source" select='$image-root'/>
         <p:with-option name="image-target" select="concat($root, $path-sep, $content-dir-name, $path-sep, $images-dir-name)"/> 
@@ -74,7 +76,7 @@
     
     <epub:generate-html name="generate-html-data">
         <p:input port="source">
-            <p:pipe port="source" step="create-and-render-test"/>            
+            <p:pipe port="source" step="create-epub-test-1"/>            
         </p:input>
         <p:input port="css-files">
             <p:pipe port="result" step="copy-css-files"/>
@@ -83,16 +85,39 @@
         <p:with-option name="css-uri-base" select="$css-uri-base"/>
         <p:with-option name="xhtml-path" select="$xhtml-path"/>        
     </epub:generate-html>
-   
-        
     
-    <p:wrap-sequence wrapper="results">
+    <p:wrap-sequence wrapper="results" name="results">
         <p:input port="source">
             <p:pipe port="result" step="generate-html-data"/>
         </p:input>
     </p:wrap-sequence>
+   
+    <!-- metadata files -->
+    <epub:create-opf name="create-opf">
+        <p:input port="source">
+            <p:pipe port="source" step="create-epub-test-1"/>
+        </p:input>
+        <p:with-option name="href" select="$opf-path"/>
+    </epub:create-opf>
         
-    <p:identity name="final"/>
+    <epub:create-ncx name="create-ncx">
+        <p:input port="source">
+            <p:pipe port="source" step="create-epub-test-1"/>
+        </p:input>
+        <p:with-option name="href" select="$ncx-path"/>
+        <p:with-option name="xhtml-dir-name" select='$xhtml-dir-name'/>
+    </epub:create-ncx>
+    
+    <p:sink/>
+    
+    
+
+        
+    <p:identity name="final">
+        <p:input port="source">
+            <p:pipe port="result" step="results"/>
+        </p:input>
+    </p:identity>
     
     
     
