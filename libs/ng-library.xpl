@@ -96,6 +96,16 @@
         <p:option name="href" required="true"/>                       <!-- anyURI -->
         <p:option name="fail-on-error" select="'true'"/>              <!-- boolean -->
     </p:declare-step>
+    
+    <p:declare-step type="cxf:info">
+        <p:output port="result" sequence="true"/>
+        <p:option name="href" required="true"/>                       <!-- anyURI -->
+        <p:option name="fail-on-error" select="'true'"/>              <!-- boolean -->
+    </p:declare-step>    
+    
+    <p:declare-step type="cxo:info">
+        <p:output port="result"/>
+    </p:declare-step>
 
 </p:library>
 

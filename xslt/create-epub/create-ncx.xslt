@@ -2,9 +2,13 @@
 <xsl:stylesheet xmlns="http://www.daisy.org/z3986/2005/ncx/" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" xmlns:db="http://docbook.org/ns/docbook"
     xmlns:corbas="http://www.corbas.net/ns/tempns" version="2.0" xpath-default-namespace="http://docbook.org/ns/docbook"
-    xmlns:daisy="http://www.daisy.org/z3986/2005/ncx/" exclude-result-prefixes="xd db xsl corbas">
+    xmlns:daisy="http://www.daisy.org/z3986/2005/ncx/" exclude-result-prefixes="#all">
 
-    <xsl:param name="isbn" select="/book/info/blioset[@role =  'identifiers']/biblioid[@class='isbn'][@role='epub']"/>
+    <!-- Unique identifier for book. Should be the same value as that used in the OPF metadata. If none is
+        not provided, synthesises one from from the first ISBN found. -->
+    <xsl:param name="book-id" select="concat('book-', /book/info/biblioid[@class='isbn'][1])"/>
+    
+    <!-- relative path from the NCX file to content. Defaults to 'xhtml' -->
     <xsl:param name="xhtml-dir" select="&quot;xhtml&quot;"/>
 
     <xsl:output method="xml" doctype-public="-//NISO//DTD ncx 2005-1//EN"
@@ -22,14 +26,11 @@
 
     <xsl:template match="/book/info">
         <head>
-            <meta name="dtb:uid" content="{concat('p', $isbn)}"/>
-            <meta name="dtb:depth" content="1"/>
-            <meta name="dtb:totalPageCount" content="0"/>
-            <meta name="dtb:maxPageNumber" content="0"/>
+            <meta name="dtb:uid" content="{$book-id}"/>
         </head>
         <docTitle>
             <text>
-                <xsl:value-of select="title"/>
+                <xsl:value-of select="title/text()"/>
             </text>
         </docTitle>
         <docAuthor>
@@ -41,8 +42,7 @@
 
     <xsl:template match="book" mode="navMap">
                 
-        <xsl:variable name="nav-sequence" as="element()*">
-            
+        <navMap>
             <xsl:apply-templates select="info/cover[@role='cover']"/>
             <xsl:apply-templates select='dedication'/>
             <xsl:apply-templates select="info/cover[@role='title']"/>
@@ -70,36 +70,10 @@
             <xsl:apply-templates select="author//personblurb"/>
             <xsl:apply-templates select="preface[@role = ('author', 'books-by')]"/> 
             
-        </xsl:variable>
-        
-        <navMap>
-            <xsl:apply-templates select='$nav-sequence' mode='playorder'/>            
         </navMap>
 
-
     </xsl:template>
     
-    
-    <xsl:template match='daisy:navPoint' mode='playorder'>
-        <xsl:variable name='offset' select="if (ancestor::daisy:navPoint[@id = 'book']) then 0 else 1"/>
-        <xsl:variable name="order" select="
-            count(preceding::daisy:navPoint) + count(ancestor::daisy:navPoint) + $offset"/>
-        <xsl:copy>
-            <xsl:copy-of select='@*'/>
-            <xsl:attribute name="playOrder" select='$order'/>
-            <xsl:copy-of select='*'/>
-        </xsl:copy>
-    </xsl:template>
-    
-    
-    <xsl:template match="daisy:navPoint[@id='book']" mode="playorder">
-        <xsl:copy>
-            <xsl:copy-of select='@*'/>
-            <xsl:copy-of select='*'/>
-        </xsl:copy>        
-    </xsl:template>
-    
-
 
     <xsl:template match="cover">
         <xsl:variable name="basis" select="(@role, @xml:id, local-name())[1]"/>

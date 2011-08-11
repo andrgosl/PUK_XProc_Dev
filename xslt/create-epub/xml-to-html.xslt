@@ -6,7 +6,7 @@
 
     <xsl:output method="xhtml"/>
 
-    <xsl:param name="image-dir" select="&quot;images&quot;"/>
+    <xsl:param name="image-uri-base" select="'images'"/>
 
     <xsl:template match="/">
         <xsl:apply-templates select="book"/>
@@ -240,25 +240,25 @@
         <xsl:apply-templates/>
     </xsl:template>
 
-    <xsl:template match="peng:stanza">
+    <xsl:template match="stanza[@role='stanza']">
         <div class="AFStanza">
             <xsl:apply-templates/>
         </div>
     </xsl:template>
 
-    <xsl:template match="peng:linegroup">
+    <xsl:template match="linegroup">
         <div class="AFLinegroup">
             <xsl:apply-templates/>
         </div>
     </xsl:template>
 
-    <xsl:template match="peng:line">
+    <xsl:template match="line">
         <p class="AFLine">
             <xsl:apply-templates/>
         </p>
     </xsl:template>
 
-    <xsl:template match="peng:poem">
+    <xsl:template match="poetry">
         <div class="AFPoetry">
             <xsl:apply-templates/>
         </div>
@@ -288,13 +288,7 @@
         <xsl:variable name="current" select="."/>
         <xsl:variable name='role' select='(ancestor-or-self::*/@role)[1]'/>
         <xsl:variable name='id' select='@xml:id'/>
-        <xsl:analyze-string select="@fileref" regex="([\w_-]+)\.[a-zA-Z]+$">
-            <xsl:matching-substring>
-                <img src="{concat('../', $image-dir, '/', regex-group(1), '.jpg')}" alt="{regex-group(1)}">
-                    <xsl:apply-templates select="$id|$role"/>
-                </img>
-            </xsl:matching-substring>
-        </xsl:analyze-string>
+        <img src="{concat($image-uri-base, '/', @fileref)}" alt="{@fileref}/"/>
     </xsl:template>
 
     <xsl:template match="emphasis">
@@ -414,19 +408,19 @@
         <xsl:message terminate="yes">Unhandled element - <xsl:value-of select="local-name()"/></xsl:message>
     </xsl:template>
 
-
+      
+    <!-- the serialisation info here is a dummy as we actually serialise in XProc -->
     <xsl:template name="html-doc">
         <xsl:param name="filename"/>
         <xsl:param name="page-id"/>
         <xsl:param name="title"/>
         <xsl:variable name="class" select="if (@role) then @role else local-name()"/>
         <xsl:result-document encoding="utf-8" exclude-result-prefixes="#all" method="xhtml" href="{$filename}">
-            <html>
+            <html xml:id='{$page-id}'>
                 <head>
                     <xsl:copy-of select="$title"/>
                     <link rel="stylesheet" type="text/css" href="../styles/stylesheet.css"/>
                     <link rel="stylesheet" type="text/css" href="../styles/fowl.css"/>
-                    <meta name="page-id" content="{$page-id}"/>
                 </head>
                 <body class="{$class}">
                     <xsl:apply-templates mode="#current"/>
