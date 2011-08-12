@@ -14,7 +14,7 @@
     <p:declare-step name="generate-html" type="epub:generate-html">
         <p:documentation>
             <div xmlns="http://www.w3.org/1999/xhtml">
-                <p>Wrapper for content converstion to html. Generates the HTML and stores it to the
+                <p>Wrapper for content conversion to html. Generates the HTML and stores it to the
                     appropriate location. Before rendering, converts Penguion Standard to DocBook
                     Publishers.</p>
                 <p>The primary input is the XML document to be rendered, the output is a sequence of
@@ -41,8 +41,8 @@
         <epub:insert-penguin-styles/>
 
         <epub:render-to-html name="render-to-html-files">
-            <p:input port="css-files">
-                <p:pipe port="css-files" step="generate-html"/>
+            <p:input port="css-files" >
+                <p:pipe port="css-files" step="generate-html" />
             </p:input>
             <p:with-option name="image-uri-base" select="$image-uri-base"/>
             <p:with-option name="css-uri-base" select="$css-uri-base"/>
@@ -372,13 +372,9 @@
     </p:declare-step>
 
     <p:declare-step name="render-to-html" type="epub:render-to-html">
-        
-        <p:documentation>
-            
-        </p:documentation>
-        
+               
         <p:input port="source" primary="true"/>
-        <p:input port="css-files"/>
+        <p:input port="css-files" sequence="true"/>
         
         <p:output port="result" primary="true" sequence="true">
             <p:pipe port="html-files" step="store-pages"/>
@@ -388,8 +384,10 @@
         <p:option required="true" name="css-uri-base"/>
         <p:option required="true" name="xhtml-path"/>
         
+ 
     
-        <p:xslt name="render-pages">
+    
+        <p:xslt name="render-pages" version="2.0">
             <p:input port="parameters">
                 <p:empty/>
             </p:input>
@@ -425,31 +423,20 @@
             <p:store encoding="UTF-8" include-content-type="true" method="xhtml" indent="true" omit-xml-declaration="false">
                 <p:with-option name="href" select="$href"/>
             </p:store>
-
-            <p:xslt name="create-result">
-                <p:input port="parameters"><p:empty/></p:input>
-                <p:input port="source">
-                    <p:inline><c:result><c:dummy/></c:result></p:inline>
-                </p:input>
-                <p:input port="stylesheet">
-                    <p:inline>
-                        <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
-                            xmlns:c="http://www.w3.org/ns/xproc-step">
-                            <xsl:param name="filename"/>
-                            <xsl:template match="@*|node()">
-                                <xsl:copy>
-                                    <xsl:apply-templates select="@*|node()"/>
-                                </xsl:copy>
-                            </xsl:template>
-                            <xsl:template match="c:dummy">
-                                <xsl:value-of select="$filename"/>
-                            </xsl:template>                            
-                        </xsl:stylesheet>
-                    </p:inline>
-                </p:input>
-                <p:with-param name="filename" select="$filename"/>
-            </p:xslt>
             
+            <p:in-scope-names name="vars"/>
+            <p:template name="create-result">
+                <p:input port="source">
+                    <p:empty/>
+                </p:input>
+                <p:input port="template">
+                    <p:inline><c:result type="xhtml" xml:id="{$page-id}" filename="{$filename}"/></p:inline>
+                </p:input>
+                <p:input port="parameters">
+                    <p:pipe step="vars" port="result"/>
+                </p:input>
+            </p:template>
+
         </p:for-each>
     
     </p:declare-step>

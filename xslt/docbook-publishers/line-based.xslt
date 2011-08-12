@@ -44,7 +44,7 @@
         
         There's a warning in this template because there is no sensible way to
         insert the speaker into an arbitrary block. Therefore, if the linegroup
-        contains 
+        contains anything bar lines we retain the block speaker. 
             
     -->
     <xsl:template match="db:linegroup[db:speaker]">
@@ -117,7 +117,8 @@
     <xd:doc scope="component">
         <xd:desc>
             <xd:p>Handles shared processing of block content. Defaults to generating divs but can be
-                overriden.</xd:p>
+                overriden. Calls a modal template to allow for easy overrides passing the same
+            options to it.</xd:p>
         </xd:desc>
         <xd:param><xd:b>class</xd:b> Name of css class to create on output.</xd:param>
         <xd:param><xd:b>element</xd:b> Name of element to output. Defaults to <b>div</b>.</xd:param>

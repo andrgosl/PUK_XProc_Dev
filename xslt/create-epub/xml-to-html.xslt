@@ -437,7 +437,7 @@
         
         
         <xsl:result-document encoding="utf-8" exclude-result-prefixes="#all" method="xhtml" href="toc.html">
-            <html>
+            <html xml:id="toc">
                 <head>
                     <title>Contents</title>
                     <link rel="stylesheet" type="text/css" href="../styles/stylesheet.css"/>
@@ -493,7 +493,7 @@
     <!-- copyright page -->
     <xsl:template match="book/info" mode='copyright'>
         <xsl:result-document href="'copyright.html" encoding="utf-8" exclude-result-prefixes="#all" method="xhtml">
-        <html>
+        <html xml:id='copyright'>
             <head>
                 <title><xsl:apply-templates select='publisher/publishername'/></title>
                 <link rel="stylesheet" type="text/css" href="../styles/stylesheet.css"/>

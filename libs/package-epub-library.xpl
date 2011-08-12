@@ -324,7 +324,7 @@
     </p:declare-step>
 
 
-    <p:declare-step name="create-epub" type="epub:create-epub">
+    <p:declare-step name="package-epub" type="epub:package-epub">
         <p:documentation>
             <div xmlns="http://www.w3.org/1999/xhtml">
                 <p>Given an input of an OPF file, creates an EPUB file. The caller must
@@ -345,7 +345,7 @@
         
         <p:input port="source" primary="true"/>
         <p:output port="result" primary="true">
-            <p:pipe port="result" step="create-epub-result"/>
+            <p:pipe port="result" step="package-epub-result"/>
         </p:output>
         
         <p:option name="content-dir" select="'OPS'"/>
@@ -362,7 +362,7 @@
         
         <epub:convert-opf-to-zip-manifest name='create-content-manifest'>
             <p:input port="source">
-                <p:pipe port="source" step="create-epub"/>
+                <p:pipe port="source" step="package-epub"/>
             </p:input>
             <p:with-option name="content-dir" select="$content-dir"/>
             <p:with-option name="opf-uri" select="$opf-uri"/>
@@ -418,7 +418,7 @@
         <!-- now add all the other content to the zip file -->
         <cx:zip name="insert-content">            
             <p:input port="source">
-               <p:pipe port="source" step="create-epub"/>
+               <p:pipe port="source" step="package-epub"/>
             </p:input>
             <p:input port="manifest">
                 <p:pipe port="result" step="create-content-manifest"/>
@@ -429,7 +429,7 @@
         
         <p:sink/>
         
-        <p:identity name='create-epub-result'>
+        <p:identity name='package-epub-result'>
             <p:input port="source">
                 <p:pipe port="result" step="create-manifest-manifest"/>
             </p:input>

@@ -83,7 +83,7 @@
             </div>
         </p:documentation>
 
-        <p:output port="result">
+        <p:output port="result" sequence="true">
             <p:pipe step="wrap-files" port="css-files"/>
         </p:output>
 
@@ -104,7 +104,7 @@
 
             <p:when test="/c:directory">
 
-                <p:output port="css-files" primary="true">
+                <p:output port="css-files" primary="true" sequence="true">
                     <p:pipe port="result" step="copy-multiple-css-files"/>
                 </p:output>
 
@@ -118,7 +118,7 @@
 
             <p:otherwise>
 
-                <p:output port="css-files" primary="true">
+                <p:output port="css-files" primary="true" sequence="true">
                     <p:pipe port="result" step="copy-single-css-file"/>
                 </p:output>
 
@@ -136,11 +136,14 @@
 
         <p:option name="source-file"/>
         <p:option name="target-dir"/>
-
-        <p:output port="result" primary="true">
+        
+        <p:output port="result" primary="true" sequence="true">
             <p:pipe port="result" step="transform-css-file"/>
         </p:output>
-
+        
+        <p:variable name="filename" select="if (matches($source-file, '/[^/]+\.css$') then reverse(substring-after(reverse($source-file), '/')) else $source_file"/>
+        <p:variable name="id" select="concat('css-', substring-before($filename, '.'))"/>
+        
         <cx:message name="source-file">
             <p:with-option name="message" select="$source-file"/>
             <p:input port="source">
@@ -153,7 +156,18 @@
             <p:with-option name="target" select="$target-dir"/>
         </cxf:copy>
 
-        <p:xslt version="2.0" name="transform-css-file">
+        <p:in-scope-names name="vars"/>
+        <p:template>
+            <p:input port="source"><p:empty/></p:input>
+            <p:input port='template'>
+                <p:inline><c:result type="css" filename="{$filename}" path="{$source-file}" xml:id="{$id}"/></p:inline>
+            </p:input>
+            <p:input port="parameters">
+                <p:pipe step="vars" port="result"/>
+            </p:input>
+        </p:template>
+        
+<!--        <p:xslt version="2.0" name="transform-css-file">
 
             <p:with-param name="path" select="$source-file"/>
 
@@ -201,7 +215,7 @@
 
             </p:input>
 
-        </p:xslt>
+        </p:xslt> -->
 
     </p:declare-step>
 
@@ -210,8 +224,8 @@
         <p:option name="source-dir" required="true"/>
         <p:option name="target-dir" required="true"/>
 
-        <p:output port="result" primary="true">
-            <p:pipe port="result" step="transform-css-list"/>
+        <p:output port="result" primary="true" sequence="true">
+            <p:pipe port="result" step="process-css-files"/>
         </p:output>
 
         <cx:message name="source-dir">
@@ -238,24 +252,34 @@
             <p:iteration-source select="//c:file">
                 <p:pipe port="result" step="list-css-files"/>
             </p:iteration-source>
+
+            <p:output port="result" primary="true" sequence="true">
+                <p:pipe port="result" step="css-result"/>
+            </p:output>
             
             <p:variable name="filename" select="/c:file/@name"/>
+            <p:variable name="id" select="concat('css-', substring-before($filename, '.'))"/>
             
-            <cx:message>
-                <p:input port="source">
-                    <p:empty/>
-                </p:input>
-                <p:with-option name="message" select="$filename"/>
-            </cx:message>
-
-            <cxf:copy name="copy-css-file">
+             <cxf:copy name="copy-css-file">
                 <p:with-option name="href" select="p:resolve-uri($filename, $source-dir)"/>
                 <p:with-option name="target" select="$target-dir"/>
             </cxf:copy>
+            
+            <p:in-scope-names name="vars"/>
+            
+            <p:template name="css-result">
+                <p:input port="source"><p:empty/></p:input>
+                <p:input port="template">
+                    <p:inline><c:result type="css" filename="{$filename}" id="{$id}"/></p:inline>
+                </p:input>
+                <p:input port="parameters">
+                    <p:pipe port="result" step="vars"/>
+                </p:input>
+            </p:template>
 
         </p:for-each>
 
-        <p:xslt version="2.0" name="transform-css-list">
+  <!--      <p:xslt version="2.0" name="transform-css-list">
             <p:input port="source">
                 <p:pipe port="result" step="list-css-files"/>
             </p:input>
@@ -284,7 +308,7 @@
                     </xsl:stylesheet>
                 </p:inline>
             </p:input>
-        </p:xslt>
+        </p:xslt> -->
 
 
     </p:declare-step>
@@ -312,8 +336,8 @@
         </p:documentation>
 
         <p:input port="source" primary="true"/>
-        <p:output port="result" primary="true">
-            <p:pipe port="result" step="combine-results"/>
+        <p:output port="result" primary="true" sequence="true">
+            <p:pipe port="image-results" step="process-images"/>
         </p:output>
 
         <p:option name="image-source" required="true"/>
@@ -325,26 +349,36 @@
                 <p:pipe port="source" step="copy-images"/>
             </p:iteration-source>
 
-            <p:output port="image-result">
-                <p:pipe port="result" step="copy-image"/>
+            <p:output port="image-results" sequence="true">
+                <p:pipe port="result" step="reference-image"/>
             </p:output>
-
+            
+            <p:variable name="file" select="db:imagedatga/@file"/>
+            <p:variable name="filename" select="if (matches($file, '/[^/]+\.[a-z]+')) then reverse(substring-after(reverse($file), '/')) else $file"/> 
+            <p:variable name="id" select="concat('img-', substring-before($filename, '.'))"/>
 
             <cxf:copy name="copy-image">
                 <p:with-option name="href"
                     select="p:resolve-uri(/db:imagedata/@fileref, $image-source)"/>
                 <p:with-option name="target" select="$image-target"/>
             </cxf:copy>
+            
+            <p:in-scope-names name="vars"/> 
+            
+            <p:template name="reference-image">
+                <p:input port="parameters">
+                    <p:pipe port="result" step="vars"/>
+                </p:input>
+                <p:input port="source"><p:empty/></p:input>
+                <p:input port="template">
+                    <p:inline>
+                        <c:result xml:id="{$id}" filename="{$filename}" type="image"/>
+                    </p:inline>
+                </p:input>
+            </p:template>
 
 
         </p:for-each>
-
-        <p:wrap-sequence name="combine-results" wrapper="c:result-set">
-            <p:input port="source">
-                <p:pipe port="image-result" step="process-images"/>
-            </p:input>
-        </p:wrap-sequence>
-
 
     </p:declare-step>
 
@@ -368,12 +402,6 @@
         <p:variable name="css-path" select="concat($base-path, '/', $content-dir-name, '/', $styles-dir-name)"/>
         <p:variable name="img-path" select="concat($base-path, '/', $content-dir-name, '/', $images-dir-name)"/>
  
-        <cx:message name="source-file">
-            <p:with-option name="message" select="$xhtml-path"/>
-            <p:input port="source">
-                <p:empty/>
-            </p:input>
-        </cx:message>
         <cxf:mkdir>
             <p:with-option name="href" select="$xhtml-path"/>
         </cxf:mkdir> 
@@ -409,11 +437,16 @@
 
         <p:input port="source" primary="true"/>
         <p:output port="result">
-            <p:pipe step="store-toc" port="result"/>
+            <p:pipe step="ncx-result" port="result"/>
         </p:output>
         
-        <p:option name="href" required="true"/>
+        <p:option name="filename" select="'toc.ncx'"/>
+        <p:option name="content-path" required="true"/>
         <p:option name="xhtml-dir-name" required="true"/>
+   
+       
+        <p:variable name="ncx-uri" select="concat($content-path, '/', $filename)"/>
+        <p:variable name="id" select="substring-before($filename, '.')"/>
 
         <!-- generate the NCX file -->
         <p:xslt name="convert-ncx">
@@ -442,18 +475,36 @@
         </p:xslt>
 
         <p:store name="store-toc">
-            <p:with-option name="href" select="$href"/>
+            <p:with-option name="href" select="$ncx-uri"/>
             <p:input port="source">
                 <p:pipe port="result" step="sequence-ncx"/>
             </p:input>
         </p:store>
+        
+        <p:in-scope-names name="vars"/>
+        <p:template name="ncx-result">
+            <p:input port="source"><p:empty/></p:input>
+            <p:input port="parameters"><p:pipe port="result" step="vars"/></p:input>
+            <p:input port="template">
+                <p:inline>
+                    <c:result id="{$id}" filename="{$filename}" type="ncx"/>
+                </p:inline>
+            </p:input>
+        </p:template>
 
     </p:declare-step>
     
     <p:declare-step name="create-opf" type="epub:create-opf">
         
         <p:input port="source" primary="true"/>
+        <p:input port="manifest-files" sequence="true"/>
+        
+        <p:output port="result">
+            <p:pipe  port="result" step="store-opf"/>
+        </p:output>
+        
         <p:option name="href" required="true"/>
+
         
         <p:xslt name="convert-opf">
             <p:input port="parameters">

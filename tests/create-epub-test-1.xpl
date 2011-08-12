@@ -40,6 +40,7 @@
    
     <p:import href="../libs/create-epub-library.xpl"/>
     <p:import href="../libs/pstd-library.xpl"/>
+    <p:import href="../libs/package-epub-library.xpl"/>
     
     <!-- set up some paths -->
     <p:variable name="opf-path" select="concat($root, $path-sep,  $content-dir-name, $path-sep, $package-file)"/>
@@ -58,7 +59,6 @@
         <p:with-option name="xhtml-dir-name" select="$xhtml-dir-name"/>
         <p:with-option name="styles-dir-name" select="$styles-dir-name"/>
         <p:with-option name="images-dir-name" select="$images-dir-name"/>
-        
     </epub:create-paths>
     
     <epub:copy-images name="copy-image-files">
@@ -91,6 +91,7 @@
             <p:pipe port="result" step="generate-html-data"/>
         </p:input>
     </p:wrap-sequence>
+    
    
     <!-- metadata files -->
     <epub:create-opf name="create-opf">
@@ -110,15 +111,11 @@
     
     <p:sink/>
     
-    
-
-        
     <p:identity name="final">
         <p:input port="source">
             <p:pipe port="result" step="results"/>
-        </p:input>
-    </p:identity>
-    
+        </p:input>    
+    </p:identity>  
     
     
 </p:declare-step>
