@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns="http://www.daisy.org/z3986/2005/ncx/" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" xmlns:db="http://docbook.org/ns/docbook"
-    xmlns:corbas="http://www.corbas.net/ns/tempns" version="2.0" xpath-default-namespace="http://docbook.org/ns/docbook"
+<xsl:stylesheet xmlns="http://www.daisy.org/z3986/2005/ncx/"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
+    xmlns:db="http://docbook.org/ns/docbook" xmlns:corbas="http://www.corbas.net/ns/tempns"
+    version="2.0" xpath-default-namespace="http://docbook.org/ns/docbook"
     xmlns:daisy="http://www.daisy.org/z3986/2005/ncx/" exclude-result-prefixes="#all">
+
+    <xsl:import href="page-ids.xslt"/>
 
     <!-- Unique identifier for book. Should be the same value as that used in the OPF metadata. If none is
         not provided, synthesises one from from the first ISBN found. -->
     <xsl:param name="book-id" select="concat('book-', /book/info/biblioid[@class='isbn'][1])"/>
-    
+
     <!-- relative path from the NCX file to content. Defaults to 'xhtml' -->
     <xsl:param name="xhtml-dir" select="&quot;xhtml&quot;"/>
 
@@ -41,50 +44,63 @@
     </xsl:template>
 
     <xsl:template match="book" mode="navMap">
-                
+
         <navMap>
             <xsl:apply-templates select="info/cover[@role='cover']"/>
-            <xsl:apply-templates select='dedication'/>
+            <xsl:apply-templates select="dedication"/>
             <xsl:apply-templates select="info/cover[@role='title']"/>
-            
-            <navPoint id='toc'>
-                <navLabel><text>Contents</text></navLabel>
+
+            <navPoint id="toc">
+                <navLabel>
+                    <text>Contents</text>
+                </navLabel>
                 <content src="{concat($xhtml-dir, '/toc.html')}"/>
             </navPoint>
-            
-            <navPoint id="book"> 
+
+            <navPoint id="book">
                 <navLabel>
-                    <text><xsl:apply-templates select='/book/info/title'/></text>
+                    <text>
+                        <xsl:apply-templates select="/book/info/title"/>
+                    </text>
                 </navLabel>
-                <xsl:apply-templates 
-                    select="(preface[not(@role) or not(@role = ('reviews', 'author', 'books-by'))]|part|chapter)[1]" mode="book-content"/>
-                <xsl:apply-templates select="preface[not(@role) or not(@role = ('reviews', 'author', 'books-by'))]"/>
-                <xsl:apply-templates select="part|chapter"/>                
+                <xsl:apply-templates
+                    select="(preface[not(@role) or not(@role = ('reviews', 'author', 'books-by'))]|part|chapter|bibliography|appendix)[1]"
+                    mode="book-content"/>
+                <xsl:call-template name="generate.notes"/>
+                <xsl:apply-templates
+                    select="preface[not(@role) or not(@role = ('reviews', 'author', 'books-by'))]"/>
+                <xsl:apply-templates select="part|chapter"/>
             </navPoint>
-            
-            <navPoint id='copyright'>
-                <navLabel><text>Copyright</text></navLabel>
+
+            <navPoint id="copyright">
+                <navLabel>
+                    <text>Copyright</text>
+                </navLabel>
                 <content src="{concat($xhtml-dir, '/copyright.html')}"/>
             </navPoint>
-            
+
             <xsl:apply-templates select="author//personblurb"/>
-            <xsl:apply-templates select="preface[@role = ('author', 'books-by')]"/> 
-            
+            <xsl:apply-templates select="preface[@role = ('author', 'books-by')]"/>
+
         </navMap>
 
     </xsl:template>
-    
+
 
     <xsl:template match="cover">
-        <xsl:variable name="basis" select="(@role, @xml:id, local-name())[1]"/>
-        <xsl:variable name="filename" select="concat($basis, '.html')"/>
-        <xsl:variable name="title" select="concat(upper-case(substring(@role, 1, 1)), lower-case(substring(@role, 2)))"/>
+        <xsl:variable name="file-name">
+            <xsl:call-template name="page.href"/>
+        </xsl:variable>
+        <xsl:variable name="title"
+            select="concat(upper-case(substring(@role, 1, 1)), lower-case(substring(@role, 2)))"/>
 
         <navPoint id="{@role}">
             <navLabel>
-                <text><xsl:value-of select="$title"/></text>
+                <text>
+                    <xsl:value-of select="$title"/>
+                </text>
             </navLabel>
-            <content src="{concat($xhtml-dir, '/', $filename)}"/>
+            <content src="{concat($xhtml-dir, '/', $file-name)}"/>
         </navPoint>
 
     </xsl:template>
@@ -94,7 +110,7 @@
             <navLabel>
                 <text>Dedication</text>
             </navLabel>
-            <content src="{concat($xhtml-dir, '/dedication.html')}"/>
+            <xsl:apply-templates select="." mode="book-content"/>
         </navPoint>
 
     </xsl:template>
@@ -102,97 +118,88 @@
 
 
 
-    <xsl:template match="chapter">
+    <xsl:template match="chapter|bibliography|appendix">
 
-        <xsl:variable name="chapnum" select="count(preceding::chapter) + 1"/>
-        <xsl:variable name="page-id" select="concat(local-name(), format-number($chapnum, '000'))"/>
-        <xsl:variable name="file-name" select="concat($xhtml-dir, '/', $page-id, '.html')"/>
-        <xsl:variable name='title-node' select="(title, info/title)[1]"/>
+        <xsl:variable name="page-id">
+            <xsl:call-template name="page.id"/>
+        </xsl:variable>
+
+        <xsl:variable name="title-node" select="(title, info/title)[1]"/>
         <navPoint id="{$page-id}">
             <navLabel>
-                <text><xsl:value-of select='normalize-space($title-node)'/></text>
+                <text>
+                    <xsl:value-of select="normalize-space($title-node)"/>
+                </text>
             </navLabel>
-            <content src="{$file-name}"/>
+            <xsl:apply-templates select="." mode="book-content"/>
         </navPoint>
 
     </xsl:template>
 
-    <xsl:template match="chapter" mode='book-content'>
 
-        <xsl:variable name="chapnum" select="count(preceding::chapter) + 1"/>
-        <xsl:variable name="page-id" select="concat(local-name(), format-number($chapnum, '000'))"/>
-        <xsl:variable name="file-name" select="concat($xhtml-dir, '/', $page-id, '.html')"/>
-        
-        <content src="{$file-name}"/>
-        
-    </xsl:template>
-    
-    
+
 
     <xsl:template match="part">
 
-        <xsl:variable name="partnum" select="count(preceding::part) + 1"/>
-        <xsl:variable name="page-id" select="concat(local-name(), format-number($partnum, '000'))"/>
-        <xsl:variable name="file-name" select="concat($xhtml-dir, '/', $page-id, '.html')"/>
+        <xsl:variable name="page-id">
+            <xsl:call-template name="page.id"/>
+        </xsl:variable>
+
         <navPoint id="{$page-id}">
             <navLabel>
                 <text>
                     <xsl:apply-templates select="title|info/title"/>
                 </text>
             </navLabel>
-            <content src="{$file-name}"/>
+            <xsl:apply-templates select="." mode="book-content"/>
             <xsl:apply-templates select="preface|chapter"/>
+
         </navPoint>
 
     </xsl:template>
-    
-    <xsl:template match="part" mode="book-content">
-        
-        <xsl:variable name="partnum" select="count(preceding::part) + 1"/>
-        <xsl:variable name="page-id" select="concat(local-name(), format-number($partnum, '000'))"/>
-        <xsl:variable name="file-name" select="concat($xhtml-dir, '/', $page-id, '.html')"/>
-        
-        <content src="{$file-name}"/>
-        
+
+    <xsl:template match="part|part|dedication|chapter|preface|bibliography|appendix"
+        mode="book-content">
+
+        <xsl:variable name="page-id">
+            <xsl:call-template name="page.id"/>
+        </xsl:variable>
+        <xsl:variable name="file-name">
+            <xsl:call-template name="page.href"/>
+        </xsl:variable>
+
+        <content src="{concat($xhtml-dir, '/', $file-name)}"/>
+
     </xsl:template>
 
-     <xsl:template match="preface">
+    <xsl:template match="preface">
 
         <xsl:variable name="basis" select="(@role, @xml:id, local-name())[1]"/>
-        <xsl:variable name="file-name" select="concat($xhtml-dir, '/', $basis, '.html')"/>
         <navPoint id="{$basis}">
             <navLabel>
                 <text>
                     <xsl:apply-templates select="title|info/title"/>
                 </text>
             </navLabel>
-            <content src="{$file-name}"/>
+            <xsl:apply-templates select="." mode="book-content"/>
         </navPoint>
 
-     </xsl:template>
-    
-    <xsl:template match="preface" mode="book-content">
-        
-        <xsl:variable name="basis" select="(@role, @xml:id, local-name())[1]"/>
-        <xsl:variable name="file-name" select="concat($xhtml-dir, '/', $basis, '.html')"/>
-
-        <content src="{$file-name}"/>
-        
     </xsl:template>
-    
+
 
     <xsl:template match="personblurb">
-        
-        <xsl:variable name="file-name" select="concat($xhtml-dir, '/author.html')"/>
+
+        <xsl:variable name="file-name">
+            <xsl:call-template name="page.href"/>
+        </xsl:variable>
+
         <navPoint id="author">
             <navLabel>
-                <text>
-                    About the author
-                </text>
+                <text> About the author </text>
             </navLabel>
-            <content src="{$file-name}"/>
+            <content src="{concat($xhtml-dir, '/', $file-name)}"/>
         </navPoint>
-        
+
     </xsl:template>
 
     <xsl:template match="authorgroup">
@@ -211,6 +218,18 @@
 
     <xsl:template match="author|editor|othercredit">
         <xsl:apply-templates select="personname"/>
+    </xsl:template>
+
+
+    <xsl:template name="generate.notes">
+        <xsl:if test="descendant::footnote">
+            <navPoint id="notes">
+                <navLabel>
+                    <text>Notes</text>
+                </navLabel>
+                <content src="{concat($xhtml-dir, '/notes.html')}"/>
+            </navPoint>
+        </xsl:if>
     </xsl:template>
 
     <!-- very basic -->
