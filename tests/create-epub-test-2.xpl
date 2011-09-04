@@ -28,8 +28,8 @@
     <p:option name="path-sep" select="'/'"/>
     
     <!-- metadata filenames --> 
-    <p:option name="package-file" select="'package.opf'"/>
-    <p:option name="daisy-file" select="'toc.ncx'"/>
+    <p:option name="epub.opf.filename" select="'package.opf'"/>
+    <p:option name="epub.ncx.filename" select="'toc.ncx'"/>
     
     <!-- main content directory -->
     <p:option name="content-dir-name" select="'OPS'"/>
@@ -48,8 +48,8 @@
     
     <!-- set up some paths -->
     <p:variable name="content-path" select="concat($root, $path-sep, $content-dir-name)"/>
-    <p:variable name="opf-path" select="concat($content-path, $path-sep, $package-file)"/>
-    <p:variable name="ncx-path" select="concat($content-path, $path-sep, $daisy-file)"/>    
+    <p:variable name="opf-path" select="concat($content-path, $path-sep, $epub.opf.filename)"/>
+    <p:variable name="ncx-path" select="concat($content-path, $path-sep, $epub.ncx.filename)"/>    
     <p:variable name="xhtml-path" select="concat($content-path, $path-sep, $xhtml-dir-name)"/>
     
     <!-- set up base URLs for relative access to images and css from HTML -->
@@ -133,7 +133,7 @@
             <p:pipe port="source" step="create-epub-test-2"/>
         </p:input>
         <p:with-option name="content-path" select="$content-path"/>
-        <p:with-option name="filename" select="$daisy-file"/>
+        <p:with-option name="filename" select="$epub.ncx.filename"/>
         <p:with-option name="xhtml-dir-name" select='$xhtml-dir-name'/>
     </epub:create-ncx>
   
@@ -156,22 +156,23 @@
         <p:with-option name="href" select="$opf-path"/>
     </epub:create-opf>
         
-
     <p:load  dtd-validate="false" name="reload-opf">
         <p:with-option name="href" select="$opf-path"/>
     </p:load>  
+    
     <epub:package-epub name="make-zip">
         <p:input port="source">
             <p:pipe port="result" step="reload-opf"/>
         </p:input>
         <p:with-option name="content-dir" select="$content-dir-name"/>
-        <p:with-option name="package-file" select="$package-file"/>
         <p:with-option name="epub-path" select="$epub-path"/>
     </epub:package-epub>
+
+    <p:sink/>
     
     <p:identity name="final">
         <p:input port="source">
-            <p:pipe port="result" step="make-zip"/>
+            <p:pipe port="result" step="create-opf"/>
         </p:input>
     </p:identity>
     

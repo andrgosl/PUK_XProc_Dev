@@ -397,7 +397,9 @@
             <p:input port="stylesheet">
                 <p:document href="../xslt/create-epub/xml-to-html.xslt"/>
             </p:input>
-            <p:with-param name="image-uri-base" select="$image-uri-base"/>
+            <!-- <p:with-param name="image-uri-base" select="$image-uri-base"/> -->
+            <p:with-param name="epub.oebps.dir" select="'OPS'"/>
+            
             
         </p:xslt>
 
