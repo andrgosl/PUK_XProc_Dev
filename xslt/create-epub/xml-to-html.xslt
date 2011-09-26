@@ -39,6 +39,9 @@
         <xsl:apply-templates/>
 
     </xsl:template>
+    
+    <!-- ignore the dummy appendix for the notes - only used in FO -->
+    <xsl:template match="appendix[@role='notes']" mode='#all'/>
 
     <xsl:template match="part/info">
 
@@ -147,6 +150,9 @@
             <xsl:apply-templates/>
         </h2>
     </xsl:template>
+    
+    <!-- titleabbrev is used in the fo but not the html -->
+    <xsl:template match="titleabbrev"/>
 
 
     <xsl:template match="title|info/title" mode="as-title">
