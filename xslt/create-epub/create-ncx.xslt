@@ -65,11 +65,10 @@
                 </navLabel>
                 <xsl:apply-templates
                     select="(preface[not(@role) or not(@role = ('reviews', 'author', 'books-by'))]|part|chapter|bibliography|appendix)[1]"
-                    mode="book-content"/>
-                <xsl:call-template name="generate.notes"/>
+                    mode="book-content"/>                
                 <xsl:apply-templates
                     select="preface[not(@role) or not(@role = ('reviews', 'author', 'books-by'))]"/>
-                <xsl:apply-templates select="part|chapter"/>
+                <xsl:apply-templates select="part|chapter|appendix"/>
             </navPoint>
 
             <navPoint id="copyright">
@@ -218,18 +217,6 @@
 
     <xsl:template match="author|editor|othercredit">
         <xsl:apply-templates select="personname"/>
-    </xsl:template>
-
-
-    <xsl:template name="generate.notes">
-        <xsl:if test="descendant::footnote">
-            <navPoint id="notes">
-                <navLabel>
-                    <text>Notes</text>
-                </navLabel>
-                <content src="{concat($xhtml-dir, '/notes.html')}"/>
-            </navPoint>
-        </xsl:if>
     </xsl:template>
 
     <!-- very basic -->

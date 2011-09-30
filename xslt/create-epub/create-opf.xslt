@@ -80,7 +80,6 @@
             <item id="copyright" href="{concat($xhtml-dir, '/copyright.html')}" media-type="application/xhtml+xml"/>
             <xsl:apply-templates select='descendant::mediaobject|descendant::inlinemediaobject'/>
             <xsl:apply-templates select='part|preface|chapter|bibliography|appendix' mode='manifest'/>
-            <xsl:call-template name="notes.manifest"/>
         </manifest>
     </xsl:template>
         
@@ -119,9 +118,6 @@
         
     </xsl:template>
     
-    <xsl:template name="notes.manifest">
-        <item id="notes" media-type="application/xhtml+xml" href="{concat($xhtml-dir, '/notes.html')}"/>
-    </xsl:template>
     
     <!-- Generate the spine -->
     
