@@ -199,24 +199,7 @@
         
     </xsl:template>
   
-    <xd:doc>
-        <xd:desc>
-            <xd:p>Content controls are all mapped to DocBook sections. This is not a final
-            conversion - it simply maps it to a DocBook vocabulary. In particular, images
-            are wrapped in section elements where this is probably undesired in the final
-            output. </xd:p>
-        </xd:desc>
-    </xd:doc>
-     <xsl:template match='w:sdt'>
-         <db:section role='{w:sdtPr/w:tag/@w:val}'>
-            <db:info>
-                <db:bibliomisc role='alias'><xsl:value-of select='w:sdtPr/w:alias/@w:val'/></db:bibliomisc>
-                <db:bibliomisc role='tag'><xsl:value-of select='w:sdtPr/w:tag/@w:val'/></db:bibliomisc>
-            </db:info>
-            <xsl:apply-templates/>
-        </db:section>
-     </xsl:template>
-    
+ 
     <xd:doc>
         <xd:desc>
             <xd:p>Output graphics, using the alignment control to set the value
@@ -234,31 +217,7 @@
         </db:section>       
     </xsl:template>
     
-    <xd:doc>
-        <xd:desc>
-            <xd:p>This is a workaround for word content where the tag for graphic isn't
-            present. We use the alias element's value to check and create the same
-            structure we would have were it not for the missing element.</xd:p>
-        </xd:desc>
-    </xd:doc>
-    <xsl:template match='w:sdt[descendant::w:alias/@w:val = "Graphic" and not(descendant::w:tag)]'>
-        <db:section role='graphic:graphic'>
-            <db:info>
-                <db:bibliomisc role='alias'><xsl:value-of select='w:sdtPr/w:alias/@w:val'/></db:bibliomisc>
-                <db:bibliomisc role='tag'>graphic:graphic</db:bibliomisc>
-            </db:info>
-            <xsl:apply-templates/>
-        </db:section>
-    </xsl:template>
-    
-    <xd:doc>
-        <xd:desc>
-            <xd:p>Convert a standard content element that contains an image.</xd:p>
-        </xd:desc>
-    </xd:doc>     
-    <xsl:template match="w:sdtContent//w:drawing">
-        <xsl:apply-templates select='.//a:blip'/>
-      </xsl:template>
+
     
     <xd:doc>
         <xd:desc>

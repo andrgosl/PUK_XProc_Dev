@@ -3,6 +3,7 @@
     xmlns:cx="http://xmlcalabash.com/ns/extensions" name="docx2xml"
     xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
     xmlns:rels="http://schemas.openxmlformats.org/package/2006/relationships" version="1.0"
+     type="corbas:docx2xml"
     xmlns:corbas="http://www.corbas.co.uk/ns/xproc" xmlns:temp="http://www.corbas.co.uk/ns/temp">
 
     <p:documentation>
@@ -54,7 +55,7 @@
 
     <p:option name="package-url" required="true"/>
 
-    <p:import href="../lib/ng-library.xpl"/>
+    <p:import href="library-1.0.xpl"/>
 
 
 
