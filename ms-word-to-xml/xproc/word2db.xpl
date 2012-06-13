@@ -43,7 +43,7 @@
     </p:documentation>
 
     <p:option name="package-url" required="true"/>
-    <p:option name="show-steps" select="false" required="false"/>
+    <p:option name="show-steps" select="'false'" required="false"/>
 
     <p:import href="library-1.0.xpl"/>
     <p:import href="docx2xml.xpl"/>
@@ -52,17 +52,13 @@
         <p:with-option name="package-url" select="$package-url"/>
     </corbas:docx2xml>
 
-    <p:choose>
-        <p:when test="$show-steps = 'true'">
-            <p:store href="/tmp/extracted.xml">
-                <p:input port="source">
-                    <p:pipe port="result" step="extract-document"/>
-                </p:input>
-            </p:store>
-        </p:when>
-    </p:choose>
-    
-    
+    <p:store href="/tmp/extracted.xml">
+        <p:input port="source">
+            <p:pipe port="result" step="extract-document"/>
+        </p:input>
+    </p:store>
+
+
     <p:xslt name="normalise-doc" version="2.0">
         <p:input port="source">
             <p:pipe port="result" step="extract-document"/>
@@ -73,10 +69,46 @@
         </p:input>
     </p:xslt>
 
+    <p:store href="/tmp/normalised-1.xml">
+        <p:input port="source">
+            <p:pipe port="result" step="normalise-doc"/>
+        </p:input>
+    </p:store>
+    
+    <p:xslt name="tidy-numbering">
+        <p:input port="source">
+            <p:pipe port="result" step="normalise-doc"/>
+        </p:input>
+        <p:input port="parameters"/>
+        <p:input port="stylesheet">
+            <p:document href="../xsl/word-numbering.xsl"/>
+        </p:input>        
+    </p:xslt>
 
-    <p:wrap-sequence wrapper="docfiles"/>
-
-
-
+    <p:store href="/tmp/normalised-2.xml">
+        <p:input port="source">
+            <p:pipe port="result" step="tidy-numbering"/>
+        </p:input>
+    </p:store>
+    
+<!--       LIST PROCESSING NOT WORKING, SKIP FOR NOW.
+        
+        <p:xslt name="manage-lists" version="2.0">
+        <p:input port="source">
+            <p:pipe port="result" step="tidy-numbering"/>
+        </p:input>
+        <p:input port="parameters"/>
+        <p:input port="stylesheet">
+            <p:document href="../xsl/word-lists.xsl"/>
+        </p:input>
+    </p:xslt>
+    
+ -->
+    
+    <p:identity>
+        <p:input port="source">
+            <p:pipe port="result" step="tidy-numbering"/>
+        </p:input>
+    </p:identity>
 
 </p:pipeline>

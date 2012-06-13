@@ -150,7 +150,7 @@
     <corbas:get-doc-from-archive name="get-doc">
         <p:input port="fallback">
             <p:inline>
-                <w:footnotes/>
+                <w:document/>
             </p:inline>
         </p:input>
         <p:with-option name="archive" select="$package-url"/>

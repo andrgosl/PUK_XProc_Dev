@@ -5,6 +5,7 @@
     xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" xmlns:db="http://docbook.org/ns/docbook"
     xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
     xmlns:rp="http://schemas.openxmlformats.org/package/2006/relationships"
+    
     xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"    
     exclude-result-prefixes="xs cword xd db w r rp a">
     <xsl:import href="word-functions.xsl"/>
@@ -12,6 +13,8 @@
     <xsl:import href="word-templates.xsl"/>
 
     <xsl:output encoding="UTF-8" indent="yes"/>
+    
+    <xsl:param name="image-uri-base" select="'images'"/> <!-- override to change the assumed dir for images -->
     
     <xsl:strip-space elements="*"/>
     <xsl:preserve-space elements="w:t"/>
@@ -27,6 +30,21 @@
             imageobject elements within a section (the next stage processing may move this).</xd:p>
         </xd:desc>
     </xd:doc>
+    
+    <!-- most nodes just copy to output -->
+    <xsl:template match="@*|node()">
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()"/>
+        </xsl:copy>
+    </xsl:template>
+    
+    <!-- word body can be skipped -->
+    <xsl:template match="w:body">
+        <xsl:apply-templates/>
+    </xsl:template>
+    
+    <!-- Section, para and run properties must be dropped -->
+    <xsl:template match="w:sectPr|w:p/w:pPr|w:r/w:rPr"/>
 
     <xd:doc>
         <xd:desc>
@@ -91,7 +109,7 @@
         list and indent level.</xd:desc>
     </xd:doc> 
     <xsl:template match="w:p[w:pPr/w:numPr]">
-        <db:listitem role='{w:pPr/w:numPr/w:ilvl/@w:val}' override='{w:pPr/w:numPr/w:numId/@w:val}'>
+        <db:listitem cword:list-level='{w:pPr/w:numPr/w:ilvl/@w:val}' cword:list-mark='{w:pPr/w:numPr/w:numId/@w:val}'>
             <xsl:apply-templates select='.' mode='basic'/>
         </db:listitem>
     </xsl:template>
@@ -200,22 +218,6 @@
     </xsl:template>
   
  
-    <xd:doc>
-        <xd:desc>
-            <xd:p>Output graphics, using the alignment control to set the value
-            of the role attribute on the topmost section.</xd:p>
-        </xd:desc>
-     
-    </xd:doc>
-    <xsl:template match="w:sdt[descendant::w:tag/@w:val = 'graphic:container']">
-        <db:section role='{w:sdtPr/w:tag/@w:val}'>
-            <db:info>
-                <db:bibliomisc role='alias'><xsl:value-of select='w:sdtPr/w:alias/@w:val'/></db:bibliomisc>
-                <db:bibliomisc role='tag'><xsl:value-of select='w:sdtPr/w:tag/@w:val'/></db:bibliomisc>
-            </db:info>
-            <xsl:apply-templates/>
-        </db:section>       
-    </xsl:template>
     
 
     
@@ -228,7 +230,18 @@
     </xd:doc>
     <xsl:template match='a:blip'>
         <db:imageobject>
-            <db:imagedata fileref="{@r:link}"/>
+            <xsl:apply-templates select="@r:link"/>
          </db:imageobject>
     </xsl:template>
+    
+    <xsl:template match="a:blip/@r:link">
+        <!-- generate a docbook imdagedata element based on this. -->
+        <xsl:variable name="id" select='.'/>
+        <xsl:variable name="image-uri" select="//rp:Relationships/rp:Relationship[@Id = $id]/Target"/>
+        <xsl:variable name="filename" select="if (matches($image-uri, '/')) then reverse(substring-before(reverse($image-uri), '/')) else $image-uri"/>
+        <xsl:variable name="new-uri" select="concat($image-uri-base, '/', $filename)"/>
+        <db:imagedata fileref="{$new-uri}"/>
+    </xsl:template>
+    
+    
 </xsl:stylesheet>
