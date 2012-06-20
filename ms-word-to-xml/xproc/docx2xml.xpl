@@ -2,6 +2,8 @@
 <p:declare-step xmlns:p="http://www.w3.org/ns/xproc" xmlns:c="http://www.w3.org/ns/xproc-step"
     xmlns:cx="http://xmlcalabash.com/ns/extensions" name="docx2xml"
     xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+    xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties"
+    xmlns:prop="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"
     xmlns:rels="http://schemas.openxmlformats.org/package/2006/relationships" version="1.0"
      type="corbas:docx2xml"
     xmlns:corbas="http://www.corbas.co.uk/ns/xproc" xmlns:temp="http://www.corbas.co.uk/ns/temp">
@@ -40,6 +42,11 @@
                         <date>2010-04-12</date>
                         <revremark> Added wrappers around all loaders to handle missing xml files.
                         </revremark>
+                    </revision>
+                    <revision>
+                        <revnumber>5</revnumber>
+                        <date>2012-05-12</date>
+                        <revremark>Added core and app properties</revremark>
                     </revision>
                 </revhistory>
             </info>
@@ -156,7 +163,28 @@
         <p:with-option name="archive" select="$package-url"/>
         <p:with-option name="doc" select="'word/document.xml'"/>
     </corbas:get-doc-from-archive>
+    
+    <corbas:get-doc-from-archive name="get-core-properties">
+        <p:input port="fallback">
+            <p:inline>
+                <cp:coreProperties/>
+            </p:inline>
+        </p:input>
+        <p:with-option name="archive" select="$package-url"/>
+        <p:with-option name="doc" select="'docProps/core.xml'"/>
+    </corbas:get-doc-from-archive>
 
+
+    <corbas:get-doc-from-archive name="get-app-properties">
+        <p:input port="fallback">
+            <p:inline>
+                <prop:Properties/>
+            </p:inline>
+        </p:input>
+        <p:with-option name="archive" select="$package-url"/>
+        <p:with-option name="doc" select="'docProps/app.xml'"/>
+    </corbas:get-doc-from-archive>
+    
     <p:identity name="create-sequence">
         <p:input port="source">
             <p:pipe port="result" step="get-doc"/>
@@ -164,6 +192,8 @@
             <p:pipe port="result" step="get-numbering"/>
             <p:pipe port="result" step="get-footnotes"/>
             <p:pipe port="result" step="get-endnotes"/>
+            <p:pipe port="result" step="get-app-properties"/>
+            <p:pipe port="result" step="get-core-properties"/>
         </p:input>
     </p:identity>
 

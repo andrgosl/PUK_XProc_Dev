@@ -51,33 +51,10 @@
     <corbas:docx2xml name="extract-document">
         <p:with-option name="package-url" select="$package-url"/>
     </corbas:docx2xml>
-
-    <p:store href="/tmp/extracted.xml">
-        <p:input port="source">
-            <p:pipe port="result" step="extract-document"/>
-        </p:input>
-    </p:store>
-
-
-    <p:xslt name="normalise-doc" version="2.0">
-        <p:input port="source">
-            <p:pipe port="result" step="extract-document"/>
-        </p:input>
-        <p:input port="parameters"/>
-        <p:input port="stylesheet">
-            <p:document href="../xsl/word-components.xsl"/>
-        </p:input>
-    </p:xslt>
-
-    <p:store href="/tmp/normalised-1.xml">
-        <p:input port="source">
-            <p:pipe port="result" step="normalise-doc"/>
-        </p:input>
-    </p:store>
     
-    <p:xslt name="tidy-numbering">
+    <p:xslt name="refactor-numbering">
         <p:input port="source">
-            <p:pipe port="result" step="normalise-doc"/>
+            <p:pipe port="result" step="extract-document"/>
         </p:input>
         <p:input port="parameters"/>
         <p:input port="stylesheet">
@@ -85,11 +62,50 @@
         </p:input>        
     </p:xslt>
 
-    <p:store href="/tmp/normalised-2.xml">
+    <p:store href="/tmp/extracted.xml">
         <p:input port="source">
-            <p:pipe port="result" step="tidy-numbering"/>
+            <p:pipe port="result" step="refactor-numbering"/>
         </p:input>
     </p:store>
+
+    <p:xslt name="initial-conversion" version="2.0">
+        <p:input port="source">
+            <p:pipe port="result" step="refactor-numbering"/>
+        </p:input>
+        <p:input port="parameters"/>
+        <p:input port="stylesheet">
+            <p:document href="../xsl/word-components.xsl"/>
+        </p:input>
+    </p:xslt>
+
+    <p:store href="/tmp/converted-1.xml">
+        <p:input port="source">
+            <p:pipe port="result" step="initial-conversion"/>
+        </p:input>
+    </p:store>
+    
+
+    <p:xslt name="refactor-paragraphs" version="2.0">
+        <p:input port="source">
+            <p:pipe port="result" step="initial-conversion"/>
+        </p:input>
+        <p:input port="parameters"/>
+        <p:input port="stylesheet">
+            <p:document href="../xsl/refactor-paragraphs.xsl"/>
+        </p:input>
+    </p:xslt>
+    
+    <p:xslt name="refactor-epigraphs" version="2.0">
+        <p:input port="source">
+            <p:pipe port="result" step="refactor-paragraphs"/>
+        </p:input>
+        <p:input port="parameters"/>
+        <p:input port="stylesheet">
+            <p:document href="../xsl/refactor-epigraphs.xsl"/>
+        </p:input>
+       
+    </p:xslt>
+
     
 <!--       LIST PROCESSING NOT WORKING, SKIP FOR NOW.
         
@@ -107,7 +123,7 @@
     
     <p:identity>
         <p:input port="source">
-            <p:pipe port="result" step="tidy-numbering"/>
+            <p:pipe port="result" step="refactor-epigraphs"/>
         </p:input>
     </p:identity>
 
