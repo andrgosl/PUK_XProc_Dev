@@ -2,15 +2,17 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
     xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cword="http://www.corbas.co.uk/ns/word"
     xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+    xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties"
     xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" xmlns:db="http://docbook.org/ns/docbook"
     xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
     xmlns:rp="http://schemas.openxmlformats.org/package/2006/relationships"
+    xmlns:dc="http://purl.org/dc/elements/1.1/" 
     
     xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"    
-    exclude-result-prefixes="xs cword xd db w r rp a">
+    exclude-result-prefixes="#all">
     <xsl:import href="word-functions.xsl"/>
     <xsl:import href="word-tables.xsl"/>
-    <xsl:import href="word-templates.xsl"/>
+    
 
     <xsl:output encoding="UTF-8" indent="yes"/>
     
@@ -54,12 +56,13 @@
     </xd:doc>
     <xsl:template match="w:document">
         
-        <db:article>
+        <db:book>
             <db:info>
-                <xsl:call-template name="cword:documentTitle"/>
+                <xsl:apply-templates select="//cp:coreProperties/dc:title"/>
+                
             </db:info>
             <xsl:apply-templates/>
-        </db:article>
+        </db:book>
     </xsl:template>
 
 
@@ -69,11 +72,11 @@
             style data to copy into the role attribute of the element.</xd:p>
         </xd:desc>
     </xd:doc>
-    <xsl:template match="w:p">
-        <xsl:if test='normalize-space(.) != ""'>
-            <xsl:apply-templates select='.' mode='basic'/>
-        </xsl:if>    
+    <xsl:template match="w:p[not(normalize-space(.) = '')]">
+            <xsl:apply-templates select='.' mode='basic'/>           
     </xsl:template>
+    
+    <xsl:template match="w:p[normalize-space(.) = '']" priority="2"/>
     
     <xd:doc>
         <xd:desc>
@@ -97,7 +100,7 @@
             <xd:p>Matches paragraphs that contain images.</xd:p>
         </xd:desc>
     </xd:doc>
-    <xsl:template match="w:p[descendant::w:drawing]">
+    <xsl:template match="w:p[descendant::w:drawing]" priority="3">
         <xsl:apply-templates select='.//a:blip'/>
     </xsl:template>
     
@@ -182,6 +185,25 @@
     
     <xd:doc>
         <xd:desc>
+            <xd:p>Process runs of text with foot note references into docbook footnotes.</xd:p>
+        </xd:desc>
+    </xd:doc>
+    <xsl:template match="w:r[w:endnoteReference]">
+        <xsl:apply-templates select="w:endnoteReference"/>
+    </xsl:template>
+            
+    <xsl:template match="w:endnoteReference">
+        <xsl:apply-templates select="//w:endnotes/w:endnote[@w:id = current()/@w:id]"/>
+    </xsl:template>
+    
+    <xsl:template match="w:endnote[w:r[not(w:continuationSeparator)]]">
+        <db:footnote role="endnote"><xsl:apply-templates/></db:footnote>
+    </xsl:template>
+        
+                
+    
+    <xd:doc>
+        <xd:desc>
             <xd:p>Process runs of italicised text by wrapping that text
             in a db:emphasis element.</xd:p>
         </xd:desc>
@@ -200,9 +222,6 @@
         <db:emphasis role='italic'><db:emphasis role='bold'><xsl:apply-templates select='.' mode='default'/></db:emphasis></db:emphasis>
     </xsl:template>
     
-    
-    <!-- Include any custom runs required -->
-    <xsl:include href='custom-runs.xsl'/>
     
     <xd:doc>
         <xd:desc>
@@ -242,6 +261,74 @@
         <xsl:variable name="new-uri" select="concat($image-uri-base, '/', $filename)"/>
         <db:imagedata fileref="{$new-uri}"/>
     </xsl:template>
+    
+    <xd:doc>
+        <xd:desc>
+            <xd:p>Converts the style given in an elements properties
+                to a role attribute containing the style's value.</xd:p>
+            <xd:p>Currently handles run and paragraph styles.</xd:p>
+        </xd:desc>
+        <xd:param name="properties">
+            <xd:p>The properties parameter must be provided and must
+                contain the properties element of the document being processed</xd:p>
+        </xd:param>
+    </xd:doc>
+    <xsl:template name="cword:getStyleAsRole">
+        <xsl:param name='properties'/>
+        <xsl:variable name='style' select='$properties/w:rStyle|$properties/w:pStyle'/>
+        <xsl:variable name='mapped-style'>
+            <xsl:choose>
+                <xsl:when test='$properties/w:pStyle'><xsl:value-of select='cword:mapParagraphStyle($style/@w:val)'/></xsl:when>
+            </xsl:choose>
+            <xsl:choose>
+                <xsl:when test='$properties/w:rStyle'><xsl:value-of select='cword:mapRunStyle($style/@w:val)'/></xsl:when>
+            </xsl:choose>
+        </xsl:variable>
+        
+        <xsl:choose>
+            <xsl:when test='$style/@w:val = "attributes"'/>
+            <xsl:when test='$style/@w:val = "CommentReference"'/>
+            <xsl:when test='$style'>
+                <xsl:attribute name='role'><xsl:value-of select='$mapped-style'/></xsl:attribute>
+            </xsl:when>
+        </xsl:choose>
+    </xsl:template>
+    
+    
+    <xd:doc>
+        <xd:desc>
+            <xd:p>Returns the document title from properties.</xd:p>
+        </xd:desc>
+    </xd:doc>
+    <xsl:template match="dc:title">
+        <db:title><xsl:apply-templates/></db:title>
+    </xsl:template>
+    
+    
+    <xd:doc>
+        <xd:desc>
+            <xd:p>Handle word bookmarks by converting them to either anchors (when empty) or phrases (when  not)</xd:p>
+        </xd:desc>
+    </xd:doc>
+    
+    <xsl:template match="w:bookmarkStart[following-sibling::node()[1][self::w:bookmarkEnd]]">
+        <db:anchor xml:id="{@w:name}"/>
+    </xsl:template>
+    
+    <xsl:template match="w:bookmarkStart[not(following-sibling::node()[1][self::w:bookmarkEnd])]">
+        <xsl:variable name="end-marker" select="(following-sibling::*[self::bookmarkEnd])[1]"/>
+        <db:phrase xml:id="{@w:name}"><xsl:apply-templates select='following-sibling::*[ . &lt;&lt; $end-marker]'/></db:phrase>
+    </xsl:template>
+    
+    <xsl:template match="w:bookmarkEnd"/>    
+    
+    
+    <xd:doc>
+        <xd:desc><xd:p>Delete all page breaks</xd:p></xd:desc>
+    </xd:doc>
+    
+    <xsl:template match="w:br[@w:type='page']"/>
+    
     
     
 </xsl:stylesheet>

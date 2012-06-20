@@ -1,0 +1,12 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use URI;
+use URI::file;
+use Cwd qw/abs_path/;
+
+my $path = shift;
+my $abs = abs_path($path);
+my $uri = URI::file->new($abs);
+print "$uri\n";

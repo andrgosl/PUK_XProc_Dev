@@ -1,0 +1,25 @@
+#!/bin/sh
+
+
+#CALABASH="$JARPATH/calabash.jar"
+#SAXON="$JARPATH/saxon9he.jar"
+#RESOLVER="$JARPATH/resolver.jar"
+#JING="$JARPATH/jing.jar"
+
+RESOLVERCLASS="org.apache.xml.resolver.tools.CatalogResolver"
+
+
+CATALOGMGR=/usr/local/share/xml
+
+CP="$CLASSPATH:$CATALOGMGR"
+
+if [ $# -lt 1  ]
+  then
+    echo usage "$0 params"
+    echo Where params are the calabash parameters
+  exit 2
+
+fi
+
+java -Xmx2500M -Dcom.xmlcalabash.phonehome="false" -cp "$CP" com.xmlcalabash.drivers.Main -U $RESOLVERCLASS -E $RESOLVERCLASS --saxon-processor=ee $*
+
