@@ -1,6 +1,6 @@
 #!/bin/sh
 
-CLASSPATH=~/bin
+CLASSPATH=$PUK_ROOT/ms-word-to-xml/bin/java
 
-java -Xmx2500M -Dcom.xmlcalabash.phonehome="false" -cp "$CLASSPATH" com.xmlcalabash.drivers.Main $*
+java -Xmx2500M -Dcom.xmlcalabash.phonehome="false" -jar $CLASSPATH/calabash.jar $*
 

@@ -1,5 +1,12 @@
 #!/usr/bin/perl
 
+BEGIN
+{
+    use strict;
+    my $libs = $ENV{'PUK_ROOT'} . 'ms-word-to-xml/bin/lib';
+    push @INC, $libs;
+}
+
 use strict;
 use warnings;
 use URI;

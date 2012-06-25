@@ -1,6 +1,8 @@
 #!/bin/sh
 
-DOCX=`path-to-uri $1`
-SCRIPT=/Users/nicg/Projects/penguin/PUK_XProc_Dev/ms-word-to-xml/xproc/word2db.xpl
+DOCX=`$PUK_ROOT/ms-word-to-xml/bin/path-to-uri $1`
+SCRIPT=$PUK_ROOT/ms-word-to-xml/xproc/word2db.xpl
 
-calabash $SCRIPT package-url=$DOCX 
+echo $SCRIPT
+
+$PUK_BASE/ms-word-to-xml/bin/calabash $SCRIPT package-url=$DOCX 
