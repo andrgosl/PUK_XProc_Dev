@@ -10,8 +10,7 @@
         <xd:desc>
             <xd:p><xd:b>Created on:</xd:b> 6/6/12</xd:p>
             <xd:p><xd:b>Author:</xd:b> nicg</xd:p>
-            <xd:p>Custom text runs. This allows character formatting to drive semantic inline
-                tagging.</xd:p>
+            <xd:p>Reformatting based on penguin styles.</xd:p>
             <xd:p>Interprets penguin styles to get improved docbook elememt conversion</xd:p>
         </xd:desc>
     </xd:doc>
@@ -19,27 +18,27 @@
     <!-- Prelims -->
     
     <xsl:template match="para[@role='01FMTPTitle']">
-        <title cword:hint="doc-title"><xsl:apply-templates select="@*|node()"/></title>
+        <title cword:hint="doc-title" role="{@role}"><xsl:apply-templates select="@*|node()"/></title>
     </xsl:template>
     
     <xsl:template match="para[@role='01FMTPSubtitle']">
-        <subtitle cword:hint="doc-title"><xsl:apply-templates select="@*|node()"/></subtitle>
+        <subtitle cword:hint="doc-title" role="{@role}"><xsl:apply-templates select="@*|node()"/></subtitle>
     </xsl:template>
     
     <xsl:template match="para[@role='01FMTPAuthor']">
-        <author cword:hint="doc-author"><xsl:apply-templates select="@*|node()"/></author>
+        <author cword:hint="doc-author" role="{@role}"><xsl:apply-templates select="@*|node()"/></author>
     </xsl:template>
 
     <xsl:template match="para[@role='01FMDediBody']">
-        <dedication><para><xsl:apply-templates select="@*|node()"/></para></dedication>
+        <dedication role="{@role}"><para><xsl:apply-templates select="@*|node()"/></para></dedication>
     </xsl:template>
     
     <xsl:template match="para[@role='01FMEpigraph']">
-        <epigraph><para><xsl:apply-templates select="@*|node()"/></para></epigraph>
+        <epigraph role="{@role}"><para><xsl:apply-templates select="@*|node()"/></para></epigraph>
     </xsl:template>
 
-     <xsl:template match="para[@role='01FMEpigraphSource']">
-        <epigraph><attribution><xsl:apply-templates select="@*|node()"/></attribution></epigraph>
+    <xsl:template match="para[@role='01FMEpigraphSource']">
+        <epigraph role="{@role}"><attribution><xsl:apply-templates select="@*|node()"/></attribution></epigraph>
     </xsl:template>      
     
     <!-- skip the TOC -->
@@ -48,16 +47,20 @@
     
     <!-- Chapter Openers -->
     <xsl:template match="para[@role='03ChapterEpigraph']">
-        <epigraph><para><xsl:apply-templates select="@*|node()"/></para></epigraph>
+        <epigraph role="{@role}"><para><xsl:apply-templates select="@*|node()"/></para></epigraph>
     </xsl:template>    
     
+    <xsl:template match="para[@role='03ChapterEpigraphSource']">
+        <epigraph role="{@role}"><attribution><xsl:apply-templates select="@*|node()"/></attribution></epigraph>
+    </xsl:template>
+    
     <xsl:template match="para[@role='03ChapterNumberandTitle']">
-        <title cword:hint="chapter-title"><xsl:apply-templates select="@*|node()"/></title>
+        <title cword:hint="chapter-title" role="{@role}"><xsl:apply-templates select="@*|node()"/></title>
     </xsl:template>
     
     <!-- Images/Art -->
     <xsl:template match="para[@role='12caption']">
-        <caption><xsl:apply-templates select="@*|node()"/></caption>
+        <caption role="{@role}"><xsl:apply-templates select="@*|node()"/></caption>
     </xsl:template>
     
     

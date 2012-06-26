@@ -3,6 +3,4 @@
 DOCX=`$PUK_ROOT/ms-word-to-xml/bin/path-to-uri $1`
 SCRIPT=$PUK_ROOT/ms-word-to-xml/xproc/word2db.xpl
 
-echo $SCRIPT
-
-$PUK_BASE/ms-word-to-xml/bin/calabash $SCRIPT package-url=$DOCX 
+$PUK_ROOT/ms-word-to-xml/bin/calabash $SCRIPT package-url=$DOCX 

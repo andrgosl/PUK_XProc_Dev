@@ -16,7 +16,7 @@
     </xsl:template>
     
     <xsl:template match="w:numbering">
-        <list-formats>
+        <list-formats xmlns="http://www.corbas.co.uk/ns/word">
             <xsl:apply-templates select="w:num"/>
         </list-formats>
     </xsl:template>

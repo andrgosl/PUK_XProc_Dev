@@ -3,6 +3,7 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cword="http://www.corbas.co.uk/ns/word"
     xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
     xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties"
+    xmlns:dcterms="http://purl.org/dc/terms/"
     xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" xmlns:db="http://docbook.org/ns/docbook"
     xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
     xmlns:rp="http://schemas.openxmlformats.org/package/2006/relationships"
@@ -58,8 +59,7 @@
         
         <db:book>
             <db:info>
-                <xsl:apply-templates select="//cp:coreProperties/dc:title"/>
-                
+                <xsl:apply-templates select="//cp:coreProperties/*"/>
             </db:info>
             <xsl:apply-templates/>
         </db:book>
@@ -297,14 +297,45 @@
     
     <xd:doc>
         <xd:desc>
+            <xd:p>Skip core properties</xd:p>
+        </xd:desc>
+    </xd:doc>
+    
+    <xsl:template match="cp:coreProperties"/>
+    
+    <xd:doc>
+        <xd:desc>
+            <xd:p>Copy children of core properties unless specified.</xd:p>
+        </xd:desc>
+    </xd:doc>
+    <xsl:template match="cp:coreProperties/*">
+        <db:bibliomisc relation="{name()}"><xsl:apply-templates/></db:bibliomisc>
+    </xsl:template>
+    
+    <xd:doc>
+        <xd:desc>
             <xd:p>Returns the document title from properties.</xd:p>
         </xd:desc>
     </xd:doc>
-    <xsl:template match="dc:title">
+    <xsl:template match="cp:coreProperties/dc:title" priority="1">
         <db:title><xsl:apply-templates/></db:title>
     </xsl:template>
     
+    <xd:doc>
+        <xd:desc>
+            <xd:p>Convert dcterms:created and modified into date metadata</xd:p>
+        </xd:desc>
+    </xd:doc>
     
+    <xsl:template match="cp:coreProperties/dcterms:created|cp:coreProperties/dcterms:modified"  priority="1">
+        <db:date role="{name()}"><xsl:apply-templates/></db:date>
+    </xsl:template>
+    
+    <xd:doc>
+        <xd:desc><xd:p>Convert the word revision number</xd:p></xd:desc>
+    </xd:doc>
+    
+ 
     <xd:doc>
         <xd:desc>
             <xd:p>Handle word bookmarks by converting them to either anchors (when empty) or phrases (when  not)</xd:p>

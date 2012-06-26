@@ -6,11 +6,12 @@
     xmlns:prop="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"
     xmlns:rels="http://schemas.openxmlformats.org/package/2006/relationships" version="1.0"
      type="corbas:docx2xml"
-    xmlns:corbas="http://www.corbas.co.uk/ns/xproc" xmlns:temp="http://www.corbas.co.uk/ns/temp">
+    xmlns:corbas="http://www.corbas.co.uk/ns/xproc" xmlns:cword="http://www.corbas.co.uk/ns/cword">
 
     <p:documentation>
         <section xmlns="http://docbook.org/ns/docbook">
             <info>
+                
                 <title>docx2xml.xpl</title>
                 <author><personname>Nic Gibson</personname></author>
                 <revhistory>
@@ -98,10 +99,12 @@
                     </p:input>
                 </p:identity>
             </p:group>
-            <p:catch>
+            <p:catch name="catch-error">
                 <p:output port="result" primary="true">
                     <p:pipe port="result" step="use-fallback"/>
                 </p:output>
+            
+             
                 <p:identity name="use-fallback">
                     <p:input port="source">
                         <p:pipe port="fallback" step="get-doc-from-archive"/>
@@ -197,8 +200,17 @@
         </p:input>
     </p:identity>
 
-    <p:wrap-sequence name="the-end" wrapper="word-doc"
-        wrapper-namespace="http://www.corbas.co.uk/ns/temp"/>
+    <p:wrap-sequence name="wrap-up" wrapper="word-doc"
+        wrapper-namespace="http://www.corbas.co.uk/ns/word"/>
+
+    <p:add-attribute name="insert-url" xmlns:cword="http://www.corbas.co.uk/ns/word"
+        attribute-name="package-url" 
+         match="/cword:word-doc">
+        <p:with-option name="attribute-value" select="$package-url"/>
+    </p:add-attribute>
+    
+    
+    <p:identity name="the-end"/>
 
 
 </p:declare-step>
