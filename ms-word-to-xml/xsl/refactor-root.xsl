@@ -7,11 +7,7 @@
     xpath-default-namespace="http://docbook.org/ns/docbook"
     version="2.0">
     
-    <xsl:template match='@*|node()'>
-        <xsl:copy>
-            <xsl:apply-templates select='@*|node()'/>
-        </xsl:copy>
-    </xsl:template>
+    <xsl:include href="identity.xsl"/>
     
     <!-- choose which root element we should have (book or article) depending on the
     presence of chapter or part content  -->

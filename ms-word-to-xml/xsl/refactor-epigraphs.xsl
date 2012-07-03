@@ -6,11 +6,8 @@
 
     <!-- Update epigraph content to create groups and insert sources -->
 
-    <xsl:template match="@*|node()">
-        <xsl:copy>
-            <xsl:apply-templates select="@*|node()"/>
-        </xsl:copy>
-    </xsl:template>
+    <xsl:include href="identity.xsl"/>
+    
     
     <xsl:template match="*[epigraph]">
         <xsl:copy>

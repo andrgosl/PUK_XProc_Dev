@@ -6,12 +6,9 @@
     xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" version="2.0">
 
     <xsl:output indent="yes"/>
+    
+    <xsl:include href="identity.xsl"/>
 
-    <xsl:template match="@*|node()" mode="#all">
-        <xsl:copy>
-            <xsl:apply-templates select="@*|node()" mode="#current"/>
-        </xsl:copy>
-    </xsl:template>
 
     <!-- we may have two titles. Override the one we pulled from properties if we have another -->
     <xsl:template match="/cword:word-doc/*/info/title[exists(//title[@cword:hint='doc-title'])]"/>

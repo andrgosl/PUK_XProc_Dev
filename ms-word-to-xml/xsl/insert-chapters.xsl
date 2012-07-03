@@ -5,11 +5,7 @@
     xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" xmlns:cword="http://www.corbas.co.uk/ns/word"
     version="2.0">
 
-    <xsl:template match="@*|node()" mode="#all">
-        <xsl:copy>
-            <xsl:apply-templates select="@*|node()" mode="#current"/>
-        </xsl:copy>
-    </xsl:template>
+    <xsl:include href="identity.xsl"/>
 
     <!-- wrap up chapters -->
     <xsl:template match="*[title[@cword:hint='chapter-title']]">

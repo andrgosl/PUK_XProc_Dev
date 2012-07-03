@@ -11,6 +11,7 @@
     xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" exclude-result-prefixes="#all">
     <xsl:import href="word-functions.xsl"/>
     <xsl:import href="word-tables.xsl"/>
+    
 
 
     <xsl:output encoding="UTF-8" indent="yes"/>
@@ -35,6 +36,8 @@
                 this).</xd:p>
         </xd:desc>
     </xd:doc>
+    
+    <xsl:include href="identity.xsl"/>
 
     <!-- most nodes just copy to output -->
     <xsl:template match="@*|node()">

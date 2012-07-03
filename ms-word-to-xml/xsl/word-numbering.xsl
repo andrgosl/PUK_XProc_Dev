@@ -9,11 +9,7 @@
     
     <!-- cleans up the word numbering file so that we can easily extract information from it -->
     
-    <xsl:template match="@*|node()">
-        <xsl:copy>
-            <xsl:apply-templates select="@*|node()"/>
-        </xsl:copy>
-    </xsl:template>
+    <xsl:include href="identity.xsl"/>
     
     <xsl:template match="w:numbering">
         <list-formats xmlns="http://www.corbas.co.uk/ns/word">

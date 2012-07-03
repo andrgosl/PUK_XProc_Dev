@@ -5,12 +5,8 @@
     xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" xmlns:cword="http://www.corbas.co.uk/ns/word"
     xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" version="2.0">
 
-    <xsl:template match="@*|node()" mode="#all">
-        <xsl:copy>
-            <xsl:apply-templates select="@*|node()" mode="#current"/>
-        </xsl:copy>
-    </xsl:template>
-
+    <xsl:include href="identity.xsl"/>
+    
     <xsl:template match="cword:word-doc">
         <xsl:variable name="insert-prefaces">
             <xsl:copy>

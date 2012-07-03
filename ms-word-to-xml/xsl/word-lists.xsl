@@ -4,13 +4,8 @@
     xmlns="http://docbook.org/ns/docbook" xpath-default-namespace="http://docbook.org/ns/docbook"
     xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" xmlns:cword="http://www.corbas.co.uk/ns/word"
     xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" version="2.0">
-
-    <xsl:template match="@*|node()" mode="#all">
-        <xsl:param name="level" select="0"/>
-        <xsl:copy>
-            <xsl:apply-templates select="@*|node()"/>
-        </xsl:copy>
-    </xsl:template>
+    
+    <xsl:include href="identity.xsl"/>
     
     <!-- suppress the list definitions on output -->
     <xsl:template match="cword:list-formats"/>

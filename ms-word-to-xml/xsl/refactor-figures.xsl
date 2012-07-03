@@ -9,11 +9,7 @@
     <!-- find mediaobject elements immediately followed by caption elements
         and turn them into figure elements -->
     
-    <xsl:template match='@*|node()'>
-        <xsl:copy>
-            <xsl:apply-templates select='@*|node()'/>
-        </xsl:copy>
-    </xsl:template>
+    <xsl:include href="identity.xsl"/>
     
     <xsl:template match="mediaobject[following-sibling::*[1][self::caption]]">
         <figure xml:id="{generate-id()}">
