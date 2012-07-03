@@ -11,19 +11,19 @@
         </xsl:copy>
     </xsl:template>
 
-    <!-- wrap up chapters -->
-    <xsl:template match="*[title[@cword:hint='chapter-title']]">
+    <!-- wrap up parts -->
+    <xsl:template match="*[title[@cword:hint='part-title']]">
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
-            <xsl:for-each-group select="*" group-starting-with="title[@cword:hint='chapter-title']">
+            <xsl:for-each-group select="*" group-starting-with="title[@cword:hint='part-title']">
                 <xsl:choose>
-                    <xsl:when test="@cword:hint = 'chapter-title'">
-                        <chapter xml:id="{generate-id()}">
-                            <xsl:copy-of select="current-group()"/>
-                        </chapter>
+                    <xsl:when test="@cword:hint = 'part-title'">
+                        <part xml:id="{generate-id()}">
+                            <xsl:apply-templates select="current-group()"/>
+                        </part>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:copy-of select="current-group()"/>
+                        <xsl:apply-templates select="current-group()"/>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:for-each-group>

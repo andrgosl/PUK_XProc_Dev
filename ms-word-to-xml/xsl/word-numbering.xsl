@@ -32,6 +32,7 @@
         <level>
             <xsl:apply-templates select="w:numFmt|w:start|w:lvlText"/>
         </level>        
+        
     </xsl:template>
     
     <xsl:template match="w:numFmt">

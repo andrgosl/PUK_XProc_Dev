@@ -49,6 +49,11 @@
                         <date>2012-05-12</date>
                         <revremark>Added core and app properties</revremark>
                     </revision>
+                    <revision>
+                        <revnumber>6</revnumber>
+                        <date>2012-07-02</date>
+                        <revremark>Added omitted relationships doc</revremark>
+                    </revision>
                 </revhistory>
             </info>
             <para>XProc script to unzip a word docx document, extract metadata and convert to
@@ -188,6 +193,17 @@
         <p:with-option name="doc" select="'docProps/app.xml'"/>
     </corbas:get-doc-from-archive>
     
+    
+    <corbas:get-doc-from-archive name="get-relationships">
+        <p:input port="fallback">
+            <p:inline>
+                <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"/>
+            </p:inline>
+        </p:input>
+        <p:with-option name="archive" select="$package-url"/>
+        <p:with-option name="doc" select="'word/_rels/document.xml.rels'"/>
+    </corbas:get-doc-from-archive>
+    
     <p:identity name="create-sequence">
         <p:input port="source">
             <p:pipe port="result" step="get-doc"/>
@@ -197,6 +213,7 @@
             <p:pipe port="result" step="get-endnotes"/>
             <p:pipe port="result" step="get-app-properties"/>
             <p:pipe port="result" step="get-core-properties"/>
+            <p:pipe port="result" step="get-relationships"/>
         </p:input>
     </p:identity>
 

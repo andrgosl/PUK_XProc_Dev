@@ -15,6 +15,11 @@
         </xd:desc>
     </xd:doc>
     
+    <!-- sets of styles -->
+    <xsl:variable name="chapter-titles" select="('03ChapterTitle', '03ChapterNumberandTitle', '03ChapterNumber')"/>
+    <xsl:variable name="epigraphs" select="('01FMEpigraph', '01FMEpigraphFL', '01EpigraphVerse', '02PartEpigraph', '02PartEpigraphVerse', '03ChapterEpigraph')"/>
+    <xsl:variable name="epigraph-sources" select="('01FMEpigraphSource', '02PartEpigraphSource', '03ChapterEpigraphSource')"/>
+        
     <!-- Prelims -->
     
     <xsl:template match="para[@role='01FMTPTitle']">
@@ -25,44 +30,76 @@
         <subtitle cword:hint="doc-title" role="{@role}"><xsl:apply-templates select="@*|node()"/></subtitle>
     </xsl:template>
     
+    <xsl:template match="para[@role='01FMHead']">
+        <title cword:hint="prelims-title" role="{@role}"><xsl:apply-templates select="@*|node()"/></title>        
+    </xsl:template>
+    
     <xsl:template match="para[@role='01FMTPAuthor']">
-        <author cword:hint="doc-author" role="{@role}"><xsl:apply-templates select="@*|node()"/></author>
+        <author cword:hint="doc-author" role="{@role}"><personname><xsl:apply-templates select="@*|node()"/></personname></author>
     </xsl:template>
 
     <xsl:template match="para[@role='01FMDediBody']">
         <dedication role="{@role}"><para><xsl:apply-templates select="@*|node()"/></para></dedication>
     </xsl:template>
-    
-    <xsl:template match="para[@role='01FMEpigraph']">
-        <epigraph role="{@role}"><para><xsl:apply-templates select="@*|node()"/></para></epigraph>
-    </xsl:template>
-
-    <xsl:template match="para[@role='01FMEpigraphSource']">
-        <epigraph role="{@role}"><attribution><xsl:apply-templates select="@*|node()"/></attribution></epigraph>
-    </xsl:template>      
-    
+       
     <!-- skip the TOC -->
     <xsl:template match="para[starts-with(@role, '01FMContent')]"/>
     
+    <!-- Part Openers -->
+
     
-    <!-- Chapter Openers -->
-    <xsl:template match="para[@role='03ChapterEpigraph']">
-        <epigraph role="{@role}"><para><xsl:apply-templates select="@*|node()"/></para></epigraph>
-    </xsl:template>    
-    
-    <xsl:template match="para[@role='03ChapterEpigraphSource']">
-        <epigraph role="{@role}"><attribution><xsl:apply-templates select="@*|node()"/></attribution></epigraph>
+    <!-- match a title that isn't paired with a number or other title -->
+    <xsl:template match="para[@role=('02PartTitle', '02PartNumber')][not(following-sibling::*[1][para[@role =('02PartTitle', '02PartNumber')]]) 
+        and not(preceding-sibling::*[1][para[@role = ('02PartTitle', '02PartNumber')]])]">
+        <title cword:hint="part-title" role="{@role}"><xsl:apply-templates select="@*|node()"/></title>
     </xsl:template>
     
-    <xsl:template match="para[@role='03ChapterNumberandTitle']">
+    <!-- match a title immediately preceded by a number -->
+    <xsl:template match="para[@role='02PartTitle'][preceding-sibling::*[1][para[@role = '02PartNumber']]]">
+        <title cword:hint="part-title" role="{@role}" cword:chapter-number="{following-sibling::*[1][para[@role = '02PartNumber']]}"><xsl:apply-templates select="@*|node()"/></title>
+    </xsl:template>
+    
+    <xsl:template match="para[@role='02PartTitleSubtitle']">
+        <subtitle cword:hint="part-title"><xsl:apply-templates select="@*|node()"/></subtitle>
+    </xsl:template>    
+    
+    
+    <!-- Chapter Openers -->
+    
+   <!-- match a title that isn't paired with a number or other title -->
+    <xsl:template match="para[@role=$chapter-titles][not(following-sibling::*[1][para[@role = $chapter-titles]]) 
+        and not(preceding-sibling::*[1][para[@role = $chapter-titles]])]">
         <title cword:hint="chapter-title" role="{@role}"><xsl:apply-templates select="@*|node()"/></title>
     </xsl:template>
     
-    <!-- Images/Art -->
-    <xsl:template match="para[@role='12caption']">
-        <caption role="{@role}"><xsl:apply-templates select="@*|node()"/></caption>
+    <!-- match a title immediately preceded by a number -->
+    <xsl:template match="para[@role='03ChapterTitle'][preceding-sibling::*[1][para[@role = '03ChapterNumber']]]">
+        <title cword:hint="chapter-title" role="{@role}" cword:chapter-number="{following-sibling::*[1][para[@role = '03ChapterNumber']]}"><xsl:apply-templates select="@*|node()"/></title>
     </xsl:template>
     
+    <xsl:template match="para[@role='03ChapterTitleSubtitle']">
+        <subtitle cword:hint="chapter-title"><xsl:apply-templates select="@*|node()"/></subtitle>
+    </xsl:template>
+    
+    <!-- Headers-->
+    <xsl:template match="para[@role=('05HeadA', '05HeadB', '05HeadC')]">
+        <xsl:variable name='hint' select="concat(substring-after(@role, 'Head'), '-Head')"/>
+        <title cword:hint="{$hint}" role="{@role}"><xsl:apply-templates select="@*|node()"/></title>
+    </xsl:template>
+    
+    <!-- Images/Art -->
+    <xsl:template match="para[@role='12Caption']">
+        <caption role="{@role}"><para><xsl:apply-templates select="@*|node()"/></para></caption>
+    </xsl:template>
+    
+    <!-- epipgraphs -->
+    <xsl:template match="para[@role=$epigraphs]">
+        <epigraph role="{@role}"><para><xsl:apply-templates select="@*|node()"/></para></epigraph>
+    </xsl:template>
+    
+    <xsl:template match="para[@role=$epigraph-sources]">
+        <epigraph role="{@role}"><attribution><xsl:apply-templates select="@*|node()"/></attribution></epigraph>
+    </xsl:template>      
     
     
 </xsl:stylesheet>

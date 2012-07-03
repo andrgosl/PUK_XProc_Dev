@@ -11,7 +11,7 @@
             <xsl:apply-templates select="@*|node()"/>
         </xsl:copy>
     </xsl:template>
-
+    
     <xsl:template match="*[epigraph]">
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
@@ -21,7 +21,8 @@
                     <xsl:when test="current-grouping-key() = 'epigraph'">
                         <epigraph>
                             <xsl:apply-templates select="@*"/> <!-- done separately to stop a sequencing issue -->
-                            <xsl:apply-templates select="$cg"/>
+                            <xsl:apply-templates select="$cg/*[self::attribution]"/>
+                            <xsl:apply-templates select="$cg/*[not(self::attribution)]"/>
                         </epigraph>
                     </xsl:when>
                     <xsl:otherwise>
