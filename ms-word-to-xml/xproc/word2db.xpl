@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <p:pipeline xmlns:p="http://www.w3.org/ns/xproc" xmlns:c="http://www.w3.org/ns/xproc-step"
-    xmlns:cx="http://xmlcalabash.com/ns/extensions" xmlns:cword="http://wwww.corbas.co.uk/ns/word"
+    xmlns:cx="http://xmlcalabash.com/ns/extensions" xmlns:cword="http://www.corbas.co.uk/ns/word"
     name="wordToDocBook" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
     xmlns:db="http://docbook.org/ns/docbook" version="1.0"
     xmlns:corbas="http://www.corbas.co.uk/ns/xproc"
@@ -47,7 +47,7 @@
 
     <p:import href="library-1.0.xpl"/>
     <p:import href="docx2xml.xpl"/>
-
+    <p:import href="insert-db-structures.xpl"/>
 
     <!-- Extract docx file to a wrapped xml file -->
     <corbas:docx2xml name="extract-document">
@@ -81,12 +81,14 @@
             <p:document href="../xsl/word-components.xsl"/>
         </p:input>
     </p:xslt>
-
-    <p:store href="/tmp/converted-1.xml">
+ 
+    <p:store href="/tmp/converted.xml">
         <p:input port="source">
             <p:pipe port="result" step="initial-conversion"/>
         </p:input>
     </p:store>
+    
+     
     
     <!-- rewrite paragraphs to appropriate elements -->
     <p:xslt name="refactor-paragraphs" version="2.0">
@@ -99,18 +101,22 @@
         </p:input>
     </p:xslt>
     
-    
-    <p:store href="/tmp/converted-2.xml">
+    <!-- make sure we have the right db root element -->
+    <p:xslt name="refactor-root" version="2.0">
         <p:input port="source">
             <p:pipe port="result" step="refactor-paragraphs"/>
         </p:input>
-    </p:store>
+        <p:input port="parameters"/>
+        <p:input port="stylesheet">
+            <p:document href="../xsl/refactor-root.xsl"/>
+        </p:input>
+    </p:xslt>
     
     
-    <!-- start refactoring - fix up epipgraphs -->
+    <!-- start refactoring - fix up epigraphs -->
     <p:xslt name="refactor-epigraphs" version="2.0">
         <p:input port="source">
-            <p:pipe port="result" step="refactor-paragraphs"/>
+            <p:pipe port="result" step="refactor-root"/>
         </p:input>
         <p:input port="parameters"/>
         <p:input port="stylesheet">
@@ -118,13 +124,6 @@
         </p:input>
        
     </p:xslt>
-
-    <p:store href="/tmp/converted-3.xml">
-        <p:input port="source">
-            <p:pipe port="result" step="refactor-epigraphs"/>
-        </p:input>
-    </p:store>
-    
     
         <!-- continue refactoring - fix up lists -->
         <p:xslt name="refactor-lists" version="2.0">
@@ -136,52 +135,55 @@
             <p:document href="../xsl/word-lists.xsl"/>
         </p:input>
     </p:xslt>
+
     
-    <p:store href="/tmp/converted-4.xml">
+    <!-- continue refactoring - fix up figures -->
+    <p:xslt name="refactor-figures" version="2.0">
         <p:input port="source">
             <p:pipe port="result" step="refactor-lists"/>
         </p:input>
-    </p:store>
+        <p:input port="parameters"/>
+        <p:input port="stylesheet">
+            <p:document href="../xsl/refactor-figures.xsl"/>
+        </p:input>
+    </p:xslt>
     
+    <p:store href="/tmp/converted-x.xml">
+        <p:input port="source">
+            <p:pipe port="result" step="refactor-figures"/>
+        </p:input>
+    </p:store>
+        
     <!-- continue refactoring - build book info -->
     <p:xslt name="insert-book-info" version="2.0">
         <p:input port="source">
-            <p:pipe port="result" step="refactor-lists"/>
+            <p:pipe port="result" step="refactor-figures"/>
         </p:input>
         <p:input port="parameters"/>
         <p:input port="stylesheet">
-            <p:document href="../xsl/insert-chapters.xsl"/>
+            <p:document href="../xsl/insert-book-info.xsl"/>
         </p:input>        
     </p:xslt>
     
-    <p:store href="/tmp/converted-5.xml">
+    <!-- This step inserts DocBook structure -->
+    <corbas:insert-db-structures name="build-db-structures">
         <p:input port="source">
             <p:pipe port="result" step="insert-book-info"/>
         </p:input>
-    </p:store>
-   
-    <!-- continue refactoring - insert chapters -->
-    <p:xslt name="insert-chapters" version="2.0">
+    </corbas:insert-db-structures>
+
+    <p:store href="/tmp/converted-y.xml">
         <p:input port="source">
-            <p:pipe port="result" step="insert-book-info"/>
-        </p:input>
-        <p:input port="parameters"/>
-        <p:input port="stylesheet">
-            <p:document href="../xsl/insert-chapters.xsl"/>
-        </p:input>        
-    </p:xslt>
-    
-    <p:store href="/tmp/converted-6.xml">
-        <p:input port="source">
-            <p:pipe port="result" step="insert-chapters"/>
+            <p:pipe port="result" step="build-db-structures"/>
         </p:input>
     </p:store>
     
+ 
     <!-- remove everything non docbook; done in xslt because it's a hassle
     to handle the sequence result otherwise -->
     <p:xslt name="filter-non-db" version="2.0">
         <p:input port="source">
-            <p:pipe port="result" step="insert-chapters"/>
+            <p:pipe port="result" step="build-db-structures"/>
         </p:input>
         <p:input port="parameters"/>
         <p:input port="stylesheet">
