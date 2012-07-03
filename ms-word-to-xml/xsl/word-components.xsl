@@ -131,8 +131,11 @@
                 break. </xd:p>
         </xd:desc>
     </xd:doc>
-    <xsl:template match="w:p[count(w:r) = 1 and w:r/w:br]"/>
-
+    
+   
+    <xsl:template match="w:p[count(w:r) = 1][w:r/w:br][not(w:r/w:t)]"/>
+    
+    
     <xd:doc>
         <xd:desc>
             <xd:p>Ignore paragraphs containing just a singe run which contains only a tab.</xd:p>
@@ -202,7 +205,8 @@
         </footnote>
     </xsl:template>
 
-
+    <xsl:template match="w:endnote[normalize-space(.) = '']"/>
+    
 
     <xd:doc>
         <xd:desc>
