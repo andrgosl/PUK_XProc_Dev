@@ -1,0 +1,164 @@
+namespace rng = "http://relaxng.org/ns/structure/1.0"
+namespace db = "http://docbook.org/ns/docbook"
+datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
+default namespace pbl = "http://www.penguingroup.com/ns/standard"
+
+# Version 1.0.1
+# 19 July 2007
+# Minor Correction:
+#    attributes omitted from model for pbl:poem in version 1.0. Corrected
+
+# Version 1.0.2
+#Ê28 August 2007
+#ÊMinor Addition:
+#    pbl:linenumber attribute added to db.common.idreq.attributes 
+#Ê    in order to allow anchor elements to work as specified.
+
+# Version 1.0.3
+# 03 September 2007
+# Minor Addition and Modifications:
+#    added pbl:speechgroup element to group together related speeches
+#    modified pbl:speaker to allow for multiple roleref and/or role children
+
+# Version 1.0.4
+# 01 October 2007
+# Modified the content model for a poem to make the title optional.
+
+# Version 1.0.5
+# 04 October 2007
+# Modified the content model for a poem to make the db:info block 
+# optional - we don't really want an empty info block if  we have nothing
+# to put into it.
+
+# Version 1.0.6
+#  03 January 2008
+# Modified the following elements to allow footnotes in the content:
+#    pbl.speaker
+#    pbl.role
+# Modified pbl.inlinedirection to allow any standard inline
+# content.
+
+
+# Version 1.0.7
+#  17 January 2008
+# Corrected pbl.inlinedirection to allow more than one child element.
+# Modified the 'block' version of pbl:speech to allow multiple paragraphs,
+# poems and line groups.
+# Added an optional title for stanzas
+
+# Version 1.0.8
+#   09 December 2008
+#    Added role attribute to all pbl elements.
+
+#ÊVersion 1.0.9
+#   18 December 208
+#    Updated content model to all pbl.cast as a paragraph level element
+
+# Penguin specific elements.
+
+# Line number attribute. We allow this on lines but we also add it
+# as an optional attribute on the docbook 
+pbl.linenumber.attribute = attribute pbl:linenumber {xsd:integer}?
+
+# Role attribute for pbl content.
+pbl.role.attribute = attribute pbl:role {text}
+
+# A single line of text.
+pbl.line.attlist = db.common.attributes & pbl.role.attribute?
+pbl.line.content = (db.all.inlines | pbl.inlinedirection )+
+pbl.line = element pbl:line {pbl.line.attlist, pbl.line.content}
+
+# A group of lines in a poem
+pbl.stanza.attlist = db.common.attributes & db.label.attribute? & pbl.role.attribute?
+pbl.stanza.content = (db.title?, (pbl.line+ | pbl.linegroup+))
+pbl.stanza = element pbl:stanza { pbl.stanza.attlist, pbl.stanza.content }
+
+# A large grouping within a poem. A canto usually consists of a number
+# of stanzas so we are currently allowing a canto to consist of a title and two
+# or more stanzas.
+pbl.canto.attlist = db.common.attributes & db.label.attribute? & pbl.role.attribute?
+pbl.canto.content = (db.title?, pbl.stanza, pbl.stanza+)
+pbl.canto = element pbl:canto { pbl.canto.attlist, pbl.canto.content }
+
+
+# A group of lines.
+pbl.linegroup.attlist = db.common.attributes & db.label.attribute? & pbl.role.attribute?
+pbl.linegroup.content = (pbl.line+)
+pbl.linegroup = element pbl:linegroup {pbl.linegroup.attlist, pbl.linegroup.content}
+
+# A poem. A poem is similar to a section although we place it into the
+# hierarchy wth paragraphs.
+pbl.poem.attlist = db.common.attributes & pbl.role.attribute?
+pbl.poem.content = (db.info?, db.para*, (pbl.canto |pbl.stanza)+)
+pbl.poem = element pbl:poem {pbl.poem.attlist, pbl.poem.content}
+
+# A speaker in a drama.
+pbl.speaker.attlist = db.common.attributes & pbl.role.attribute?
+pbl.speaker.content = (pbl.role | pbl.roleref|db.footnote)+
+pbl.speaker = element pbl:speaker {pbl.speaker.attlist, pbl.speaker.content }
+
+# A stage direction.
+pbl.direction.attlist = db.common.attributes & pbl.role.attribute?
+pbl.direction.content = (db.para+)
+pbl.direction = element pbl:direction {pbl.direction.attlist, pbl.direction.content }
+
+#  inline stage direction.
+pbl.inlinedirection.attlist = db.common.attributes & pbl.role.attribute?
+pbl.inlinedirection.content = (db.all.inlines+)
+pbl.inlinedirection = element pbl:inlinedirection {pbl.inlinedirection.attlist, pbl.inlinedirection.content }
+
+# A speech in a drama.
+pbl.speech.attlist = db.common.attributes & pbl.role.attribute?
+pbl.speech.content = (
+    pbl.speaker, 
+    ((pbl.direction | pbl.line)+ |
+    (pbl.direction?, (db.para | pbl.poem | pbl.linegroup | pbl.direction)+))) 
+pbl.speech = element pbl:speech {pbl.speech.attlist, pbl.speech.content}
+    
+# A group of speeches in a drama. The aim of this element is to allow a single direction to apply
+#Êelements that logically group together. We require that at least two speeches are contained in it.
+pbl.speechgroup.attlist = db.common.attributes & pbl.role.attribute?
+pbl.speechgroup.content = (pbl.direction?, pbl.speech, pbl.speech+)
+pbl.speechgroup = element pbl:speechgroup { pbl.speechgroup.attlist, pbl.speechgroup.content }
+    
+# A dialog in a drama.
+pbl.dialog.attlist = db.common.attributes & pbl.role.attribute?
+pbl.dialog.content = (pbl.direction?, (pbl.speech | pbl.speechgroup), (pbl.speech | pbl.speechgroup | pbl.direction)*)
+pbl.dialog = element pbl:dialog {pbl.dialog.attlist, pbl.dialog.content}
+
+# A role in a drama
+pbl.role.attlist =db.common.attributes & pbl.role.attribute?
+pbl.role.content = (db.personname, db.personblurb?, db.footnote?)
+pbl.role = element pbl:role {pbl.role.attlist, pbl.role.content}
+
+# Reference to a role.
+pbl.roleref.attlist = db.common.attributes | db.common.req.linking.attributes
+pbl.roleref.content = empty
+pbl.roleref = element pbl:roleref {pbl.roleref.attlist, pbl.roleref.content}
+
+# Cast member in a drama.
+pbl.castmember.attlist = db.common.attributes & pbl.role.attribute?
+pbl.castmember.content = (db.person, pbl.role)
+pbl.castmember = element pbl:castmember {pbl.castmember.attlist, pbl.castmember.content}
+
+# Cast of a drama.
+pbl.cast.attlist = db.common.attributes & pbl.role.attribute?
+pbl.cast.content = (pbl.castmember+)
+pbl.cast = element pbl:cast {pbl.cast.attlist, pbl.cast.content}
+
+
+db.para.blocks |= pbl.linegroup | pbl.poem | pbl.dialog | pbl.cast
+db.info.elements |= pbl.cast
+db.common.attributes &= pbl.linenumber.attribute
+db.common.idreq.attributes &= pbl.linenumber.attribute
+
+# This grammar is heavily influenced by three sources:
+#        1) Simplified DocBook
+#        2) The Publishers' Minimal Elements draft    
+#        3) The line group model of TEI
+
+include "base.rnc" inherit = db
+{
+    db._any =
+        element * - (db:* |  pbl:*) { (db._any.attribute | text | db._any)* }
+}
