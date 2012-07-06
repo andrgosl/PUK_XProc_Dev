@@ -148,16 +148,27 @@
         </p:input>
     </p:xslt>
     
-    <p:store href="/tmp/converted-x.xml">
+    <p:store href="/tmp/refactor-figures.xml">
         <p:input port="source">
             <p:pipe port="result" step="refactor-figures"/>
         </p:input>
     </p:store>
+
+    <!-- continue refactoring - fix poetry -->
+    <p:xslt name="refactor-poetry" version="2.0">
+        <p:input port="source">
+            <p:pipe port="result" step="refactor-figures"/>
+        </p:input>
+        <p:input port="parameters"/>
+        <p:input port="stylesheet">
+            <p:document href="../xsl/refactor-poetry.xsl"/>
+        </p:input>        
+    </p:xslt>   
         
     <!-- continue refactoring - build book info -->
     <p:xslt name="insert-book-info" version="2.0">
         <p:input port="source">
-            <p:pipe port="result" step="refactor-figures"/>
+            <p:pipe port="result" step="refactor-poetry"/>
         </p:input>
         <p:input port="parameters"/>
         <p:input port="stylesheet">
@@ -171,12 +182,6 @@
             <p:pipe port="result" step="insert-book-info"/>
         </p:input>
     </corbas:insert-db-structures>
-
-    <p:store href="/tmp/converted-y.xml">
-        <p:input port="source">
-            <p:pipe port="result" step="build-db-structures"/>
-        </p:input>
-    </p:store>
     
  
     <!-- remove everything non docbook; done in xslt because it's a hassle
@@ -187,28 +192,8 @@
         </p:input>
         <p:input port="parameters"/>
         <p:input port="stylesheet">
-            <p:inline>
-                <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2"
-                    xmlns:cword="http://www.corbas.co.uk/ns/word"
-                    xmlns="http://docbook.org/ns/docbook"
-                    xpath-default-namespace="http://docbook.org/ns/docbook"
-                    exclude-result-prefixes="cword">
-                    
-                    <xsl:template match="cword:word-doc">
-                        <xsl:apply-templates select="book"/>
-                    </xsl:template>
-                    
-                    <xsl:template match="@cword:*"/>
-                    
-                    <xsl:template match="@*|node()">
-                        <xsl:copy>
-                            <xsl:apply-templates select="@*|node()"/>
-                        </xsl:copy>
-                    </xsl:template>
-                    
-                </xsl:stylesheet>
-            </p:inline>
-        </p:input>        
+            <p:document href="../xsl/strip-non-db.xsl"/>
+         </p:input>        
     </p:xslt>
     
     <p:identity>

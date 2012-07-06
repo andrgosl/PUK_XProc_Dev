@@ -17,7 +17,7 @@
     
     <!-- sets of styles -->
     <xsl:variable name="chapter-titles" select="('03ChapterTitle', '03ChapterNumberandTitle', '03ChapterNumber')"/>
-    <xsl:variable name="epigraphs" select="('01FMEpigraph', '01FMEpigraphFL', '01EpigraphVerse', '02PartEpigraph', '02PartEpigraphVerse', '03ChapterEpigraph')"/>
+    <xsl:variable name="epigraphs" select="('01FMEpigraph', '01FMEpigraphFL', '01EpigraphVerse', '02PartEpigraph', '02PartEpigraphVerse', '03ChapterEpigraph', '03ChapterEpigraphVerse')"/>
     <xsl:variable name="epigraph-sources" select="('01FMEpigraphSource', '02PartEpigraphSource', '03ChapterEpigraphSource')"/>
         
     <!-- Prelims -->
@@ -84,7 +84,12 @@
     <!-- Headers-->
     <xsl:template match="para[@role=('05HeadA', '05HeadB', '05HeadC')]">
         <xsl:variable name='hint' select="concat(substring-after(@role, 'Head'), '-Head')"/>
-        <title cword:hint="{$hint}" role="{@role}"><xsl:apply-templates select="@*|node()"/></title>
+        <title cword:hint="{$hint}"><xsl:apply-templates select="@*|node()"/></title>
+    </xsl:template>
+    
+    <!-- B-Head that immediately follows an A-Head -->
+    <xsl:template match="para[@role='05HeadB'][preceding-sibling::*[1][self::para[@role='05HeadA']]]"  priority="1">
+        <subtitle cword:hint='B-Head'><xsl:apply-templates select='@*|node()'/></subtitle>
     </xsl:template>
     
     <!-- Images/Art -->
@@ -93,9 +98,14 @@
     </xsl:template>
     
     <!-- epipgraphs -->
-    <xsl:template match="para[@role=$epigraphs]">
+    <xsl:template match="para[@role=$epigraphs]" priority="1">
         <epigraph role="{@role}"><para><xsl:apply-templates select="@*|node()"/></para></epigraph>
     </xsl:template>
+    
+    <xsl:template match="para[@role=$epigraphs][matches(@role, 'Verse')]" priority="2">
+        <epigraph><para cword:hint="poetry"><xsl:apply-templates select="@*|node()"/></para></epigraph>
+    </xsl:template>
+    
     
     <xsl:template match="para[@role=$epigraph-sources]">
         <epigraph role="{@role}"><attribution><xsl:apply-templates select="@*|node()"/></attribution></epigraph>

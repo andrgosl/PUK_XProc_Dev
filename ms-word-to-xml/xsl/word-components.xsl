@@ -39,13 +39,6 @@
     
     <xsl:include href="identity.xsl"/>
 
-    <!-- most nodes just copy to output -->
-    <xsl:template match="@*|node()">
-        <xsl:copy>
-            <xsl:apply-templates select="@*|node()"/>
-        </xsl:copy>
-    </xsl:template>
-
     <!-- word body can be skipped -->
     <xsl:template match="w:body">
         <xsl:apply-templates/>
@@ -62,7 +55,7 @@
     </xd:doc>
     <xsl:template match="w:document">
 
-        <book version="5.0">
+        <book version="PBL1.0">
             <info>
                 <xsl:apply-templates select="//cp:coreProperties/*"/>
             </info>
@@ -144,16 +137,16 @@
             <xd:p>Ignore paragraphs containing just a singe run which contains only a tab.</xd:p>
         </xd:desc>
     </xd:doc>
-    <xsl:template match="w:p[count(w:r) = 1 and w:r/w:tab]"/>
+    <xsl:template match="w:p[count(w:r) = 1][w:r/w:tab][not(w:r/w:t)]"/>
 
     <xd:doc>
         <xd:desc>
-            <xd:p>Default processing for runs - execute supply mode default. This is intended to
+            <xd:p>Default processing for runs - execute and supply mode base. This is intended to
                 allow additional modes as required.</xd:p>
         </xd:desc>
     </xd:doc>
     <xsl:template match="w:r">
-        <xsl:apply-templates select="." mode="default"/>
+        <xsl:apply-templates select="." mode="base"/>
     </xsl:template>
 
     <xd:doc>
@@ -162,20 +155,17 @@
                 phrase element so that we can capture the character style name.</xd:p>
         </xd:desc>
     </xd:doc>
-    <xsl:template match="w:r" mode="default">
-        <xsl:choose>
-            <xsl:when test="w:rPr/w:rStyle">
+    <xsl:template match="w:r[w:rPr/w:rStyle]" mode="base">
                 <phrase>
                     <xsl:call-template name="cword:getStyleAsRole">
                         <xsl:with-param name="properties" select="w:rPr"/>
                     </xsl:call-template>
                     <xsl:apply-templates/>
                 </phrase>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:apply-templates/>
-            </xsl:otherwise>
-        </xsl:choose>
+    </xsl:template>
+    
+    <xsl:template match="w:r" mode="base">
+        <xsl:apply-templates/>
     </xsl:template>
 
     <xd:doc>
@@ -185,7 +175,7 @@
     </xd:doc>
     <xsl:template match="w:r[w:rPr/w:b]">
         <emphasis role="bold">
-            <xsl:apply-templates select="." mode="default"/>
+            <xsl:apply-templates select="." mode="base"/>
         </emphasis>
     </xsl:template>
 
@@ -219,7 +209,7 @@
     </xd:doc>
     <xsl:template match="w:r[w:rPr/w:i]">
         <emphasis role="italic">
-            <xsl:apply-templates select="." mode="default"/>
+            <xsl:apply-templates select="." mode="base"/>
         </emphasis>
     </xsl:template>
 
@@ -232,7 +222,7 @@
     <xsl:template match="w:r[w:rPr/w:i and w:rPr/w:b]">
         <emphasis role="italic">
             <emphasis role="bold">
-                <xsl:apply-templates select="." mode="default"/>
+                <xsl:apply-templates select="." mode="base"/>
             </emphasis>
         </emphasis>
     </xsl:template>
@@ -286,7 +276,32 @@
             </xsl:analyze-string>
         </imagedata>
     </xsl:template>
-
+    
+    <xd:doc>
+        <xd:desc>
+            <xd:p>Handle comment references by processing the referenced comment
+            and including it as an XML comment in the same location.</xd:p>
+        </xd:desc>
+    </xd:doc>
+    
+    <xsl:template match="w:commentReference">
+        <xsl:variable name="comment-id" select='@w:id'/>
+        <xsl:apply-templates select="//w:comments/w:comment[@w:id = $comment-id]"/>
+    </xsl:template>
+    
+    <xd:doc>
+        <xd:desc>
+            <xd:p>Convert a word comment to an XML comment. Output the name
+            of the user who made the comment too.</xd:p>
+        </xd:desc>
+    </xd:doc>
+    
+    <xsl:template match="w:comment">
+        <xsl:comment>
+            <xsl:apply-templates select="@w:author"/>: <xsl:apply-templates/>
+        </xsl:comment>
+    </xsl:template>
+    
     <xd:doc>
         <xd:desc>
             <xd:p>Converts the style given in an elements properties to a role attribute containing
@@ -404,7 +419,13 @@
     </xd:doc>
 
     <xsl:template match="w:br[@w:type='page']"/>
+    <xsl:template match="w:lastRenderedPageBreak"/>
 
-
-
+    <xd:doc>
+        <xd:desc>
+            <xd:p>Just suppress tabs</xd:p>
+        </xd:desc>
+    </xd:doc>
+    <xsl:template match="w:tab"/>
+    
 </xsl:stylesheet>

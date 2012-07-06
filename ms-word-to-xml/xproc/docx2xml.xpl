@@ -54,6 +54,12 @@
                         <date>2012-07-02</date>
                         <revremark>Added omitted relationships doc</revremark>
                     </revision>
+                    <revision>
+                        <revnumber>7</revnumber>
+                        <date>2012-07-04</date>
+                        <revremark>Added comments so we can insert as XML comments into
+                        the xml doc.</revremark>
+                    </revision>
                 </revhistory>
             </info>
             <para>XProc script to unzip a word docx document, extract metadata and convert to
@@ -204,6 +210,16 @@
         <p:with-option name="doc" select="'word/_rels/document.xml.rels'"/>
     </corbas:get-doc-from-archive>
     
+    <corbas:get-doc-from-archive name="get-comments">
+        <p:input port="fallback">
+            <p:inline>
+                <comments xmlns="http://schemas.openxmlformats.org/wordprocessingml/2006/main"/>
+            </p:inline>
+        </p:input>
+        <p:with-option name="archive" select="$package-url"/>
+        <p:with-option name="doc" select="'word/comments.xml'"/>        
+    </corbas:get-doc-from-archive>
+    
     <p:identity name="create-sequence">
         <p:input port="source">
             <p:pipe port="result" step="get-doc"/>
@@ -214,6 +230,7 @@
             <p:pipe port="result" step="get-app-properties"/>
             <p:pipe port="result" step="get-core-properties"/>
             <p:pipe port="result" step="get-relationships"/>
+            <p:pipe port="result" step="get-comments"/>
         </p:input>
     </p:identity>
 
