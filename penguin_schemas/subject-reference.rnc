@@ -1,0 +1,62 @@
+namespace rng = "http://relaxng.org/ns/structure/1.0"
+namespace db = "http://docbook.org/ns/docbook"
+datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
+namespace pbl = "http://www.penguingroup.com/ns/standard"
+namespace pbr = "http://www.penguingroup.com/ns/reference"
+default namespace db = "http://docbook.org/ns/docbook"
+
+
+#version 0.5
+# 23 November 2010 
+# was actually broken after last edit, corrected 
+
+#version 0.4
+# 02 March 2010 
+# Male/Female added to pbr.gender.enumeration, predominately for use with db.personname 
+# changed inclue = base.rnc to include = standard.rnc so schema can be used with elements from pbl namespace 
+
+
+#version 0.3
+# 15 September 2009 
+# updated so it actually works
+
+
+#version 0.1
+# 27 June 2008
+#     Initial draft.
+
+
+# This grammar is heavily influenced by three sources:
+#        1) Simplified DocBook
+#        2) The Publishers' Minimal Elements draft    
+#        3) The line group model of TEI
+
+# Gender attribute. We add this to the module for db:person and
+# db:personname
+pbr.gender.enumeration = 'male' | 'female' | 'male/female'
+pbr.gender.attribute = attribute pbr:gender { pbr.gender.enumeration }?
+
+
+db.person.attlist &= pbr.gender.attribute
+db.personname.attlist &= pbr.gender.attribute
+
+
+
+
+# include "base.rnc" inherit = db
+include "standard.rnc"
+{
+
+  db.glossentry =
+    element glossentry {
+      db.glossentry.attlist,
+      db.glossterm,
+      db.acronym?,
+      db.abbrev?,
+      db.indexterm*,
+      (db.glosssee+ | db.glossdef+) }
+      
+    db._any =
+        element * - (db:* | pbl:*) { (db._any.attribute | text | db._any)* }
+}
+

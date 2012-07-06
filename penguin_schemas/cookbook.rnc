@@ -1,0 +1,105 @@
+namespace rng = "http://relaxng.org/ns/structure/1.0"
+datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
+namespace pb = "http://www.penguingroup.com/ns/base"
+namespace db = "http://docbook.org/ns/docbook"
+default namespace pbc = 'http://www.penguingroup.com/ns/cookbook'
+
+# Version 1.0
+# Issued: 17 July 2007
+ 
+
+# Cookbook module.
+# Modifies the model of chapter to allow for recipe elements.
+
+# version 1.0.2
+# Issued: 01/08/07
+# Corrected to reference unversioned base.rnc
+
+# version  1.0.3
+#ÊIssues 11/06/08
+# Correct namespace to use correct url 
+#Êwas http://www.penguingroup/ns/cookbook
+# now http://www.penguingroup.com/ns/cookbook
+
+# version 1.0.4
+#     18th Dec 2008
+#    added a role attribute for cookery content
+
+
+# Role attribute for pbc content.
+
+# version 1.0.5
+#     13th April 2010
+#    allowed info in recipe
+
+
+pbc.role.attribute = attribute pbc:role {text}
+
+
+pbc.ingredient.attlist = db.common.attributes & pbc.role.attribute?
+pbc.ingredient.content = (db.all.inlines+)
+pbc.ingredient = element pbc:ingredient {pbc.ingredient.attlist, pbc.ingredient.content}
+
+pbc.ingredients.attlist = db.common.attributes & pbc.role.attribute?
+pbc.ingredients.content = (db.title?, (db.formalpara | db.para)*, pbc.ingredient+)
+pbc.ingredients = element pbc:ingredients {pbc.ingredients.attlist, pbc.ingredients.content}
+
+pbc.cooktime.attlist = db.common.attributes & pbc.role.attribute?
+pbc.cooktime.content = (db.all.inlines+)
+pbc.cooktime = element pbc:cooktime {pbc.cooktime.attlist, pbc.cooktime.content}
+
+pbc.preptime.attlist = db.common.attributes & pbc.role.attribute?
+pbc.preptime.content = (db.all.inlines+)
+pbc.preptime = element pbc:preptime {pbc.preptime.attlist, pbc.preptime.content}
+
+pbc.serves.attlist = db.common.attributes & pbc.role.attribute?
+pbc.serves.content = (db.all.inlines+)
+pbc.serves = element pbc:serves {pbc.serves.attlist, pbc.serves.content}
+
+pbc.informalrecipe.attlist = db.common.attributes & pbc.role.attribute?
+pbc.informalrecipe.content = 
+    (
+        db.mediaobject*,
+        (db.formalpara | db.simplesect |db.para|db.itemizedlist|db.orderedlist|db.simplelist)*,
+        (pbc.serves | pbc.preptime | pbc.cooktime )*,
+        pbc.ingredients*,
+        (db.formalpara | db.para | db.simplesect | db.mediaobject|db.itemizedlist|db.orderedlist|db.simplelist)+
+    )        
+ pbc.informalrecipe = element pbc:informalrecipe {pbc.informalrecipe.attlist, pbc.informalrecipe.content}
+
+pbc.recipe.attlist = db.common.attributes & pbc.role.attribute?
+pbc.recipe.content = 
+    (
+        (db.title | db.info),
+        db.mediaobject*,
+        (db.formalpara | db.simplesect |db.para|db.itemizedlist|db.orderedlist|db.simplelist)*,
+        (
+            (
+                (pbc.serves | pbc.preptime | pbc.cooktime )*,
+                pbc.ingredients*,
+                (db.formalpara | db.para | db.simplesect | db.mediaobject|db.itemizedlist|db.orderedlist|db.simplelist)+
+             )
+             |
+             (
+                 pbc.informalrecipe+
+             )
+        )
+    )
+
+pbc.recipe = element pbc:recipe {pbc.recipe.attlist, pbc.recipe.content}
+
+dbX.section =
+
+    element db:section {
+      db.section.attlist,
+      db.section.info,
+      db.recursive.blocks.or.sections,
+      db.navigation.components*
+    }
+
+include "base.rnc" inherit= pb
+{
+    db.section = dbX.section | pbc.recipe
+       db._any =
+        element * - (db:* |  pbc:*) { (db._any.attribute | text | db._any)* }
+}

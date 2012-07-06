@@ -1,0 +1,101 @@
+namespace db = "http://docbook.org/ns/docbook"
+namespace rng = "http://relaxng.org/ns/structure/1.0"
+
+# Modification of DocBook based on the Publisher's Minimal Elements list.
+
+# 2008-05-16
+# version 1.3
+#            Allowed db.annotation - removal was never intended.
+# 2008-03-17
+# version 1.2
+#             Allowed db.indexterm as we have changed the guidance on indices.
+# 2007-08-01
+# version 1.1
+#               Corrected base.rnc because 
+#              db.informaltable had been set to db.cals.table and not db.cals.informaltable
+# 2008-01-08
+# version  1.1.1
+#             Modified base.rnc to allow db:footnote's label attribute to be a text
+#             value instead of an NMTOKEN.
+# 2008-11-28
+# version  1.1.2
+#            Removed bridgehead.
+# 2008-12-18
+# version  1.1.3
+#            Enabled itermset - this should have been done some months ago 
+#            was omitted by accident.
+
+include "docbookxi.rnc" inherit = db {
+  # We allow documents to start with book, elements that can be direct children of book
+  # and chapters or sections.
+  start =
+    db.set
+    | db.book
+    | db.part
+    | db.section
+    | db.components
+    | db.navigation.components
+  # DISCARDED PATTERNS
+  
+  # 1) Reference sections. Reference sections are  used for 'man page' type
+  # applications and we don't want them. The following elements are now
+  # excluded because they have no allowable parent:
+  db.reference = notAllowed
+  db.refentry = notAllowed
+  # This is citation to a refentry so we'll exclude it here.
+  db.citerefentry = notAllowed
+  # 2) Message sections. These are basically defined for  the output of 
+  # error messages in software systems.
+  db.msgset = notAllowed
+  # 3) Software terms. These are all very domain specific and we have
+  # no need of them.
+  db.programming.inlines = notAllowed
+  db.oo.inlines = notAllowed
+  db.os.inlines = notAllowed
+  db.technical.inlines = notAllowed
+  db.gui.inlines = notAllowed
+  db.keyboard.inlines = notAllowed
+  db.synopsis.blocks = notAllowed
+  db.product.inlines = notAllowed
+  db.error.inlines = notAllowed
+  # added by NG 25/07/2007
+  
+  # 4) Numbered sections. Remove the first and rest have no place...
+  db.sect1 = notAllowed
+  # 5) Remove all verbatim blocks bar literallayout. These are in 
+  # multiple models so we mark them explicitly
+  db.programlisting = notAllowed
+  db.screen = notAllowed
+  db.synopsis = notAllowed
+  db.programlistingco = notAllowed
+  db.screenco = notAllowed
+  db.screenshot = notAllowed
+  db.productionset = notAllowed
+  # 6) Tables. CALS only
+  # db.table = db.cals.table
+  # db.informaltable = db.cals.informaltable
+  
+  # X) Misc
+  db.token = notAllowed
+  db.symbol = notAllowed
+  db.literal = notAllowed
+  db.code = notAllowed
+  db.constant = notAllowed
+  db.lineannotation = notAllowed
+  db.markup = notAllowed
+  db.systemitem = notAllowed
+  db.tag = notAllowed
+  db.userinput = notAllowed
+  db.computeroutput = notAllowed
+  db.shortcut = notAllowed
+  
+  # 8) Bridgeheads - we have only seen this element abused not used
+  # Therefore, it should be removed.
+  db.bridgehead = notAllowed
+  
+  # change the footnote type
+  db.footnote.label.attribute =
+    
+    ## Identifies the desired footnote mark
+    attribute label { text } 
+}
