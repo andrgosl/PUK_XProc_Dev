@@ -19,21 +19,21 @@
             <p:pipe port="source" step="insert-db-structures"/>
         </p:input>
         <p:input port="stylesheet">
-            <p:document href="../xsl/insert-parts.xsl"/>
+            <p:document href="../xsl/word-to-docbook/insert-parts.xsl"/>
         </p:input>        
     </p:xslt>
     
     <!-- continue refactoring - insert chapters -->
     <p:xslt name="insert-chapters" version="2.0">
         <p:input port="stylesheet">
-            <p:document href="../xsl/insert-chapters.xsl"/>
+            <p:document href="../xsl/word-to-docbook/insert-chapters.xsl"/>
         </p:input>        
     </p:xslt>
     
     <!-- continue refactoring - insert prelims -->
     <p:xslt name="insert-prelims" version="2.0">
         <p:input port="stylesheet">
-            <p:document href="../xsl/insert-prelims.xsl"/>
+            <p:document href="../xsl/word-to-docbook/insert-prelims.xsl"/>
         </p:input>        
     </p:xslt>
     
@@ -44,7 +44,7 @@
         </p:input>
         <p:input port="parameters"/>
         <p:input port="stylesheet">
-            <p:document href="../xsl/insert-sections.xsl"/>
+            <p:document href="../xsl/word-to-docbook/insert-sections.xsl"/>
         </p:input>        
     </p:xslt>
     

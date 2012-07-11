@@ -61,7 +61,7 @@
         </p:input>
         <p:input port="parameters"/>
         <p:input port="stylesheet">
-            <p:document href="../xsl/word-numbering.xsl"/>
+            <p:document href="../xsl/word-to-docbook/word-numbering.xsl"/>
         </p:input>        
     </p:xslt>
 
@@ -78,7 +78,7 @@
         </p:input>
         <p:input port="parameters"/>
         <p:input port="stylesheet">
-            <p:document href="../xsl/word-components.xsl"/>
+            <p:document href="../xsl/word-to-docbook/word-components.xsl"/>
         </p:input>
     </p:xslt>
  
@@ -97,7 +97,7 @@
         </p:input>
         <p:input port="parameters"/>
         <p:input port="stylesheet">
-            <p:document href="../xsl/refactor-paragraphs.xsl"/>
+            <p:document href="../xsl/word-to-docbook/refactor-paragraphs.xsl"/>
         </p:input>
     </p:xslt>
     
@@ -108,7 +108,7 @@
         </p:input>
         <p:input port="parameters"/>
         <p:input port="stylesheet">
-            <p:document href="../xsl/refactor-root.xsl"/>
+            <p:document href="../xsl/word-to-docbook/refactor-root.xsl"/>
         </p:input>
     </p:xslt>
     
@@ -120,7 +120,7 @@
         </p:input>
         <p:input port="parameters"/>
         <p:input port="stylesheet">
-            <p:document href="../xsl/refactor-epigraphs.xsl"/>
+            <p:document href="../xsl/word-to-docbook/refactor-epigraphs.xsl"/>
         </p:input>
        
     </p:xslt>
@@ -132,7 +132,7 @@
         </p:input>
         <p:input port="parameters"/>
         <p:input port="stylesheet">
-            <p:document href="../xsl/word-lists.xsl"/>
+            <p:document href="../xsl/word-to-docbook/word-lists.xsl"/>
         </p:input>
     </p:xslt>
 
@@ -144,7 +144,7 @@
         </p:input>
         <p:input port="parameters"/>
         <p:input port="stylesheet">
-            <p:document href="../xsl/refactor-figures.xsl"/>
+            <p:document href="../xsl/word-to-docbook/refactor-figures.xsl"/>
         </p:input>
     </p:xslt>
     
@@ -161,7 +161,7 @@
         </p:input>
         <p:input port="parameters"/>
         <p:input port="stylesheet">
-            <p:document href="../xsl/refactor-poetry.xsl"/>
+            <p:document href="../xsl/word-to-docbook/refactor-poetry.xsl"/>
         </p:input>        
     </p:xslt>   
         
@@ -172,7 +172,7 @@
         </p:input>
         <p:input port="parameters"/>
         <p:input port="stylesheet">
-            <p:document href="../xsl/insert-book-info.xsl"/>
+            <p:document href="../xsl/word-to-docbook/insert-book-info.xsl"/>
         </p:input>        
     </p:xslt>
     
@@ -192,7 +192,7 @@
         </p:input>
         <p:input port="parameters"/>
         <p:input port="stylesheet">
-            <p:document href="../xsl/strip-non-db.xsl"/>
+            <p:document href="../xsl/word-to-docbook/strip-non-db.xsl"/>
          </p:input>        
     </p:xslt>
     
