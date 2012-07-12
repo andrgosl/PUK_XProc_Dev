@@ -141,7 +141,7 @@
             <p:pipe port="result" step="transform-css-file"/>
         </p:output>
         
-        <p:variable name="filename" select="if (matches($source-file, '/[^/]+\.css$') then reverse(substring-after(reverse($source-file), '/')) else $source_file"/>
+        <p:variable name="filename" select="if (matches($source-file, '/[^/]+\.css$')) then reverse(substring-after(reverse($source-file), '/')) else $source-file"/>
         <p:variable name="id" select="concat('css-', substring-before($filename, '.'))"/>
         
         <cx:message name="source-file">
@@ -157,6 +157,7 @@
         </cxf:copy>
 
         <p:in-scope-names name="vars"/>
+        
         <p:template name="transform-css-file">
             <p:input port="source"><p:empty/></p:input>
             <p:input port='template'>
