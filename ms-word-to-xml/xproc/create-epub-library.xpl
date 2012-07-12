@@ -157,7 +157,7 @@
         </cxf:copy>
 
         <p:in-scope-names name="vars"/>
-        <p:template>
+        <p:template name="transform-css-file">
             <p:input port="source"><p:empty/></p:input>
             <p:input port='template'>
                 <p:inline><c:result type="css" filename="{$filename}" path="{$source-file}" xml:id="{$id}"/></p:inline>
