@@ -31,7 +31,7 @@
     <xsl:template match="book">
         <xsl:apply-templates select="dedication|info/cover|preface|appendix|glossary|bibliography|chapter|part"/>
         <xsl:apply-templates select="info" mode="copyright"/>
-        <xsl:call-template name="generate-notes"/>
+        <!-- xsl:call-template name="generate-notes"/> -->
     </xsl:template>
 
     <xsl:template match="part">
@@ -145,7 +145,7 @@
         </h5>
     </xsl:template>
 
-    <xsl:template match="part/title|part/info/title">
+    <xsl:template match="part/title|part/info/title" priority="1">
         <h2 class="EB04MainHead">
             <xsl:apply-templates/>
         </h2>
@@ -299,19 +299,23 @@
 
     <xsl:template
         match="inlinemediaobject[count(imageobject) = 1]/imageobject|mediaobject[count(imageobject) = 1]/imageobject">
-        <xsl:apply-templates/>
+        <xsl:apply-templates select="node() except alt"/>
     </xsl:template>
 
     <xsl:template
         match="inlinemediaobject[count(imageobject) gt 1]/imageobject[@role='web']|mediaobject[count(imageobject) gt 1]/imageobject[@role='web']">
         <xsl:apply-templates/>
     </xsl:template>
-
+    
+    <xsl:template match="alt">
+        <xsl:attribute name="alt"><xsl:apply-templates/></xsl:attribute>
+    </xsl:template>
+    
     <xsl:template match="imagedata">
         <xsl:variable name="current" select="."/>
         <xsl:variable name="role" select="(ancestor-or-self::*/@role)[1]"/>
         <xsl:variable name="id" select="@xml:id"/>
-        <img src="{concat($image-uri-base, '/', @fileref)}" alt="{@fileref}/"/>
+        <img src="{concat($image-uri-base, '/', @fileref)}"><xsl:apply-templates select="ancestor::mediaobject/alt"/></img>
     </xsl:template>
 
     <xsl:template match="emphasis">
@@ -336,6 +340,10 @@
         <span>
             <xsl:apply-templates select="@*|node()"/>
         </span>
+    </xsl:template>
+    
+    <xsl:template match="anchor">
+        <a id="{@xml:id}"/>
     </xsl:template>
 
     <xsl:template match="itemizedlist">
@@ -712,6 +720,14 @@
         </div>
     </xsl:template>
 
+
+    <xsl:template match="abstract">
+        <div class='abstract'>
+            <xsl:apply-templates/>
+        </div>    
+    </xsl:template>
+    
+    
     <xsl:template name="apply-annotations"/>
 
     <xsl:function name="cfn:format-isbn">
@@ -926,7 +942,7 @@
         <xsl:apply-templates mode='notes'/>
     </xsl:template>
     
-    <xsl:template match="preface|appendix|glossary|bibliography|chapter|part" mode="notes">
+    <xsl:template match="preface|appendix|glossary|bibliography|chapters" mode="notes">
         <xsl:if test="descendant::footnote">
             <div class='notes-section'>
                 <xsl:apply-templates select='title|info/title' mode='notes'/>
@@ -934,6 +950,7 @@
             </div>
         </xsl:if>
     </xsl:template>
+    
     
    
 

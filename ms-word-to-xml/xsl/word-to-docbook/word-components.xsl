@@ -399,7 +399,7 @@
     </xd:doc>
 
     <xsl:template match="w:bookmarkStart[following-sibling::node()[1][self::w:bookmarkEnd]]">
-        <anchor xml:id="{@w:name}"/>
+        <!-- <anchor xml:id="{@w:name}"/> causing problems in xml to html for some reason -->
     </xsl:template>
 
     <xsl:template match="w:bookmarkStart[not(following-sibling::node()[1][self::w:bookmarkEnd])]">
@@ -414,11 +414,11 @@
 
     <xd:doc>
         <xd:desc>
-            <xd:p>Delete all page breaks</xd:p>
+            <xd:p>Delete all breaks</xd:p>
         </xd:desc>
     </xd:doc>
 
-    <xsl:template match="w:br[@w:type='page']"/>
+    <xsl:template match="w:br"/>
     <xsl:template match="w:lastRenderedPageBreak"/>
 
     <xd:doc>
@@ -428,4 +428,10 @@
     </xd:doc>
     <xsl:template match="w:tab"/>
     
+    <xd:doc>
+        <xd:desc>
+            <xd:p>Suppress CRs</xd:p>
+        </xd:desc>
+    </xd:doc>
+    <xsl:template match="w:cr"/>
 </xsl:stylesheet>

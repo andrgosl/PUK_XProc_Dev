@@ -48,7 +48,7 @@
 
         <p:xslt version="1.0" name="docbook-hierarchy">
             <p:input port="stylesheet">
-                <p:document href="../xslt/create-epub/docbook-chunk-hierarchy.xslt"/>
+                <p:document href="../xsl/docbook-to-epub/docbook-chunk-hierarchy.xsl"/>
             </p:input>
 
             <p:input port="parameters">
@@ -326,11 +326,11 @@
         </cxf:mkdir> 
             
         <cxf:mkdir>
-            <p:with-option name="href" select="concat($base-path, '/', $content-dir-name, '/', $styles-dir-name)"/>
+            <p:with-option name="href" select="$css-path"/>
         </cxf:mkdir>         
     
         <cxf:mkdir>
-            <p:with-option name="href" select="concat($base-path, '/', $content-dir-name, '/', $images-dir-name)"/>
+            <p:with-option name="href" select="$img-path"/>
         </cxf:mkdir>       
           
     </p:declare-step>
@@ -347,7 +347,7 @@
                     <dd>URI to which the NCX file is to be written.</dd>
                 </dl>
                 <h3>Parameters</h3>
-                <p>See create-ncx.xslt</p>
+                <p>See create-ncx.xsl</p>
                 <h3>Outputs</h3>
                 <p>The result port (not primary) returns a c:result containing the URI to which the
                     file was written</p>
@@ -375,7 +375,7 @@
             </p:input>
 
             <p:input port="stylesheet">
-                <p:document href="../xslt/create-epub/create-ncx.xslt"/>
+                <p:document href="../xsl/docbook-to-epub/create-ncx.xsl"/>
             </p:input>
 
         </p:xslt>
@@ -389,7 +389,7 @@
                 <p:empty/>
             </p:input>
             <p:input port="stylesheet">
-                <p:document href="../xslt/create-epub/playorder.xslt"/>
+                <p:document href="../xsl/docbook-to-epub/playorder.xsl"/>
             </p:input>
         </p:xslt>
 
@@ -430,7 +430,7 @@
                 <p:empty/>
             </p:input>
             <p:input port="stylesheet">
-                <p:document href="../xslt/create-epub/create-opf.xslt"/>
+                <p:document href="../xsl/docbook-to-epub/create-opf.xsl"/>
             </p:input>
         </p:xslt>
                 

@@ -38,8 +38,6 @@
 
         <epub:penguin-standard-to-db-p/>
 
-        <epub:insert-penguin-styles/>
-
         <epub:render-to-html name="render-to-html-files">
             <p:input port="css-files" >
                 <p:pipe port="css-files" step="generate-html" />
@@ -298,7 +296,7 @@
                 <p:pipe port="source" step="insert-penguin-styles"/>
             </p:input>
             <p:input port="stylesheet">
-                <p:document href="../xslt/create-epub/insert-penguin-styles.xslt"/>
+                <p:document href="../xsl/docbook-to-epub/style-mapping.xsl"/>
             </p:input>
         </p:xslt>
 
@@ -395,11 +393,10 @@
                 <p:pipe port="source" step="render-to-html"/>
             </p:input>
             <p:input port="stylesheet">
-                <p:document href="../xslt/create-epub/xml-to-html.xslt"/>
+                <p:document href="../xsl/docbook-to-epub/xml-to-html.xsl"/>
             </p:input>
             <!-- <p:with-param name="image-uri-base" select="$image-uri-base"/> -->
             <p:with-param name="epub.oebps.dir" select="'OPS'"/>
-            
             
         </p:xslt>
 
@@ -415,10 +412,12 @@
             <p:output port="html-files" primary="true" sequence="true">
                 <p:pipe port="result" step="create-result"/>
             </p:output>
-            
+          
             <p:variable name='page-id' select="/h:html/@xml:id"/>
             <p:variable name="filename" select="concat($page-id, '.html')"/>
             <p:variable name="href" select="concat($xhtml-path, '/', $filename)"/>
+            
+            <!-- <epub:insert-penguin-styles/> --> 
             
             <!-- no ID on root element of XHTML! -->
             <p:delete name="delete-root-id" match="/h:html/@xml:id"/>
