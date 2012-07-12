@@ -52,7 +52,7 @@
     <xsl:template match="*">
         <xsl:variable name="mapping" select="key('map-lookup', @class)"/>
         <xsl:variable name="new-name" select="if ($mapping and $mapping[1]/@element) then $mapping[1]/@element else local-name()"/>
-       <xsl:variable name="new-class" select="if ($mapping and $mapping[1]/@class) then $mapping[1]/@class else @class"/>
+       <xsl:variable name="new-class" select="if ($mapping and $mapping[1]/@style) then $mapping[1]/@style else @class"/>
         
         <xsl:element name="{$new-name}">
             <xsl:attribute name="class" select="$new-class"/>

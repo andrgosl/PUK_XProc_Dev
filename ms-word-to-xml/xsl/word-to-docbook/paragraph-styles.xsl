@@ -111,5 +111,9 @@
         <epigraph role="{@role}"><attribution><xsl:apply-templates select="@*|node()"/></attribution></epigraph>
     </xsl:template>      
     
+    <!-- para with normal style -->
+    <xsl:template match="para/@role[. = 'normal']">
+        <xsl:attribute name='role' select="'04BodyText'"/>
+    </xsl:template>
     
 </xsl:stylesheet>
