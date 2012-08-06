@@ -8,7 +8,8 @@
     xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
     xmlns:rp="http://schemas.openxmlformats.org/package/2006/relationships"
     xmlns:dc="http://purl.org/dc/elements/1.1/"
-    xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" exclude-result-prefixes="#all">
+    xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" 
+    xmlns:xlink="http://www.w3.org/1999/xlink" exclude-result-prefixes="xs w cp r rp dc a">
     <xsl:import href="word-functions.xsl"/>
     <xsl:import href="word-tables.xsl"/>
     
@@ -415,6 +416,16 @@
 
     <xsl:template match="w:bookmarkEnd"/>
 
+
+    <!-- Handle hyperlinks -->
+    <xsl:template match="w:hyperlink[@w:anchor]">
+        <link linkend="{@w:anchor}"><xsl:apply-templates/></link>
+    </xsl:template>
+    
+    <xsl:template match="w:hyperlink[@r:id]">
+        <xsl:variable name="id" select="@r:id"/>
+        <link xlink:href="{//rp:Relationships/rp:Relationship[@Id = $id]/@Target}"><xsl:apply-templates/></link>
+    </xsl:template>
 
     <xd:doc>
         <xd:desc>
