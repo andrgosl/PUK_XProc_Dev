@@ -167,55 +167,6 @@
             </p:input>
         </p:template>
         
-<!--        <p:xslt version="2.0" name="transform-css-file">
-
-            <p:with-param name="path" select="$source-file"/>
-
-            <p:input port="parameters">
-                <p:empty/>
-            </p:input>
-
-            <p:input port="source">
-                <p:inline>
-                    <dummy/>
-                </p:inline>
-            </p:input>
-
-            <p:input port="stylesheet">
-
-                <p:inline>
-
-                    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
-                        xmlns:c="http://www.w3.org/ns/xproc-step" exclude-result-prefixes="#all">
-
-                        <xsl:param name="path"/>
-
-                        <xsl:template match="/">
-                            <c:result-set>
-
-                                <xsl:choose>
-                                    <xsl:when test="matches($path, '/[^/]+\.css$')">
-                                        <xsl:analyze-string select="$path" regex="/([^/]+\.css)$">
-                                            <xsl:matching-substring>
-                                                <c:result><xsl:value-of select="regex-group(1)"/></c:result>
-                                            </xsl:matching-substring>                                    
-                                        </xsl:analyze-string>                                        
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <c:result><xsl:value-of select="$path"/></c:result>
-                                    </xsl:otherwise>                                    
-                                </xsl:choose>
-
-                            </c:result-set>
-                        </xsl:template>
-
-                    </xsl:stylesheet>
-
-                </p:inline>
-
-            </p:input>
-
-        </p:xslt> -->
 
     </p:declare-step>
 
@@ -278,38 +229,6 @@
             </p:template>
 
         </p:for-each>
-
-  <!--      <p:xslt version="2.0" name="transform-css-list">
-            <p:input port="source">
-                <p:pipe port="result" step="list-css-files"/>
-            </p:input>
-            <p:input port="parameters">
-                <p:empty/>
-            </p:input>
-            <p:input port="stylesheet">
-                <p:inline>
-                    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
-                        xmlns:c="http://www.w3.org/ns/xproc-step" exclude-result-prefixes="#all">
-
-                        <xsl:template match="/">
-                            <c:result-set>
-                                <xsl:apply-templates/>
-                            </c:result-set>
-                        </xsl:template>
-
-                        <xsl:template match="c:directory">
-                            <xsl:apply-templates/>
-                        </xsl:template>
-
-                        <xsl:template match="c:file">
-                            <c:result><xsl:apply-templates select="@name"/></c:result>
-                        </xsl:template>
-
-                    </xsl:stylesheet>
-                </p:inline>
-            </p:input>
-        </p:xslt> -->
-
 
     </p:declare-step>
 
