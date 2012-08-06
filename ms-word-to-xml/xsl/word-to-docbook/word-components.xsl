@@ -65,7 +65,7 @@
                 <author>
                    <personname><xsl:comment> INSERT AUTHOR NAME HERE </xsl:comment></personname>
                 </author>
-                <bibliomisc class="isbn"><xsl:comment>INSERT ISBN HERE</xsl:comment></bibliomisc>
+                <biblioid class="isbn"><xsl:comment>INSERT ISBN HERE</xsl:comment></biblioid>
                 <publisher><publishername>Penguin Group</publishername></publisher>
                 <cover>
                     <mediaobject role='cover'><imageobject><imagedata fileref='cover.jpg'/></imageobject></mediaobject>
@@ -289,6 +289,10 @@
         </xd:desc>
     </xd:doc>
     
+    <xsl:template match="w:r[descendant::w:commentReference]" priority="1">
+        <xsl:apply-templates select="descendant::w:commentReference"/>
+    </xsl:template>
+    
     <xsl:template match="w:commentReference">
         <xsl:variable name="comment-id" select='@w:id'/>
         <xsl:apply-templates select="//w:comments/w:comment[@w:id = $comment-id]"/>
@@ -302,9 +306,17 @@
     </xd:doc>
     
     <xsl:template match="w:comment">
-        <xsl:comment>
+        <remark>
             <xsl:apply-templates select="@w:author"/>: <xsl:apply-templates/>
-        </xsl:comment>
+        </remark>
+    </xsl:template>
+    
+    <xsl:template match="@w:author">
+        <xsl:value-of select="."/>
+    </xsl:template>
+    
+    <xsl:template match="w:comment/*" priority="1">
+        <xsl:apply-templates/>
     </xsl:template>
     
     <xd:doc>
@@ -418,6 +430,10 @@
 
 
     <!-- Handle hyperlinks -->
+    <xsl:template match="w:r[descendant::w:rStyle[@w:val='Hyperlink']]">
+        <xsl:apply-templates select="descendant::w:hyperlink"/>
+    </xsl:template>
+    
     <xsl:template match="w:hyperlink[@w:anchor]">
         <link linkend="{@w:anchor}"><xsl:apply-templates/></link>
     </xsl:template>
@@ -429,24 +445,21 @@
 
     <xd:doc>
         <xd:desc>
-            <xd:p>Delete all breaks</xd:p>
+            <xd:p>Suppress the following:</xd:p>
+            <xd:ul>
+                <xd:li>Breaks</xd:li>
+                <xd:li>Tabs</xd:li>
+                <xd:li>Hard Carriage Returns</xd:li>
+                <xd:li>Annotation Refs</xd:li>
+            </xd:ul>
         </xd:desc>
     </xd:doc>
 
     <xsl:template match="w:br"/>
     <xsl:template match="w:lastRenderedPageBreak"/>
-
-    <xd:doc>
-        <xd:desc>
-            <xd:p>Just suppress tabs</xd:p>
-        </xd:desc>
-    </xd:doc>
     <xsl:template match="w:tab"/>
-    
-    <xd:doc>
-        <xd:desc>
-            <xd:p>Suppress CRs</xd:p>
-        </xd:desc>
-    </xd:doc>
     <xsl:template match="w:cr"/>
+    <xsl:template match="w:annotationRef"/>
+    
+    
 </xsl:stylesheet>
