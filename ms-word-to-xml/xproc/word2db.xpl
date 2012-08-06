@@ -35,6 +35,11 @@
                         <date>2012-05-28</date>
                         <revremark>Removed load code to replace with standalone module.</revremark>
                     </revision>
+                    <revision>
+                        <revnumber>3</revnumber>
+                        <date>2012-08-06</date>
+                        <revremark>Added block  quote refactoring code.</revremark>
+                    </revision>
                 </revhistory>
             </info>
             <para>XProc script to unzip a word docx document, extract metadata and convert to
@@ -125,10 +130,22 @@
        
     </p:xslt>
     
+    <!-- continue refactoring - fix up blockquotes -->
+    <p:xslt name="refactor-blockquotes" version="2.0">
+        <p:input port="source">
+            <p:pipe port="result" step="refactor-epigraphs"/>
+        </p:input>
+        <p:input port="parameters"/>
+        <p:input port="stylesheet">
+            <p:document href="../xsl/word-to-docbook/refactor-blockquotes.xsl"/>
+        </p:input>
+        
+    </p:xslt> 
+    
         <!-- continue refactoring - fix up lists -->
         <p:xslt name="refactor-lists" version="2.0">
         <p:input port="source">
-            <p:pipe port="result" step="refactor-epigraphs"/>
+            <p:pipe port="result" step="refactor-blockquotes"/>
         </p:input>
         <p:input port="parameters"/>
         <p:input port="stylesheet">

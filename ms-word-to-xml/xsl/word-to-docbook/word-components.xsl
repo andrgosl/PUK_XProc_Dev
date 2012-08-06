@@ -58,6 +58,17 @@
         <book version="PBL1.0">
             <info>
                 <xsl:apply-templates select="//cp:coreProperties/*"/>
+                <xsl:if test="not(normalize-space(//cp:coreProperties/dc:title))">
+                    <title><xsl:comment> INSERT TITLE HERE </xsl:comment></title>
+                </xsl:if>
+                <author>
+                   <personname><xsl:comment> INSERT AUTHOR NAME HERE </xsl:comment></personname>
+                </author>
+                <bibliomisc class="isbn"><xsl:comment>INSERT ISBN HERE</xsl:comment></bibliomisc>
+                <publisher><publishername>Penguin Group</publishername></publisher>
+                <cover>
+                    <mediaobject role='cover'><imageobject><imagedata fileref='cover.jpg'/></imageobject></mediaobject>
+                </cover>
             </info>
             <xsl:apply-templates/>
         </book>
@@ -234,15 +245,8 @@
         </xd:desc>
     </xd:doc>
     <xsl:template match="w:t">
-        <xsl:if test="normalize-space(.) != &quot;&quot;">
-            <xsl:value-of select="."/>
-        </xsl:if>
-
+        <xsl:apply-templates/>
     </xsl:template>
-
-
-
-
 
     <xd:doc>
         <xd:desc>

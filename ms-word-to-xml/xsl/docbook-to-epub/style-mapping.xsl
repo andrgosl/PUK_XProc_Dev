@@ -38,6 +38,7 @@
         <mapping role="15Subscript" style="EBsub" element="sub"/>
         <mapping role="bold" style="" element="strong"/>
         <mapping role="italic" style="" element="em"/>
+        <mapping role="normal" style="EB03BodyTextIndented" element="p"/>
     </map>
     
     

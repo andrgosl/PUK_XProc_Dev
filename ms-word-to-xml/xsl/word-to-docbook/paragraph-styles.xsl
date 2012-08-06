@@ -111,6 +111,13 @@
         <epigraph role="{@role}"><attribution><xsl:apply-templates select="@*|node()"/></attribution></epigraph>
     </xsl:template>      
     
+    <!-- match a paragraph that contains a prose quotation -->
+    <xsl:template match="para[@role = ('06ProseExtract', '06ProseExtractFirst')]">
+        <blockquote role='{@role}'>
+            <xsl:apply-templates select='.' mode="dummy"/>
+        </blockquote>
+    </xsl:template>
+    
     <!-- para with normal style -->
     <xsl:template match="para/@role[. = 'normal']">
         <xsl:attribute name='role' select="'04BodyText'"/>
