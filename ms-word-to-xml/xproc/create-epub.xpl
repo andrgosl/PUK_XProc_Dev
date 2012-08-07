@@ -4,6 +4,7 @@
     xmlns:cxo="http://xmlcalabash.com/ns/extensions/osutils"
     xmlns:cx="http://xmlcalabash.com/ns/extensions"
     xmlns:c="http://www.w3.org/ns/xproc-step" version="1.0"
+    xmlns:db="http://docbook.org/ns/docbook"
     name="create-epub">
     
     <p:input port="source" primary="true"/>
@@ -45,6 +46,13 @@
     <p:import href="create-epub-library.xpl"/>
     <p:import href="pstd-library.xpl"/>
     <p:import href="package-epub-library.xpl"/>
+    
+    <p:variable name="isbn" select="/*/db:info/db:biblioid[@class='isbn'][1]"/>
+    
+    <!-- create the output filename -->
+    <p:variable name="epub-file" select="concat($epub-path, '/', if ($isbn) then $isbn else 'unknown', '_EPUB.epub')"/>
+        
+    
     
     <!-- set up some paths -->
     <p:variable name="content-path" select="concat($root, $path-sep, $content-dir-name)"/>
@@ -167,7 +175,7 @@
             <p:pipe port="result" step="reload-opf"/>
         </p:input>
         <p:with-option name="content-dir" select="$content-dir-name"/>
-        <p:with-option name="epub-path" select="$epub-path"/>
+        <p:with-option name="epub-path" select="$epub-file"/>
     </epub:package-epub>
     
     <p:sink/>
