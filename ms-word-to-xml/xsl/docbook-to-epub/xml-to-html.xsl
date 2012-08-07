@@ -485,11 +485,6 @@
 
     <xsl:template match="@*"/>
 
-    <xsl:template match="*">
-        <xsl:message terminate="yes">Unhandled element - <xsl:value-of select="local-name()"
-            /></xsl:message>
-    </xsl:template>
-
 
     <!-- the serialisation info here is a dummy as we actually serialise in XProc -->
     <xsl:template name="html-doc">
@@ -951,12 +946,21 @@
         </xsl:if>
     </xsl:template>
     
-    
-   
 
     <xsl:template name="create-body-id">
         <xsl:variable name='with-id' select="ancestor-or-self::*[@xml:id][1]"/>
         <xsl:attribute name="id" select="$with-id/@xml:id"/>
     </xsl:template>
+    
+    <!-- Suppress -->
+    <xsl:template match="remark"/>
+    
+    <!-- Abort on unknowns -->
+    <xsl:template match="*">
+        <xsl:message terminate="yes">Unhandled element - <xsl:value-of select="local-name()"
+        /></xsl:message>
+    </xsl:template>
+    
+    
     
 </xsl:stylesheet>
