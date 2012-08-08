@@ -160,6 +160,8 @@
     <xsl:template match="w:r">
         <xsl:apply-templates select="." mode="base"/>
     </xsl:template>
+    
+     
 
     <xd:doc>
         <xd:desc>
@@ -176,6 +178,21 @@
                 </phrase>
     </xsl:template>
     
+    <xd:doc>
+        <xd:desc>
+            <xd:p>Override for hyperlink runs. We already did something sensible with them.</xd:p>
+        </xd:desc>
+    </xd:doc>
+    
+    <xsl:template match="w:r[w:rPr/w:rStyle[@w:val='Hyperlink']][not(w:t)]">
+        <xsl:apply-templates/>
+    </xsl:template>
+    
+    <xsl:template match="w:r[w:rPr/w:rStyle[@w:val='CommentReference']][not(w:t)]">
+        <xsl:apply-templates/>
+    </xsl:template>
+    
+        
     <xsl:template match="w:r" mode="base">
         <xsl:apply-templates/>
     </xsl:template>
@@ -430,9 +447,9 @@
 
 
     <!-- Handle hyperlinks -->
-    <xsl:template match="w:r[descendant::w:rStyle[@w:val='Hyperlink']]">
+<!--    <xsl:template match="w:r[descendant::w:rStyle[@w:val='Hyperlink']]">
         <xsl:apply-templates select="descendant::w:hyperlink"/>
-    </xsl:template>
+    </xsl:template>-->
     
     <xsl:template match="w:hyperlink[@w:anchor]">
         <link linkend="{@w:anchor}"><xsl:apply-templates/></link>
