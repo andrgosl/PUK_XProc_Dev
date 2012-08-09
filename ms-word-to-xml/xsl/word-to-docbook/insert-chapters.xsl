@@ -6,17 +6,17 @@
     version="2.0">
 
     <xsl:include href="identity.xsl"/>
+    
+    <xsl:variable name="hints" select="('chapter-title', 'endmatter-title', 'prelims-title')"></xsl:variable>
 
-    <!-- wrap up chapters -->
-    <xsl:template match="*[title[@cword:hint='chapter-title']]">
+    <!-- wrap up chapters and similar constructs -->
+    <xsl:template match="*[title[@cword:hint=$hints]]">
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
-            <xsl:for-each-group select="*" group-starting-with="title[@cword:hint='chapter-title']">
+            <xsl:for-each-group select="*" group-starting-with="title[@cword:hint=$hints]">
                 <xsl:choose>
-                    <xsl:when test="@cword:hint = 'chapter-title'">
-                        <chapter xml:id="{generate-id()}">
-                            <xsl:copy-of select="current-group()"/>
-                        </chapter>
+                    <xsl:when test="@cword:hint = $hints">
+                        <xsl:apply-templates select="." mode='insert-structure'/>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:copy-of select="current-group()"/>
@@ -25,5 +25,24 @@
             </xsl:for-each-group>
         </xsl:copy>
     </xsl:template>
+    
+    <xsl:template match="title[@cword:hint='chapter-title']" mode="insert-structure">
+        <chapter>
+            <xsl:apply-templates select="current-group()"/>
+        </chapter>
+    </xsl:template>
+    
+    <xsl:template match="title[@cword:hint='endmatter-title']" mode="insert-structure">
+        <appendix>
+            <xsl:apply-templates select="current-group()"/>
+        </appendix>
+    </xsl:template>
+    
+    <xsl:template match="title[@cword:hint='prelims-title']" mode="insert-structure">
+        <preface>
+            <xsl:apply-templates select="current-group()"/>
+        </preface>
+    </xsl:template>
+    
 
 </xsl:stylesheet>

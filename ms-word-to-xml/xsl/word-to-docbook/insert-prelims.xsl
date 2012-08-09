@@ -22,7 +22,7 @@
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
             <xsl:for-each-group select="*[. &lt;&lt; $first-body]"
-                group-starting-with="title|epigraph|dedication|info">
+                group-starting-with="title|dedication|info">
                 <xsl:choose>
                     <xsl:when test="self::title">
                         <preface>

@@ -41,6 +41,20 @@
     <xsl:template match="para[@role='01FMDediBody']">
         <dedication role="{@role}"><para><xsl:apply-templates select="@*|node()"/></para></dedication>
     </xsl:template>
+    
+    <xsl:template match="para[@role='01FMAboutAuthorTitle']">
+        <title cword:hint="prelims-title" role="{@role}"><xsl:apply-templates select="@*|node()"/></title>
+    </xsl:template>
+    
+    <xsl:template match="para[@role='01FMbythesameauthorHead']">
+        <title cword:hint="prelims-title" role="{@role}"><xsl:apply-templates select="@*|node()"/></title>
+    </xsl:template>
+    
+    <!-- end matter -->
+    <xsl:template match="para[@role='13EMHead']">
+        <title cword:hint="endmatter-title" role="{@role}"><xsl:apply-templates select="@*|node()"/></title>
+    </xsl:template>    
+    
        
     <!-- skip the TOC -->
     <xsl:template match="para[starts-with(@role, '01FMContent')]"/>
@@ -63,6 +77,8 @@
         <subtitle cword:hint="part-title"><xsl:apply-templates select="@*|node()"/></subtitle>
     </xsl:template>    
     
+    
+     
     
     <!-- Chapter Openers -->
     

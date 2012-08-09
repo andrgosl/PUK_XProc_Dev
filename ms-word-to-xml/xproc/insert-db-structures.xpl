@@ -25,22 +25,34 @@
     
     <!-- continue refactoring - insert chapters -->
     <p:xslt name="insert-chapters" version="2.0">
+        <p:input port="source">
+            <p:pipe port="result" step="insert-parts"/>
+        </p:input>
         <p:input port="stylesheet">
             <p:document href="../xsl/word-to-docbook/insert-chapters.xsl"/>
         </p:input>        
     </p:xslt>
     
     <!-- continue refactoring - insert prelims -->
-    <p:xslt name="insert-prelims" version="2.0">
+<!--    <p:xslt name="insert-prelims" version="2.0">
+        <p:input port="source">
+            <p:pipe port="result" step="insert-chapters"/>
+        </p:input>
         <p:input port="stylesheet">
             <p:document href="../xsl/word-to-docbook/insert-prelims.xsl"/>
         </p:input>        
-    </p:xslt>
+    </p:xslt> -->
+    
+    <p:store href="/tmp/insert-chapters.xml">
+        <p:input port="source">
+            <p:pipe port="result" step="insert-chapters"/>
+        </p:input>
+    </p:store>
     
     <!-- continue refactoring - insert sections -->
     <p:xslt name="insert-sections" version="2.0">
         <p:input port="source">
-            <p:pipe port="result" step="insert-prelims"/>
+            <p:pipe port="result" step="insert-chapters"/>
         </p:input>
         <p:input port="parameters"/>
         <p:input port="stylesheet">
@@ -49,9 +61,9 @@
     </p:xslt>
     
     
-    <p:store href="/tmp/converted-a.xml">
+    <p:store href="/tmp/insert-sections.xml">
         <p:input port="source">
-            <p:pipe port="result" step="insert-chapters"/>
+            <p:pipe port="result" step="insert-sections"/>
         </p:input>
     </p:store>
     

@@ -193,6 +193,12 @@
         </p:input>        
     </p:xslt>
     
+    <p:store href="/tmp/insert-book-info.xml">
+        <p:input port="source">
+            <p:pipe port="result" step="insert-book-info"/>
+        </p:input>
+    </p:store>
+    
     <!-- This step inserts DocBook structure -->
     <corbas:insert-db-structures name="build-db-structures">
         <p:input port="source">
@@ -213,9 +219,20 @@
          </p:input>        
     </p:xslt>
     
-    <p:identity>
+    <!-- insert identifiers on any node which should have one and doesn't -->
+    <p:xslt name="insert-identifiers" version="2.0">
         <p:input port="source">
             <p:pipe port="result" step="filter-non-db"/>
+        </p:input>
+        <p:input port="parameters"/>
+        <p:input port="stylesheet">
+            <p:document href="../xsl/word-to-docbook/insert-identifiers.xsl"/>
+        </p:input>        
+    </p:xslt>
+    
+    <p:identity>
+        <p:input port="source">
+            <p:pipe port="result" step="insert-identifiers"/>
         </p:input>
     </p:identity>
 
