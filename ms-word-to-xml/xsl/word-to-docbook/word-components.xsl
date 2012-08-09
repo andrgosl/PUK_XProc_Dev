@@ -58,16 +58,17 @@
 
         <book version="PBL1.0">
             <info>
-                <xsl:apply-templates select="//cp:coreProperties/*"/>
-                <xsl:if test="not(normalize-space(//cp:coreProperties/dc:title))">
+                <!--- Suppressed metadata from word properties -->
+                <!-- <xsl:apply-templates select="//cp:coreProperties/*"/> -->
+                <!-- <xsl:if test="not(normalize-space(//cp:coreProperties/dc:title))"> -->
                     <title><xsl:comment> INSERT TITLE HERE </xsl:comment></title>
-                </xsl:if>
+                <!-- </xsl:if> -->
                 <author>
                    <personname><xsl:comment> INSERT AUTHOR NAME HERE </xsl:comment></personname>
                 </author>
                 <biblioid class="isbn"><xsl:comment>INSERT ISBN HERE</xsl:comment></biblioid>
                 <publisher><publishername>Penguin Group</publishername></publisher>
-                <cover>
+                <cover role="cover">
                     <mediaobject role='cover'><imageobject><imagedata fileref='cover.jpg'/></imageobject></mediaobject>
                 </cover>
             </info>
