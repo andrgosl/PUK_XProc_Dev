@@ -30,7 +30,6 @@
 
     <xsl:template match="book">
         <xsl:apply-templates select="dedication|info/cover|preface|appendix|glossary|bibliography|chapter|part"/>
-        <xsl:apply-templates select="info" mode="copyright"/>
         <!-- xsl:call-template name="generate-notes"/> -->
     </xsl:template>
 
@@ -605,71 +604,6 @@
     </xsl:template>
 
 
-    <!-- copyright page -->
-    <xsl:template match="book/info" mode="copyright">
-        <xsl:result-document href="copyright.html" encoding="utf-8" exclude-result-prefixes="#all"
-            method="xhtml">
-            <html xml:id="copyright">
-                <head>
-                    <title>
-                        <xsl:apply-templates select="publisher/publishername"/>
-                    </title>
-                    <link rel="stylesheet" type="text/css" href="../styles/stylesheet.css"/>
-                    <meta name="page-id" content="copyright"/>
-                </head>
-                <body class="copyright">
-
-                    <p class="EB13CopyrightHead">
-                        <xsl:value-of select="upper-case(publisher/publishername)"/>
-                    </p>
-
-                    <p class="EB14CopyrightText">Published by the Penguin Group</p>
-                    <p class="EB14CopyrightText">Penguin Books Ltd, 80 Strand, London WC2R 0RL,
-                        England</p>
-                    <p class="EB14CopyrightText">Penguin Group (USA) Inc., 375 Hudson Street, New
-                        York, New York 10014, USA</p>
-                    <p class="EB14CopyrightText">Penguin Group (Canada), 90 Eglinton Avenue East,
-                        Suite 700, Toronto, Ontario, Canada M4P 2Y3 (a division of Pearson Penguin
-                        Canada Inc.)</p>
-                    <p class="EB14CopyrightText">Penguin Ireland, 25 St Stephen’s Green, Dublin 2,
-                        Ireland (a division of Penguin Books Ltd)</p>
-                    <p class="EB14CopyrightText">Penguin Group (Australia), 250 Camberwell Road,
-                        Camberwell, Victoria 3124, Australia (a division of Pearson Australia Group
-                        Pty Ltd)</p>
-                    <p class="EB14CopyrightText">Penguin Books India Pvt Ltd, 11 Community Centre,
-                        Panchsheel Park, New Delhi – 110 017, India</p>
-                    <p class="EB14CopyrightText">Penguin Group (NZ), 67 Apollo Drive, Rosedale,
-                        Auckland 0632, New Zealand (a division of Pearson New Zealand Ltd)</p>
-                    <p class="EB14CopyrightText">Penguin Books (South Africa) (Pty) Ltd, 24 Sturdee
-                        Avenue, Rosebank, Johannesburg 2196, South Africa</p>
-
-                    <p class="EB14CopyrightText">Penguin Books Ltd, Registered Offices: 80 Strand,
-                        London WC2R 0RL, England</p>
-
-                    <p class="EB14CopyrightText">www.puffinbooks.com</p>
-
-                    <xsl:apply-templates select="biblioset[@relation='publicationhistory']/pubdate"/>
-
-                    <xsl:apply-templates select=".//copyright"/>
-                    <xsl:apply-templates select="biblioset[@relation='credits']"/>
-                    <p class="EB14CopyrightText">All rights reserved</p>
-
-                    <p class="EB14CopyrightText">The moral right of the author and illustrators has
-                        been asserted</p>
-
-                    <p class="EB14CopyrightText">Except in the United States of America, this book
-                        is sold subject to the condition that it shall not, by way of trade or
-                        otherwise, be lent, re-sold, hired out, or otherwise circulated without the
-                        publisher’s prior consent in any form of binding or cover other than that in
-                        which it is published and without a similar condition including this
-                        condition being imposed on the subsequent purchaser</p>
-
-                    <p class="EB14CopyrightText">ISBN: <xsl:apply-templates
-                            select=".//biblioid[@class='isbn'][@role='epub']"/></p>
-                </body>
-            </html>
-        </xsl:result-document>
-    </xsl:template>
 
     <xsl:template match="info//pubdate[1]">
         <p class="EB14CopyrightText">
