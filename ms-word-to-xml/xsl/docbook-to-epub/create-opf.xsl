@@ -9,7 +9,7 @@
     
     <xsl:import href="page-ids.xsl"/>
     
-    <xsl:param name="isbn" select="/book//biblioid[@class='isbn'][@role='epub']"/>
+    <xsl:param name="isbn" select="/*/info/biblioid[@class='isbn'][1]"/>
     <xsl:param name='pagination' select='"pagebreaks"'/>
     <xsl:param name='language' select="'en-GB'"/>
     
@@ -26,7 +26,7 @@
     
     <!-- create an opf file from DocBook -->
     <xsl:template match='/'>
-        <package version="2.0" unique-identifier="{concat('p', $isbn)}">
+        <package version="2.0" unique-identifier="bookid">
             <xsl:apply-templates select='book/info'/>
             <xsl:apply-templates select='book' mode='manifest'/>
             <xsl:apply-templates select='book' mode='spine'/>
@@ -41,19 +41,14 @@
             
             <dc:date opf:event="converted"><xsl:value-of select="format-date(current-date(), '[Y]-[M,02]-[D,02]')"/></dc:date>
             <xsl:apply-templates select="bibliomisc[@role='specification']"/>
-            <xsl:apply-templates select="biblioid[@class='isbn'][@role='isbn-13']"/>
-            <dc:identifier id="{concat('p', $isbn)}">URN:ISBN:<xsl:value-of select='$isbn'/></dc:identifier>
+            <dc:identifier id="bookid">URN:ISBN:<xsl:value-of select='$isbn'/></dc:identifier>
             <dc:publisher><xsl:value-of select='publisher/publishername'/></dc:publisher>
             <dc:title><xsl:value-of select='title'/></dc:title>
             <dc:language><xsl:value-of select='$language'/></dc:language>            
             <meta name="cover" content="cover-image"/>
         </metadata>
     </xsl:template>
-    
-    <xsl:template match="biblioid[@class='isbn']">
-        <dc:source><xsl:value-of select='cfn:format-isbn(.)'/></dc:source>    
-    </xsl:template>
-    
+   
     <!-- dc:date expects just a date. Look for a four digit number -->
     <xsl:template match='pubdate'>
         <xsl:if test="matches(., '\d{4}')">
@@ -63,9 +58,6 @@
         </xsl:if>
     </xsl:template>
     
-    <xsl:template match="bibliomisc[@role='specification']">
-        <meta name="specification" content="{.}"/>
-    </xsl:template>
     
     
     <!-- Generate the manifest -->
