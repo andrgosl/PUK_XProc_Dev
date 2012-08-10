@@ -30,7 +30,7 @@
 
     <xsl:template match="book">
         <xsl:apply-templates select="dedication|info/cover|preface|appendix|glossary|bibliography|chapter|part"/>
-        <!-- xsl:call-template name="generate-notes"/> -->
+            <!-- xsl:call-template name="generate-notes"/> -->
     </xsl:template>
 
     <xsl:template match="part">
@@ -316,6 +316,14 @@
         <xsl:variable name="id" select="@xml:id"/>
         <img src="{concat($image-uri-base, '/', @fileref)}"><xsl:apply-templates select="ancestor::mediaobject/alt"/></img>
     </xsl:template>
+    
+    <xsl:template match="imagedata[not(ancestor::mediaobject/alt)]">
+        <xsl:variable name="current" select="."/>
+        <xsl:variable name="role" select="(ancestor-or-self::*/@role)[1]"/>
+        <xsl:variable name="id" select="@xml:id"/>
+        <img src="{concat($image-uri-base, '/', @fileref)}" alt="image"/>
+    </xsl:template>
+    
 
     <xsl:template match="emphasis">
         <span class="{@role}">
