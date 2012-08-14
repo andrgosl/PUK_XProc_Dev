@@ -17,6 +17,7 @@
     <xsl:param name='image-dir' select="'images'"/>
     <xsl:param name='styles-dir' select="'styles'"/>
     
+    
     <xsl:output method='xml'
          omit-xml-declaration="no"
          indent="yes"
@@ -65,13 +66,15 @@
     <xsl:template match='book' mode='manifest'>
         <manifest>
             <xsl:apply-templates select='/book/info/cover' mode='manifest'/>
-            <xsl:apply-templates select='dedication|author/personblurb' mode='manifest'/>
-            <item id="stylesheet2" href="{concat($styles-dir, '/stylesheet.css')}" media-type="text/css" />
+            <xsl:apply-templates select="*[not(self::info)]" mode="manifest"/>
+            
+            
+            <!-- this needs to be parameterised properly -->
             <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
-            <item id="toc" href="{concat($xhtml-dir, '/toc.html')}" media-type="application/xhtml+xml"/>
-            <item id="copyright" href="{concat($xhtml-dir, '/copyright.html')}" media-type="application/xhtml+xml"/>
+            <item id="toc" href="{concat($xhtml-dir, '/toc.', $xhtml.suffix)}" media-type="application/xhtml+xml"/>
+            <item id="styles" href="{concat($styles-dir, '/stylesheet.css')}"  media-type="text/css"/>
             <xsl:apply-templates select='descendant::mediaobject|descendant::inlinemediaobject'/>
-            <xsl:apply-templates select='part|preface|chapter|bibliography|appendix' mode='manifest'/>
+            
         </manifest>
     </xsl:template>
         
@@ -115,15 +118,10 @@
     
     <xsl:template match='book' mode='spine'>
         <spine toc="ncx">
-            <xsl:apply-templates select="info/cover[@role ='cover']" mode='spine'/>
-            <xsl:apply-templates select='dedication' mode='spine'/>
-            <xsl:apply-templates select="info/cover[not(@role='cover')]" mode='spine'/>
+            <xsl:apply-templates select="info/cover" mode='spine'/>
             <itemref idref="toc"/>
-            <xsl:apply-templates mode="spine" select="preface[not(@role) or not(@role = ('author', 'books-by'))]|chapter|part|appendix|bibliography"/>
             <xsl:call-template name="notes.spine"/>
-            <itemref idref="copyright"/>
-            <xsl:apply-templates select='author//personblurb' mode='spine'/>
-            <xsl:apply-templates mode="spine" select="preface[@role = ('author', 'books-by')]"/>
+            <xsl:apply-templates select="*[not(self::info)]" mode="spine"/>
         </spine>
     </xsl:template>
     
@@ -147,12 +145,12 @@
     <!-- Generate the guide -->
     
     <xsl:template match='book' mode='guide'>
-        <xsl:variable name='first-page' select="(//preface[not(@role) or not(@role = ('reviews', 'author', 'books-by'))]|//chapter)[1]"/>
+        <xsl:variable name='first-page' select="(//preface|//chapter)[1]"/>
         
         
         <guide>
-            <reference type="cover" title="Cover" href="{concat($xhtml-dir, '/cover.html')}"/>
-            <reference type="toc" title="Contents" href="{concat($xhtml-dir, '/toc.html')}"/>
+            <reference type="cover" title="Cover" href="{concat($xhtml-dir, '/cover.', $xhtml.suffix)}"/>
+            <reference type="toc" title="Contents" href="{concat($xhtml-dir, '/toc.', $xhtml.suffix)}"/>
             <xsl:apply-templates select='$first-page' mode='guide'/>           
         </guide>
         

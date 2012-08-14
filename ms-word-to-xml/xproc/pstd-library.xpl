@@ -35,7 +35,9 @@
         <p:option required="true" name="image-uri-base"/>
         <p:option required="true" name="css-uri-base"/>
         <p:option required="true" name="xhtml-path"/>
+        <p:option name="xhtml.suffix" select="'html'"/>
 
+        <!-- convert penguin docbook variant to standard docbook -->
         <epub:penguin-standard-to-db-p/>
 
         <epub:render-to-html name="render-to-html-files">
@@ -45,6 +47,7 @@
             <p:with-option name="image-uri-base" select="$image-uri-base"/>
             <p:with-option name="css-uri-base" select="$css-uri-base"/>
             <p:with-option name="xhtml-path" select="$xhtml-path"/>
+            <p:with-option name="xhtml.suffix" select="$xhtml.suffix"/>
         </epub:render-to-html>
         
         
@@ -287,7 +290,7 @@
 
         <p:input port="source" primary="true"/>
         <p:output port="result" primary="true"/>
-
+        
         <p:xslt version="2.0">
             <p:input port="parameters">
                 <p:empty/>
@@ -381,6 +384,7 @@
         <p:option required="true" name="image-uri-base"/>
         <p:option required="true" name="css-uri-base"/>
         <p:option required="true" name="xhtml-path"/>
+        <p:option name="xhtml.suffix" select="'html'"/>
         
  
     
@@ -414,10 +418,10 @@
             </p:output>
           
             <p:variable name='page-id' select="/h:html/@xml:id"/>
-            <p:variable name="filename" select="concat($page-id, '.html')"/>
+            <p:variable name="filename" select="concat($page-id, '.', $xhtml.suffix)"/>
             <p:variable name="href" select="concat($xhtml-path, '/', $filename)"/>
             
-            <!-- <epub:insert-penguin-styles/> --> 
+            <epub:insert-penguin-styles/> 
             
             <!-- no ID on root element of XHTML! -->
             <p:delete name="delete-root-id" match="/h:html/@xml:id"/>

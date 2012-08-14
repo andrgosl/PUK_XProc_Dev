@@ -5,19 +5,22 @@
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xpath-default-namespace="http://docbook.org/ns/docbook" exclude-result-prefixes="#all"
     version="2.0">
-    
-    <xsl:import href="page-ids.xsl"/>
 
+    <xsl:import href="page-ids.xsl"/>
+    
     <xsl:output method="xhtml"/>
 
     <xsl:param name="debug.page.generation" select="'no'"/>
 
     <xsl:param name="image-uri-base" select="'../images'"/>
     
-    <xsl:param name="html.suffix" select="'.html'"/>
     
     <xsl:param name="notes.file.name" select="'notes'"/>
-
+    
+    <xsl:param name="debug.page-ids" select="'no'"/>
+    <xsl:param name="xhtml.suffix" select="'xhtml'"/>
+    
+ 
     <!-- params taken from docbook -->
     <xsl:param name="author.othername.in.middle" select="1"/>
 
@@ -26,11 +29,11 @@
     <xsl:template match="/">
         <xsl:apply-templates select="book"/>
         <xsl:apply-templates select="book" mode="toc"/>
+        <xsl:apply-templates select="book" mode="notes"/>
     </xsl:template>
 
     <xsl:template match="book">
         <xsl:apply-templates select="dedication|info/cover|preface|appendix|glossary|bibliography|chapter|part"/>
-            <!-- xsl:call-template name="generate-notes"/> -->
     </xsl:template>
 
     <xsl:template match="part">
@@ -39,15 +42,10 @@
 
     </xsl:template>
     
-    <!-- ignore the dummy appendix for the notes - only used in FO -->
-    <xsl:template match="appendix[@role='notes']" mode='#all'/>
-
     <xsl:template match="part/info">
 
         <xsl:variable name="page-id">
-            <xsl:call-template name="page.id">
-                <xsl:with-param name="node" select='parent::*'/>
-            </xsl:call-template>
+            <xsl:call-template name="page.id"/>
         </xsl:variable>
 
         <xsl:variable name="filename">
@@ -71,6 +69,10 @@
         <xsl:call-template name="html-doc">
             <xsl:with-param name="title">
                 <xsl:apply-templates select="info/title|title" mode="as-title"/>
+            </xsl:with-param>
+            <xsl:with-param name="contents">
+                <xsl:apply-templates/>
+                <xsl:apply-templates select="descendant::footnote[not(@role='endnote')]" mode="notes"/>
             </xsl:with-param>
         </xsl:call-template>
 
@@ -156,7 +158,7 @@
 
     <xsl:template match="title|info/title" mode="as-title">
         <title>
-            <xsl:apply-templates select="*" mode="as-title"/>
+            <xsl:apply-templates select="node()" mode="as-title"/>
         </title>
     </xsl:template>
     
@@ -496,13 +498,17 @@
     <!-- the serialisation info here is a dummy as we actually serialise in XProc -->
     <xsl:template name="html-doc">
         
-        <xsl:param name="filename">
-            <xsl:call-template name="page.href"/>
-        </xsl:param>
-        
         <xsl:param name="page-id">
             <xsl:call-template name="page.id"/>
         </xsl:param>
+        
+        
+        <xsl:param name="filename">
+            <xsl:call-template name="page.href">
+                <xsl:with-param name="page-id" select="$page-id"/>
+            </xsl:call-template>
+        </xsl:param>
+        
         
         <xsl:param name="contents">
             <xsl:apply-templates mode="#current"/>
@@ -541,7 +547,7 @@
 
 
         <xsl:result-document encoding="utf-8" exclude-result-prefixes="#all" method="xhtml"
-            href="toc.html">
+            href="{concat('toc.', $xhtml.suffix)}">
             <html xml:id="toc">
                 <head>
                     <title>Contents</title>
@@ -566,6 +572,24 @@
 
 
     </xsl:template>
+    
+    <!-- Process the book for endnotes -->
+    <xsl:template match="book[descendant::footnote[@role='endnote']]">
+        <xsl:call-template name="html-doc">
+            <xsl:with-param name="title">
+                <title>Notes</title>
+            </xsl:with-param>
+            <xsl:with-param name="page-id" select="'notes'"/>
+            <xsl:with-param name="filename" select="concat('notes.', $xhtml.suffix)"/>
+            <xsl:with-param name="contents">
+                <xsl:apply-templates select="preface|appendix|glossary|bibliography|chapter|part" mode="notes"/>
+            </xsl:with-param>            
+        </xsl:call-template>        
+    </xsl:template>
+    
+    <!-- Suppress notes generation by default -->
+    <xsl:template match="book" mode="notes"/>
+    
 
     <xsl:template match="preface" mode="toc">
         <xsl:variable name="filename"><xsl:call-template name="page.href"/></xsl:variable>
@@ -814,25 +838,37 @@
                 <title>Notes</title>
             </xsl:with-param>
             <xsl:with-param name="page-id" select="'notes'"/>
-            <xsl:with-param name="filename" select="'notes.html'"/>
+            <xsl:with-param name="filename" select="concat('notes.', $xhtml.suffix)"/>
             <xsl:with-param name="contents">
                 <xsl:apply-templates select="preface|appendix|glossary|bibliography|chapter|part" mode="notes"/>
             </xsl:with-param>            
         </xsl:call-template>        
     </xsl:template>
 
-    <!-- Default mode for footnotes - we insert a link to the notes file. Because we want to
+    <!-- Default mode for footnotes (as endnotes)- we insert a link to the notes file. Because we want to
     link back we also need to create an anchor. -->
-    <xsl:template match="footnote">
+    <xsl:template match="footnote[@role='endnote']">
         <!-- what do we use as a label. Going to insert sequential number from our chapter type ancestor-->
         <xsl:variable name='container' select="if (ancestor::part) then ancestor::*[parent::*[part]] else ancestor::*[parent::book]"/>
         <xsl:variable name='chapter-pos' select="count($container//footnote[. &lt;&lt; current()]) + 1"/>
         <span class='noteref' id='{@xml:id}'><sup>
-            <a href="{concat($notes.file.name, $html.suffix, '#', @xml:id)}">
+            <a href="{concat($notes.file.name, '.', $xhtml.suffix, '#', @xml:id)}">
                 <xsl:apply-templates select='.' mode='marker'/>
             </a></sup>
         </span>
     </xsl:template>
+    
+    <!-- Default node for (chapter-end) footnotes -->
+    <xsl:template match="footnote[not(@role='endnote')]">
+        <!-- what do we use as a label. Going to insert sequential number from our chapter type ancestor-->
+        <xsl:variable name="container" select="ancestor::chapter|ancestor::preface|ancestor::glossary|ancestor::bibliography"/>
+        <xsl:variable name='chapter-pos' select="count($container//footnote[. &lt;&lt; current()]) + 1"/>
+        <span class='noteref' id='{@xml:id}'><sup>
+            <a href="{concat('#', @xml:id)}">
+                <xsl:apply-templates select='.' mode='marker'/>
+            </a></sup>
+        </span>
+    </xsl:template>   
     
     
     <xsl:template match="footnote/para[position() = 1]" mode="notes">
@@ -902,7 +938,6 @@
         <xsl:message terminate="yes">Unhandled element - <xsl:value-of select="local-name()"
         /></xsl:message>
     </xsl:template>
-    
     
     
 </xsl:stylesheet>

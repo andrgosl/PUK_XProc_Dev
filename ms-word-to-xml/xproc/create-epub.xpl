@@ -42,6 +42,9 @@
     <p:option name="fonts-dir-name" select="'fonts'"/>
     <p:option name="media-dir-name" select="'media'"/>
     
+    <!-- suffix for xhtml files -->
+    <p:option name="xhtml.suffix" select="'xhtml'"/>
+    
    
     <p:import href="create-epub-library.xpl"/>
     <p:import href="pstd-library.xpl"/>
@@ -125,7 +128,8 @@
         </p:input>
         <p:with-option name="image-uri-base" select="$image-uri-base"/>
         <p:with-option name="css-uri-base" select="$css-uri-base"/>
-        <p:with-option name="xhtml-path" select="$xhtml-path"/>        
+        <p:with-option name="xhtml-path" select="$xhtml-path"/>     
+        <p:with-option name="xhtml.suffix" select="$xhtml.suffix"/>
     </epub:generate-html>
     
     <p:insert name="insert-html-results" match="/c:result" position="last-child">
@@ -145,6 +149,7 @@
         <p:with-option name="content-path" select="$content-path"/>
         <p:with-option name="filename" select="$epub.ncx.filename"/>
         <p:with-option name="xhtml-dir-name" select='$xhtml-dir-name'/>
+        <p:with-option name="xhtml.suffix" select="$xhtml.suffix"/>
     </epub:create-ncx>
     
     <p:insert name="insert-ncx-results" match="/c:result" position="last-child">
@@ -164,6 +169,7 @@
             <p:pipe port="result" step="insert-ncx-results"/>
         </p:input>
         <p:with-option name="href" select="$opf-path"/>
+        <p:with-option name="xhtml.suffix" select="$xhtml.suffix"></p:with-option>
     </epub:create-opf>
     
     <p:load  dtd-validate="false" name="reload-opf">

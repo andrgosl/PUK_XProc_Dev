@@ -44,5 +44,11 @@
         </preface>
     </xsl:template>
     
+    <!-- this is to handle situations where front matter marked content is *after* the chapters -->
+    <xsl:template match="title[@cword:hint='prelims-title'][preceding-sibling::title[@cword:hint='chapter-title']]"  mode="insert-structure" priority="1">
+        <appendix>
+            <xsl:apply-templates select="current-group()"/>
+        </appendix>
+    </xsl:template>
 
 </xsl:stylesheet>

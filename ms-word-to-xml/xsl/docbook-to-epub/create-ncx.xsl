@@ -10,6 +10,9 @@
     <!-- Unique identifier for book. Should be the same value as that used in the OPF metadata. If none is
         not provided, synthesises one from from the first ISBN found. -->
     <xsl:param name="book-id" select="concat('book-', /book/info/biblioid[@class='isbn'][1])"/>
+    
+    <!-- Suffix to be used for xhtml files -->
+    <xsl:param name="xhtml.suffix" select="'html'"/>
 
     <!-- relative path from the NCX file to content. Defaults to 'xhtml' -->
     <xsl:param name="xhtml-dir" select="&quot;xhtml&quot;"/>
@@ -22,12 +25,12 @@
     <!-- create an ncx file from DocBook -->
     <xsl:template match="/">
         <ncx version="2005-1" xml:lang="en">
-            <xsl:apply-templates select="/book/info"/>
+            <xsl:apply-templates select="/book/info" mode="header"/>
             <xsl:apply-templates select="/book" mode="navMap"/>
         </ncx>
     </xsl:template>
 
-    <xsl:template match="/book/info">
+    <xsl:template match="/book/info" mode="header">
         <head>
             <meta name="dtb:uid" content="{$book-id}"/>
         </head>
@@ -42,19 +45,20 @@
             </text>
         </docAuthor>
     </xsl:template>
+    
+    <xsl:template match="/book/info"/>
+    
 
     <xsl:template match="book" mode="navMap">
 
         <navMap>
-            <xsl:apply-templates select="info/cover[@role='cover']"/>
-            <xsl:apply-templates select="dedication"/>
-            <xsl:apply-templates select="info/cover[@role='title']"/>
+            <xsl:apply-templates select="info/cover"/>
 
             <navPoint id="toc">
                 <navLabel>
                     <text>Contents</text>
                 </navLabel>
-                <content src="{concat($xhtml-dir, '/toc.html')}"/>
+                <content src="{concat($xhtml-dir, '/toc.', $xhtml.suffix)}"/>
             </navPoint>
 
             <navPoint id="book">
@@ -63,23 +67,11 @@
                         <xsl:apply-templates select="/book/info/title"/>
                     </text>
                 </navLabel>
-                <xsl:apply-templates
-                    select="(preface[not(@role) or not(@role = ('reviews', 'author', 'books-by'))]|part|chapter|bibliography|appendix)[1]"
-                    mode="book-content"/>                
-                <xsl:apply-templates
-                    select="preface[not(@role) or not(@role = ('reviews', 'author', 'books-by'))]"/>
-                <xsl:apply-templates select="part|chapter|appendix"/>
+                <xsl:apply-templates select="*[not(self::appendix) and not(self::info)][1]" mode="book-content"/>
+                <xsl:apply-templates select="*[not(self::appendix)]" />                
             </navPoint>
-
-            <navPoint id="copyright">
-                <navLabel>
-                    <text>Copyright</text>
-                </navLabel>
-                <content src="{concat($xhtml-dir, '/copyright.html')}"/>
-            </navPoint>
-
-            <xsl:apply-templates select="author//personblurb"/>
-            <xsl:apply-templates select="preface[@role = ('author', 'books-by')]"/>
+            
+            <xsl:apply-templates select="appendix"/>
 
         </navMap>
 
@@ -151,13 +143,13 @@
                 </text>
             </navLabel>
             <xsl:apply-templates select="." mode="book-content"/>
-            <xsl:apply-templates select="preface|chapter"/>
+            <xsl:apply-templates select="preface|chapter|appendix"/>
 
         </navPoint>
 
     </xsl:template>
 
-    <xsl:template match="part|part|dedication|chapter|preface|bibliography|appendix"
+    <xsl:template match="part|dedication|chapter|preface|bibliography|appendix"
         mode="book-content">
 
         <xsl:variable name="page-id">
@@ -224,7 +216,9 @@
         <xsl:value-of select="honorific|firstname|givenname|surname"/>
     </xsl:template>
 
-
+    <xsl:template match="title[lower-case(.) = 'about the author']/text()">
+        <xsl:text>ABOUT THE AUTHOR</xsl:text>
+    </xsl:template>
 
 
 </xsl:stylesheet>

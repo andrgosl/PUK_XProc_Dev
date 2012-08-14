@@ -33,16 +33,6 @@
         </p:input>        
     </p:xslt>
     
-    <!-- continue refactoring - insert prelims -->
-<!--    <p:xslt name="insert-prelims" version="2.0">
-        <p:input port="source">
-            <p:pipe port="result" step="insert-chapters"/>
-        </p:input>
-        <p:input port="stylesheet">
-            <p:document href="../xsl/word-to-docbook/insert-prelims.xsl"/>
-        </p:input>        
-    </p:xslt> -->
-    
     <p:store href="/tmp/insert-chapters.xml">
         <p:input port="source">
             <p:pipe port="result" step="insert-chapters"/>

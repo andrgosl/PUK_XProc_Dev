@@ -363,7 +363,7 @@
         <p:option name="filename" select="'toc.ncx'"/>
         <p:option name="content-path" required="true"/>
         <p:option name="xhtml-dir-name" required="true"/>
-   
+        <p:option name="xhtml.suffix" select="'html'"/>
        
         <p:variable name="ncx-uri" select="concat($content-path, '/', $filename)"/>
         <p:variable name="id" select="substring-before($filename, '.')"/>
@@ -378,8 +378,18 @@
             <p:input port="stylesheet">
                 <p:document href="../xsl/docbook-to-epub/create-ncx.xsl"/>
             </p:input>
+            
+            <p:with-param name="xhtml.suffix" select="$xhtml.suffix"/>
 
         </p:xslt>
+        
+        <p:store name="temp-toc" href="/tmp/toc.ncx.initial">
+            
+            <p:input port="source">
+                <p:pipe port="result" step="convert-ncx"/>
+            </p:input>
+        </p:store>
+        
 
         <!-- add the play order to it -->
         <p:xslt name="sequence-ncx">
@@ -391,6 +401,10 @@
             </p:input>
             <p:input port="stylesheet">
                 <p:document href="../xsl/docbook-to-epub/playorder.xsl"/>
+            </p:input>
+            
+            <p:input port="source">
+                <p:pipe port="result" step="convert-ncx"/>
             </p:input>
         </p:xslt>
 
@@ -418,12 +432,12 @@
         
         <p:input port="source" primary="true"/>
         <p:input port="manifest-files" sequence="true"/>
-        
         <p:output port="result">
             <p:pipe  port="result" step="store-opf"/>
         </p:output>
         
         <p:option name="href" required="true"/>
+        <p:option name="xhtml.suffix" select="'html'"/>
 
         
         <p:xslt name="convert-opf">
@@ -433,6 +447,7 @@
             <p:input port="stylesheet">
                 <p:document href="../xsl/docbook-to-epub/create-opf.xsl"/>
             </p:input>
+            <p:with-param name="xhtml.suffix" select="$xhtml.suffix"></p:with-param>
         </p:xslt>
                 
         <p:store name="store-opf" encoding="UTF-8" omit-xml-declaration="false" indent="true">

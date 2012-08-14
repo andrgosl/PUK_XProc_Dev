@@ -12,4 +12,10 @@
         </xsl:copy>
     </xsl:template>
     
+    
+    <!-- Modify a title for about the author to all upper case -->
+    <xsl:template match="title[lower-case(.) = 'about the author']/text()">
+        <xsl:text>ABOUT THE AUTHOR</xsl:text>
+    </xsl:template>
+    
 </xsl:stylesheet>

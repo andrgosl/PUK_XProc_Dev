@@ -359,7 +359,7 @@
             <p:with-option name="uri" select="$epub-path"/>
             <p:with-option name="opf-uri" select="$opf-uri"/>
         </epub:init-epub>
-        
+                
         <epub:convert-opf-to-zip-manifest name='create-content-manifest'>
             <p:input port="source">
                 <p:pipe port="source" step="package-epub"/>

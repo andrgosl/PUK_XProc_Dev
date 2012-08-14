@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+    xmlns:cfn="https://www.corbas.co.uk/ns/xsl/functions" version="2.0">
 
     <xsl:param name="debug.page-ids" select="'no'"/>
-
+    <xsl:param name="xhtml.suffix" select="'xhtml'"/>
+    
+    <xsl:variable name="page-nodes" select="if (//part) then (/*/* | /*/*/*) else (/*/*)"/>
+   
     <!-- page IDs -->
     <xsl:template name="page.id">
         <xsl:param name="node" select="."/>
@@ -50,7 +54,7 @@
         </xsl:if>
         <xsl:variable name="generic-id">
             <xsl:choose>
-                <xsl:when test="count(//*[local-name() = $name]) = 1">
+                <xsl:when test="count($page-nodes[local-name() = $name]) lt 2">
                     <xsl:value-of select="(@role, local-name())[1]"/>
                 </xsl:when>
                 <xsl:otherwise>
@@ -71,7 +75,9 @@
         <xsl:call-template name="counted.page.id"/>
     </xsl:template>
 
-    <xsl:template name="counted.page.id">
+
+    <!--- countes the preceding elements of the same type to get a count for the id of an element -->
+    <xsl:template name="counted.page.id" as="text()">
         <xsl:variable name="type" select="local-name(.)"/>
 
         <xsl:if test="$debug.page-ids = 'yes'">
@@ -79,21 +85,43 @@
                 element.</xsl:message>
         </xsl:if>
 
-
-        <xsl:variable name="num" select="count(preceding::*[local-name(.) = $type]) + 1"/>
-        <xsl:value-of select="concat($type, format-number($num, '000'))"/>
+        <xsl:variable name="of-my-type" select="$page-nodes[local-name() = $type]"/>
+        
+        <xsl:message>Found <xsl:value-of select="count($of-my-type)"/> elements of the same type.</xsl:message>
+        
+        <xsl:choose>
+                <xsl:when test="count($of-my-type) = 0">1</xsl:when>
+            <xsl:otherwise>
+                <xsl:variable name="my-index" select="index-of($of-my-type, .)"/>
+                <xsl:message>My element is at index <xsl:value-of select="$my-index"/></xsl:message>
+                <xsl:variable name="num" select="count($page-nodes[position() = 1 to $my-index])"/>
+                <xsl:message>My page number is <xsl:value-of select="$num"/></xsl:message>
+                <xsl:value-of select="concat($type ,'-' , format-number($num, '000'))"/>
+            </xsl:otherwise>
+        </xsl:choose>
+   
     </xsl:template>
 
     <!-- page hrefs -->
     <xsl:template name="page.href">
         <xsl:param name="node" select="."/>
-        <xsl:param name="create.fragment" select="false()"/>        
-        <xsl:variable name="page-id">
-            <xsl:call-template name="page.id">
-                <xsl:with-param name="node" select="$node"/>
-            </xsl:call-template>
+        <xsl:param name="page-id" select="''"/>
+        
+        <xsl:param name="create.fragment" select="false()"/>
+
+        <xsl:variable name="calculated-page-id">
+            <xsl:choose>
+                <xsl:when test="$page-id"><xsl:value-of select="$page-id"/></xsl:when>
+                <xsl:otherwise>
+                    <xsl:call-template name="page.id">
+                        <xsl:with-param name="node" select="$node"/>
+                    </xsl:call-template>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:variable>
-        <xsl:variable name='href' select="concat($page-id, '.html')"/>
+        
+        <xsl:variable name='href' select="concat($calculated-page-id, '.', $xhtml.suffix)"/>
+        
         <xsl:choose>
             <xsl:when test="$create.fragment">
                 <xsl:value-of select="concat($href, '#', $node/@xml:id)"/>
