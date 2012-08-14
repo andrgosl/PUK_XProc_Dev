@@ -192,7 +192,7 @@
        
     <!-- very basic - remember xslt 2 will put a space between-->
     <xsl:template match='personname'>
-        <xsl:value-of select='honorific|firstname|givenname|surname'/>
+        <xsl:value-of select='honorific|firstname|givenname|surname|text()'/>
     </xsl:template> 
  
         
