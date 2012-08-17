@@ -10,7 +10,6 @@
     xmlns:dc="http://purl.org/dc/elements/1.1/"
     xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" 
     xmlns:xlink="http://www.w3.org/1999/xlink" exclude-result-prefixes="xs w cp r rp dc a">
-    <xsl:import href="word-functions.xsl"/>
     <xsl:import href="word-tables.xsl"/>
     
 
@@ -214,22 +213,48 @@
             <xd:p>Process runs of text with foot note references into docbook footnotes.</xd:p>
         </xd:desc>
     </xd:doc>
+    
+    <!-- don't output the run in which an endnote occurs, skip to the note -->
     <xsl:template match="w:r[w:endnoteReference]">
         <xsl:apply-templates select="w:endnoteReference"/>
     </xsl:template>
+    
+    <!-- don't output the run in which an footnote occurs, skip to the note -->
+    <xsl:template match="w:r[w:footnoteReference]">
+        <xsl:apply-templates select="w:footnoteReference"/>
+    </xsl:template>
 
+    <!-- replace endnote reference with referenced note -->
     <xsl:template match="w:endnoteReference">
         <xsl:apply-templates select="//w:endnotes/w:endnote[@w:id = current()/@w:id]"/>
     </xsl:template>
+    
+    <!-- replace footnote reference with referenced note -->
+    <xsl:template match="w:footnoteReference">
+        <xsl:apply-templates select="//w:footnotes/w:footnote[@w:id = current()/@w:id]"/>
+    </xsl:template>
 
-    <xsl:template match="w:endnote[w:r[not(w:continuationSeparator)]]">
-        <footnote role="endnote">
+    <!-- process any endnotes which aren't separators -->
+    <xsl:template match="w:endnote[descendant::w:r[not(w:continuationSeparator)]]" priority="1">
+        <footnote role="endnote" xml:id="{generate-id()}">
+            <xsl:apply-templates/>
+        </footnote>
+    </xsl:template>
+    
+    <!-- process any footnotes which aren't separators -->
+    <xsl:template match="w:footnote[descendant::w:r[not(w:continuationSeparator)]]" priority="1">
+        <footnote xml:id="{generate-id()}">
             <xsl:apply-templates/>
         </footnote>
     </xsl:template>
 
+    <!-- suppress empty notes -->
     <xsl:template match="w:endnote[normalize-space(.) = '']"/>
+    <xsl:template match="w:footnote[normalize-space(.) = '']"/>
     
+    <!-- suppress the footnote or endnote ref *inside* the note -->
+    <xsl:template match="w:footnote/descendant::w:r[w:footnoteRef]"/>
+    <xsl:template match="w:endnote/descendant::w:r[w:endnoteRef]"/>
 
     <xd:doc>
         <xd:desc>
@@ -342,6 +367,7 @@
             <xd:p>Converts the style given in an elements properties to a role attribute containing
                 the style's value.</xd:p>
             <xd:p>Currently handles run and paragraph styles.</xd:p>
+            <xd:p>Suppresses some known irrelevant styles.</xd:p>
         </xd:desc>
         <xd:param name="properties">
             <xd:p>The properties parameter must be provided and must contain the properties element
@@ -350,26 +376,13 @@
     </xd:doc>
     <xsl:template name="cword:getStyleAsRole">
         <xsl:param name="properties"/>
-        <xsl:variable name="style" select="$properties/w:rStyle|$properties/w:pStyle"/>
-        <xsl:variable name="mapped-style">
-            <xsl:choose>
-                <xsl:when test="$properties/w:pStyle">
-                    <xsl:value-of select="cword:mapParagraphStyle($style/@w:val)"/>
-                </xsl:when>
-            </xsl:choose>
-            <xsl:choose>
-                <xsl:when test="$properties/w:rStyle">
-                    <xsl:value-of select="cword:mapRunStyle($style/@w:val)"/>
-                </xsl:when>
-            </xsl:choose>
-        </xsl:variable>
+        <xsl:variable name="style" select="$properties/w:rStyle/@w:val|$properties/w:pStyle/@w:val"/>
 
         <xsl:choose>
-            <xsl:when test="$style/@w:val = &quot;attributes&quot;"/>
-            <xsl:when test="$style/@w:val = &quot;CommentReference&quot;"/>
+            <xsl:when test="$style = ('attributes', 'CommentReference', 'FootnoteText', 'EndnoteText')"/>
             <xsl:when test="$style">
                 <xsl:attribute name="role">
-                    <xsl:value-of select="$mapped-style"/>
+                    <xsl:value-of select="$style"/>
                 </xsl:attribute>
             </xsl:when>
         </xsl:choose>

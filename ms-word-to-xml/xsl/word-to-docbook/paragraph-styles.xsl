@@ -50,6 +50,10 @@
         <title cword:hint="prelims-title" role="{@role}"><xsl:apply-templates select="@*|node()"/></title>
     </xsl:template>
     
+    <xsl:template match="para[@role='01FMAcknowledgementsHead']">
+        <title cword:hint="ack-title" ><xsl:apply-templates select="@*|node()"/></title>
+    </xsl:template>
+    
     <!-- end matter -->
     <xsl:template match="para[@role='13EMHead']">
         <title cword:hint="endmatter-title" role="{@role}"><xsl:apply-templates select="@*|node()"/></title>

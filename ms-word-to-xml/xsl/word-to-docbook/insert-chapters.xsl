@@ -7,7 +7,7 @@
 
     <xsl:include href="identity.xsl"/>
     
-    <xsl:variable name="hints" select="('chapter-title', 'endmatter-title', 'prelims-title')"></xsl:variable>
+    <xsl:variable name="hints" select="('chapter-title', 'endmatter-title', 'prelims-title', 'ack-title')"></xsl:variable>
 
     <!-- wrap up chapters and similar constructs -->
     <xsl:template match="*[title[@cword:hint=$hints]]">
@@ -42,6 +42,12 @@
         <preface>
             <xsl:apply-templates select="current-group()"/>
         </preface>
+    </xsl:template>
+    
+    <xsl:template match="title[@cword:hint='ack-title']" mode="insert-structure">
+        <acknowledgements>
+            <xsl:apply-templates select="current-group()"/>
+        </acknowledgements>
     </xsl:template>
     
     <!-- this is to handle situations where front matter marked content is *after* the chapters -->
