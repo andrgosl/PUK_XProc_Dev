@@ -86,16 +86,12 @@
         </xsl:if>
 
         <xsl:variable name="of-my-type" select="$page-nodes[local-name() = $type]"/>
-        
-        <xsl:message>Found <xsl:value-of select="count($of-my-type)"/> elements of the same type.</xsl:message>
-        
+                
         <xsl:choose>
                 <xsl:when test="count($of-my-type) = 0">1</xsl:when>
             <xsl:otherwise>
                 <xsl:variable name="my-index" select="index-of($of-my-type, .)"/>
-                <xsl:message>My element is at index <xsl:value-of select="$my-index"/></xsl:message>
                 <xsl:variable name="num" select="count($page-nodes[position() = 1 to $my-index])"/>
-                <xsl:message>My page number is <xsl:value-of select="$num"/></xsl:message>
                 <xsl:value-of select="concat($type ,'-' , format-number($num, '000'))"/>
             </xsl:otherwise>
         </xsl:choose>

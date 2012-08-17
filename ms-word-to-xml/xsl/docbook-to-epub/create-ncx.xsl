@@ -109,7 +109,7 @@
 
 
 
-    <xsl:template match="chapter|bibliography|appendix">
+    <xsl:template match="preface|chapter|bibliography|appendix|acknowledgements">
 
         <xsl:variable name="page-id">
             <xsl:call-template name="page.id"/>
@@ -126,7 +126,6 @@
         </navPoint>
 
     </xsl:template>
-
 
 
 
@@ -149,7 +148,7 @@
 
     </xsl:template>
 
-    <xsl:template match="part|dedication|chapter|preface|bibliography|appendix"
+    <xsl:template match="part|dedication|chapter|preface|bibliography|appendix|acknowledgements"
         mode="book-content">
 
         <xsl:variable name="page-id">
@@ -163,20 +162,7 @@
 
     </xsl:template>
 
-    <xsl:template match="preface">
-
-        <xsl:variable name="basis" select="(@role, @xml:id, local-name())[1]"/>
-        <navPoint id="{$basis}">
-            <navLabel>
-                <text>
-                    <xsl:apply-templates select="title|info/title"/>
-                </text>
-            </navLabel>
-            <xsl:apply-templates select="." mode="book-content"/>
-        </navPoint>
-
-    </xsl:template>
-
+ 
 
     <xsl:template match="personblurb">
 

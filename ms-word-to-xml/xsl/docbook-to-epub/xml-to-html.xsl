@@ -10,7 +10,7 @@
     
     <xsl:output method="xhtml"/>
 
-    <xsl:param name="debug.page.generation" select="'no'"/>
+    <xsl:param name="debug.page.generation" select="'yes'"/>
 
     <xsl:param name="image-uri-base" select="'../images'"/>
     
@@ -27,13 +27,14 @@
     <xsl:key name="id-cache" match='*[@xml:id]'  use="@xml:id"/>
 
     <xsl:template match="/">
-        <xsl:apply-templates select="book"/>
-        <xsl:apply-templates select="book" mode="toc"/>
+        <xsl:apply-templates select="book"/>        
+        <xsl:apply-templates select="book" mode="toc"/>        
         <xsl:apply-templates select="book" mode="notes"/>
     </xsl:template>
 
     <xsl:template match="book">
-        <xsl:apply-templates select="dedication|info/cover|preface|appendix|glossary|bibliography|chapter|part"/>
+        <xsl:message>Processing book node - normally</xsl:message>
+        <xsl:apply-templates select="dedication|info/cover|preface|acknowledgements|appendix|glossary|bibliography|chapter|part"/>
     </xsl:template>
 
     <xsl:template match="part">
@@ -133,6 +134,15 @@
             </xsl:with-param>
         </xsl:call-template>
     </xsl:template>
+
+    <xsl:template match="acknowledgements">
+        <xsl:call-template name="html-doc">
+            <xsl:with-param name="title">
+                <xsl:apply-templates select="title" mode="as-title"/>
+            </xsl:with-param>
+        </xsl:call-template>
+    </xsl:template>
+    
 
     <xsl:template match="title|info/title">
         <h2 class="EB04MainHead">
@@ -574,7 +584,7 @@
     </xsl:template>
     
     <!-- Process the book for endnotes -->
-    <xsl:template match="book[descendant::footnote[@role='endnote']]">
+    <xsl:template match="book[descendant::footnote[@role='endnote']]" mode="notes">
         <xsl:call-template name="html-doc">
             <xsl:with-param name="title">
                 <title>Notes</title>
@@ -851,8 +861,8 @@
         <!-- what do we use as a label. Going to insert sequential number from our chapter type ancestor-->
         <xsl:variable name='container' select="if (ancestor::part) then ancestor::*[parent::*[part]] else ancestor::*[parent::book]"/>
         <xsl:variable name='chapter-pos' select="count($container//footnote[. &lt;&lt; current()]) + 1"/>
-        <span class='noteref' id='{@xml:id}'><sup>
-            <a href="{concat($notes.file.name, '.', $xhtml.suffix, '#', @xml:id)}">
+        <span class='noteref' id="{@xml:id}"><sup>
+            <a href="{concat($notes.file.name, '.', $xhtml.suffix, '#', 'note-', @xml:id)}">
                 <xsl:apply-templates select='.' mode='marker'/>
             </a></sup>
         </span>
@@ -863,8 +873,8 @@
         <!-- what do we use as a label. Going to insert sequential number from our chapter type ancestor-->
         <xsl:variable name="container" select="ancestor::chapter|ancestor::preface|ancestor::glossary|ancestor::bibliography"/>
         <xsl:variable name='chapter-pos' select="count($container//footnote[. &lt;&lt; current()]) + 1"/>
-        <span class='noteref' id='{@xml:id}'><sup>
-            <a href="{concat('#', @xml:id)}">
+        <span class='noteref' id="{@xml:id}"><sup>
+            <a href="{concat('#', 'note-', @xml:id)}">
                 <xsl:apply-templates select='.' mode='marker'/>
             </a></sup>
         </span>
@@ -887,7 +897,7 @@
             </xsl:call-template>
         </xsl:variable>        
         
-        <p class='EB26SmallTextHangingIndent' id="{../@xml:id}">
+        <p class='EB26SmallTextHangingIndent' id="{concat('note-', ../@xml:id)}">
             <a href="{$anchor}"><xsl:value-of select='$marker'/></a>
             <xsl:value-of select='$marker.padding'/>
             <xsl:apply-templates/>
@@ -915,11 +925,11 @@
         <xsl:apply-templates mode='notes'/>
     </xsl:template>
     
-    <xsl:template match="preface|appendix|glossary|bibliography|chapters" mode="notes">
-        <xsl:if test="descendant::footnote">
+    <xsl:template match="preface|appendix|glossary|bibliography|chapter" mode="notes">
+        <xsl:if test="descendant::footnote[@role='endnote']">
             <div class='notes-section'>
                 <xsl:apply-templates select='title|info/title' mode='notes'/>
-                <xsl:apply-templates select="descendant::footnote" mode='notes'/>            
+                <xsl:apply-templates select="descendant::footnote[@role='endnote']" mode='notes'/>            
             </div>
         </xsl:if>
     </xsl:template>

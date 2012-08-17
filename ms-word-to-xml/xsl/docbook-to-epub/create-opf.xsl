@@ -75,6 +75,11 @@
             <item id="styles" href="{concat($styles-dir, '/stylesheet.css')}"  media-type="text/css"/>
             <xsl:apply-templates select='descendant::mediaobject|descendant::inlinemediaobject'/>
             
+            <!-- manifest for end notes -->
+            <xsl:if test="//footnote[@role='endnote']">
+                <item id="notes" href="{concat($xhtml-dir, '/notes.', $xhtml.suffix)}" media-type="application/xhtml+xml"/>
+            </xsl:if>
+            
         </manifest>
     </xsl:template>
         
@@ -85,7 +90,7 @@
         <xsl:apply-templates select='preface|chapter' mode='manifest'/>
     </xsl:template>  
     
-    <xsl:template match="personblurb|dedication|preface|cover|chapter|bibliography|appendix" mode='manifest'>
+    <xsl:template match="personblurb|dedication|preface|cover|chapter|bibliography|appendix|acknowledgements" mode='manifest'>
         <xsl:variable name="page-id"><xsl:call-template name="page.id"/></xsl:variable>
         <xsl:variable name="file-name"><xsl:call-template name="page.href"/></xsl:variable>        
         <item id='{$page-id}' href="{concat($xhtml-dir, '/', $file-name)}" media-type='application/xhtml+xml'/>
@@ -125,7 +130,7 @@
         </spine>
     </xsl:template>
     
-     <xsl:template match='chapter|preface|personblurb|dedication|bibliography|appendix' mode='spine'>
+     <xsl:template match='acknowledgements|chapter|preface|personblurb|dedication|bibliography|appendix' mode='spine'>
        <xsl:variable name="page-id"><xsl:call-template name="page.id"/></xsl:variable>
         <itemref idref="{$page-id}"/>
     </xsl:template>
@@ -137,7 +142,7 @@
     </xsl:template>
     
     <xsl:template name="notes.spine">
-        <xsl:if test="descendant::footnote">
+        <xsl:if test="descendant::footnote[@role='endnote']">
             <itemref idref="notes"/>
         </xsl:if>
     </xsl:template>

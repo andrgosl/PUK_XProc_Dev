@@ -420,7 +420,11 @@
             </p:input>
         </p:insert>
         
-
+        <p:store name="store-manifest" href="/tmp/zip-manifest.xml">
+            <p:input port="source">
+                <p:pipe port="result" step="insert-mimetype"></p:pipe>
+            </p:input>
+        </p:store>
         
         <!-- now add all the other content to the zip file -->
         <cx:zip name="insert-content">            
