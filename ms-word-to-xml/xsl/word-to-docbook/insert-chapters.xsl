@@ -13,13 +13,13 @@
     <xsl:template match="*[title[@cword:hint=$hints]]">
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
-            <xsl:for-each-group select="*" group-starting-with="title[@cword:hint=$hints]">
+            <xsl:for-each-group select="*" group-starting-with="title[@cword:hint=$hints]|part">
                 <xsl:choose>
                     <xsl:when test="@cword:hint = $hints">
                         <xsl:apply-templates select="." mode='insert-structure'/>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:copy-of select="current-group()"/>
+                        <xsl:apply-templates select="current-group()"/>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:for-each-group>
