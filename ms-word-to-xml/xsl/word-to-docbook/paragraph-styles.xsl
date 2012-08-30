@@ -150,8 +150,16 @@
     </xsl:template>
     
     
-    <xsl:template match="phrase[@role = '14FootnoteText']">
-            <xsl:apply-templates select="node()"/>
+    <!-- force paras that are in 14FootnoteText as a char style to be a para style -->
+    <xsl:template match="para[phrase[@role='14FootnoteText']]">
+        <para role="14FootnoteText">
+            <xsl:apply-templates select="@* except @role"/>
+            <xsl:apply-templates/>
+        </para>
+        
+    </xsl:template>
+    <xsl:template match="para/phrase[@role = '14FootnoteText']">
+        <xsl:apply-templates/>
     </xsl:template>
     
 </xsl:stylesheet>

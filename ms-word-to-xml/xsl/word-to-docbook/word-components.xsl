@@ -119,7 +119,7 @@
             listitem elements and store information in the role about the sort of list and indent
             level.</xd:desc>
     </xd:doc>
-    <xsl:template match="w:p[w:pPr/w:numPr]">
+    <xsl:template match="w:p[w:pPr/w:numPr]" priority="1">
         <listitem cword:list-level="{w:pPr/w:numPr/w:ilvl/@w:val}"
             cword:list-mark="{w:pPr/w:numPr/w:numId/@w:val}">
             <xsl:apply-templates select="." mode="basic"/>

@@ -728,6 +728,11 @@
     <!-- Suppress -->
     <xsl:template match="remark"/>
     
+    <!-- convert the text of the about the author title to upper case -->
+    <xsl:template match="title[@role='01FMAboutAuthorTitle']/text()">
+        <xsl:value-of select="upper-case(.)"/>
+    </xsl:template>
+    
     <!-- Abort on unknowns -->
     <xsl:template match="*">
         <xsl:message terminate="yes">Unhandled element - <xsl:value-of select="local-name()"

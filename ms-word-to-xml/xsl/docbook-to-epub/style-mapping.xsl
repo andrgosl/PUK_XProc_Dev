@@ -11,7 +11,7 @@
     
     
     <map xmlns="http://www.corbas.co.uk/ns/penguin/data">
-        <mapping role="01FMAboutAuthorTitle" style="01FMAboutAuthorTitle" element="h5"/>
+        <mapping role="01FMAboutAuthorTitle" style="EB07SmallCapsMediumHead" element="h5"/>
         <mapping role="01FMBiographyFL" style="EB02BodyTextFullOut" element="p"/>
         <mapping role="01FMDediBody" style="EB02BodyTextFullOut" element="p"/>
         <mapping role="01FMEpigraph" style="EB17Epigraph" element="p"/>
@@ -42,6 +42,7 @@
         <mapping role="bold" style="" element="strong"/>
         <mapping role="italic" style="" element="em"/>
         <mapping role="normal" style="EB03BodyTextIndented" element="p"/>
+        <mapping role="14FootnoteText" style="EB19ExtraFeatureFullOut" element="p"/>
     </map>
     
     
