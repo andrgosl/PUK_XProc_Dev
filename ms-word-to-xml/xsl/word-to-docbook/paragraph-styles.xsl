@@ -149,4 +149,9 @@
         <xsl:attribute name='role' select="'04BodyText'"/>
     </xsl:template>
     
+    
+    <xsl:template match="phrase[@role = '14FootnoteText']">
+            <xsl:apply-templates select="node()"/>
+    </xsl:template>
+    
 </xsl:stylesheet>
