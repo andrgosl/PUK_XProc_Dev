@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-    xmlns:cfn="https://www.corbas.co.uk/ns/xsl/functions" version="2.0">
+    xmlns:cfn="https://www.corbas.co.uk/ns/xsl/functions"
+    xmlns="http://docbook.org/ns/docbook" 
+     xpath-default-namespace="http://docbook.org/ns/docbook" version="2.0">
 
     <xsl:param name="debug.page-ids" select="'no'"/>
     <xsl:param name="xhtml.suffix" select="'xhtml'"/>
     
-    <xsl:variable name="page-nodes" select="if (//part) then (/*/* | /*/*/*) else (/*/*)"/>
+    <xsl:variable name="page-elements" select="('preface', 'chapter', 'appendix', 'acknowledgements', 'dedication', 'bibliography', 'glossary', 'part')"/> 
+    <xsl:variable name="page-nodes" select="//*[local-name() = $page-elements]"/>
    
     <!-- page IDs -->
     <xsl:template name="page.id">
         <xsl:param name="node" select="."/>
+        <xsl:param name="prefix" select="''"/>
 
         <xsl:if test="$debug.page-ids = 'yes'">
             <xsl:message>Generating page id for a <xsl:value-of select="name()"/> element.
@@ -39,10 +43,10 @@
         </xsl:variable>
 
         <xsl:if test="$debug.page-ids = 'yes'">
-            <xsl:message>Generated id is <xsl:value-of select="$page-id"/></xsl:message>
+            <xsl:message>Generated id is <xsl:value-of select="concat($prefix, $page-id)"/></xsl:message>
         </xsl:if>
 
-        <xsl:value-of select="$page-id"/>
+        <xsl:value-of select="concat($prefix, $page-id)"/>
 
     </xsl:template>
 
@@ -102,8 +106,9 @@
     <xsl:template name="page.href">
         <xsl:param name="node" select="."/>
         <xsl:param name="page-id" select="''"/>
+        <xsl:param name="prefix" select="''"/>
         
-        <xsl:param name="create.fragment" select="false()"/>
+        <xsl:param name="with.fragment" select="''"/>
 
         <xsl:variable name="calculated-page-id">
             <xsl:choose>
@@ -111,6 +116,7 @@
                 <xsl:otherwise>
                     <xsl:call-template name="page.id">
                         <xsl:with-param name="node" select="$node"/>
+                        <xsl:with-param name="prefix" select="$prefix"/>
                     </xsl:call-template>
                 </xsl:otherwise>
             </xsl:choose>
@@ -119,8 +125,8 @@
         <xsl:variable name='href' select="concat($calculated-page-id, '.', $xhtml.suffix)"/>
         
         <xsl:choose>
-            <xsl:when test="$create.fragment">
-                <xsl:value-of select="concat($href, '#', $node/@xml:id)"/>
+            <xsl:when test="$with.fragment">
+                <xsl:value-of select="concat($href, '#', $with.fragment)"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="$href"/>

@@ -17,6 +17,8 @@
     <xsl:param name='image-dir' select="'images'"/>
     <xsl:param name='styles-dir' select="'styles'"/>
     
+    <xsl:param name="notes.file.name" select="'notes'"/>
+    
     
     <xsl:output method='xml'
          omit-xml-declaration="no"
@@ -75,15 +77,51 @@
             <item id="styles" href="{concat($styles-dir, '/stylesheet.css')}"  media-type="text/css"/>
             <xsl:apply-templates select='descendant::mediaobject|descendant::inlinemediaobject'/>
             
-            <!-- manifest for end notes -->
-            <xsl:if test="//footnote[@role='endnote']">
-                <item id="notes" href="{concat($xhtml-dir, '/notes.', $xhtml.suffix)}" media-type="application/xhtml+xml"/>
-            </xsl:if>
+            <!-- notes -->
+            <xsl:apply-templates select="." mode="notes-manifest"/>
+            <xsl:apply-templates select="//preface|//chapter|//appendix|//bibliography|//glossary" mode="notes-manifest"/>
             
         </manifest>
-    </xsl:template>
         
-    <xsl:template match='part' mode='manifest'>
+    </xsl:template>
+    
+    <xsl:template match="book" mode="notes-manifest"/>
+    
+    <xsl:template match="book[.//footnote[@role='endnote']]" mode="notes-manifest">
+        <xsl:variable name="notes-file">
+            <xsl:call-template name="page.href">
+                <xsl:with-param name="page-id" select="$notes.file.name"/>
+            </xsl:call-template>
+        </xsl:variable>
+        <item id="{$notes.file.name}" href="{concat($xhtml-dir, '/', $notes-file)}" media-type="application/xhtml+xml"/>
+    </xsl:template>
+    
+    <xsl:template match="preface|chapter|appendix|bibliography|glossary" mode="notes-manifest"/>
+    
+    <xsl:template match="preface[footnote[not(@role = 'endnote')]]|
+        appendix[footnote[not(@role = 'endnote')]]|
+        glossary[footnote[not(@role = 'endnote')]]|
+        bibliography[footnote[not(@role = 'endnote')]]|
+        chapter[footnote[not(@role = 'endnote')]]" mode="notes-manifest">
+        
+        <xsl:variable name="notes-file">
+            <xsl:call-template name="page.href">
+                <xsl:with-param name="prefix" select="concat($notes.file.name, '-')"/>
+            </xsl:call-template>
+        </xsl:variable>
+        
+        <xsl:variable name="page-id">
+            <xsl:call-template name="page.id">
+                <xsl:with-param name="prefix" select="concat($notes.file.name, '-')"/>
+            </xsl:call-template>
+        </xsl:variable>
+        
+        <item id="{$page-id}" href="{concat($xhtml-dir, '/', $notes-file)}" media-type="application/xhtml+xml"/>        
+
+    </xsl:template>
+    
+    <xsl:template match="part" mode="manifest"/>
+    <xsl:template match='part[partintro]' mode='manifest'>
        <xsl:variable name="page-id"><xsl:call-template name="page.id"/></xsl:variable>
         <xsl:variable name="file-name"><xsl:call-template name="page.href"/></xsl:variable>        
         <item id="{$page-id}" href="{concat($xhtml-dir, '/', $file-name)}" media-type='application/xhtml+xml'/>
@@ -125,8 +163,10 @@
         <spine toc="ncx">
             <xsl:apply-templates select="info/cover" mode='spine'/>
             <itemref idref="toc"/>
-            <xsl:call-template name="notes.spine"/>
             <xsl:apply-templates select="*[not(self::info)]" mode="spine"/>
+            <xsl:apply-templates select="//preface|//chapter|//appendix|//bibliography|//glossary" mode="notes-spine"/>
+            <xsl:apply-templates select="." mode="notes-spine"/>
+           
         </spine>
     </xsl:template>
     
@@ -135,18 +175,36 @@
         <itemref idref="{$page-id}"/>
     </xsl:template>
 
-    <xsl:template match='part' mode='spine'>
+    <xsl:template match="part" mode="spine"/>
+    <xsl:template match='part[partintro]' mode='spine'>
        <xsl:variable name="page-id"><xsl:call-template name="page.id"/></xsl:variable>
         <itemref idref="{$page-id}"/>
         <xsl:apply-templates select='preface|chapter' mode='spine'/>
     </xsl:template>
     
-    <xsl:template name="notes.spine">
-        <xsl:if test="descendant::footnote[@role='endnote']">
-            <itemref idref="notes"/>
-        </xsl:if>
+    <xsl:template match="book" mode="notes-spine"/>
+    
+    <xsl:template match="book[.//footnote[@role='endnote']]" mode="notes-spine">
+        <itemref id="{$notes.file.name}"/>
     </xsl:template>
- 
+    
+    <xsl:template match="preface|chapter|appendix|bibliography|glossary" mode="notes-spine"/>
+    
+    <xsl:template match="preface[footnote[not(@role = 'endnote')]]|
+        appendix[footnote[not(@role = 'endnote')]]|
+        glossary[footnote[not(@role = 'endnote')]]|
+        bibliography[footnote[not(@role = 'endnote')]]|
+        chapter[footnote[not(@role = 'endnote')]]" mode="notes-spine">
+        
+        <xsl:variable name="page-id">
+            <xsl:call-template name="page.id">
+                <xsl:with-param name="prefix" select="concat($notes.file.name, '-')"/>
+            </xsl:call-template>
+        </xsl:variable>
+        
+        <itemref idref="{$page-id}" />        
+        
+    </xsl:template> 
     <!-- Generate the guide -->
     
     <xsl:template match='book' mode='guide'>

@@ -421,10 +421,21 @@
             <p:variable name="filename" select="concat($page-id, '.', $xhtml.suffix)"/>
             <p:variable name="href" select="concat($xhtml-path, '/', $filename)"/>
             
-            <epub:insert-penguin-styles/> 
+            <epub:insert-penguin-styles name='insert-penguin-styles'/>
+            
+            <cx:message>
+                <p:input port="source"><p:empty/></p:input>
+                <p:with-option name="message" select="concat('Storing: ', $href)"/>
+            </cx:message>
+            
+            <p:sink/>
             
             <!-- no ID on root element of XHTML! -->
-            <p:delete name="delete-root-id" match="/h:html/@xml:id"/>
+            <p:delete name="delete-root-id" match="/h:html/@xml:id">
+                <p:input port="source">
+                    <p:pipe port="result" step="insert-penguin-styles"/>
+                </p:input>
+            </p:delete>
             <p:store encoding="UTF-8" include-content-type="true" method="xhtml" indent="true" omit-xml-declaration="false">
                 <p:with-option name="href" select="$href"/>
             </p:store>

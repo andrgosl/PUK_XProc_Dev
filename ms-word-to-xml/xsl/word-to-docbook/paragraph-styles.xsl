@@ -129,7 +129,13 @@
     
     <xsl:template match="para[@role=$epigraph-sources]">
         <epigraph role="{@role}"><attribution><xsl:apply-templates select="@*|node()"/></attribution></epigraph>
-    </xsl:template>      
+    </xsl:template>     
+    
+    
+    <!-- dedication -->
+    <xsl:template match="para[@role='01DediBody']">
+        <dedication><para><xsl:apply-templates select="@*|node()"/></para></dedication>
+    </xsl:template>
     
     <!-- match a paragraph that contains a prose quotation -->
     <xsl:template match="para[@role = ('06ProseExtract', '06ProseExtractFirst')]">

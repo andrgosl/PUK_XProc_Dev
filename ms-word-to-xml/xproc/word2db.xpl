@@ -4,7 +4,8 @@
     name="wordToDocBook" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
     xmlns:db="http://docbook.org/ns/docbook" version="1.0"
     xmlns:corbas="http://www.corbas.co.uk/ns/xproc"
-    xmlns:wprop="http://schemas.openxmlformats.org/officeDocument/2006/custom-properties">
+    xmlns:wprop="http://schemas.openxmlformats.org/officeDocument/2006/custom-properties"
+    xmlns:ccproc="http://www.corbas.co.uk/ns/xproc/extensions">
 
     <p:documentation>
         <section xmlns="http://docbook.org/ns/docbook">
@@ -38,7 +39,20 @@
                     <revision>
                         <revnumber>3</revnumber>
                         <date>2012-08-06</date>
-                        <revremark>Added block  quote refactoring code.</revremark>
+                        <revremark>Added block quote refactoring code.</revremark>
+                    </revision>
+                    <revision>
+                        <revnumber>5</revnumber>
+                        <date>2012-08-23</date>
+                        <revremark>Added code to handle dedications</revremark>
+                    </revision>
+                    <revision>
+                        <revnumber>4</revnumber>
+                        <date>2012-08-27</date>
+                        <revremark>Updated to use ccproc:store-identity and added options to make it
+                        simpler to use. Removed refactoring code to separate file for ease of maintenance.
+                        Improved documentation.
+                        </revremark>
                     </revision>
                 </revhistory>
             </info>
@@ -48,11 +62,28 @@
     </p:documentation>
 
     <p:option name="package-url" required="true"/>
-    <p:option name="show-steps" select="'false'" required="false"/>
+    
+<!--    <p:input port="parameters" kind="parameter" primary="true"/> -->
+
+    <p:option name="log-step-output" select="'true'">
+        <p:documentation>
+            <p xmlns="http://www.w3.org/1999/xhtml">Controls whether or not the output of the each transformation
+            stage is logged.</p>
+        </p:documentation>
+    </p:option>
+
+    <p:option name="href-root" select="'/tmp/'">
+        <p:documentation>
+            <p xmlns="http://wwww.w3.org/1999/xhtml">Optional prefix for the stage logging path. Defaults to 
+            <code>/tmp/</code>.</p>
+        </p:documentation>
+    </p:option>
 
     <p:import href="library-1.0.xpl"/>
     <p:import href="docx2xml.xpl"/>
+    <p:import href="store-identity.xpl"/>
     <p:import href="insert-db-structures.xpl"/>
+    <p:import href="refactor-document.xpl"/>
 
     <!-- Extract docx file to a wrapped xml file -->
     <corbas:docx2xml name="extract-document">
@@ -61,179 +92,68 @@
     
     <!-- rewrite the numbering for lists to something more useable later -->   
     <p:xslt name="refactor-numbering">
-        <p:input port="source">
-            <p:pipe port="result" step="extract-document"/>
-        </p:input>
-        <p:input port="parameters"/>
         <p:input port="stylesheet">
             <p:document href="../xsl/word-to-docbook/word-numbering.xsl"/>
         </p:input>        
     </p:xslt>
 
-    <p:store href="/tmp/extracted.xml">
-        <p:input port="source">
-            <p:pipe port="result" step="refactor-numbering"/>
-        </p:input>
-    </p:store>
-
+    <ccproc:store-identity href="extracted.xml" name="store-extracted">
+        <p:with-option name="href-root" select='$href-root'/>
+        <p:with-option name="execute-store" select="$log-step-output"/>
+    </ccproc:store-identity>
+     
     <!-- convert word markup to docbook elements -->
     <p:xslt name="initial-conversion" version="2.0">
-        <p:input port="source">
-            <p:pipe port="result" step="refactor-numbering"/>
-        </p:input>
-        <p:input port="parameters"/>
         <p:input port="stylesheet">
             <p:document href="../xsl/word-to-docbook/word-components.xsl"/>
         </p:input>
     </p:xslt>
  
-    <p:store href="/tmp/converted.xml">
-        <p:input port="source">
-            <p:pipe port="result" step="initial-conversion"/>
-        </p:input>
-    </p:store>
+    <ccproc:store-identity href="converted.xml" name="store-converted">
+        <p:with-option name="href-root" select='$href-root'/>
+        <p:with-option name="execute-store" select="$log-step-output"/>        
+    </ccproc:store-identity>
     
-     
-    
-    <!-- rewrite paragraphs to appropriate elements -->
-    <p:xslt name="refactor-paragraphs" version="2.0">
-        <p:input port="source">
-            <p:pipe port="result" step="initial-conversion"/>
-        </p:input>
-        <p:input port="parameters"/>
-        <p:input port="stylesheet">
-            <p:document href="../xsl/word-to-docbook/refactor-paragraphs.xsl"/>
-        </p:input>
-    </p:xslt>
-    
-    <!-- make sure we have the right db root element -->
-    <p:xslt name="refactor-root" version="2.0">
-        <p:input port="source">
-            <p:pipe port="result" step="refactor-paragraphs"/>
-        </p:input>
-        <p:input port="parameters"/>
-        <p:input port="stylesheet">
-            <p:document href="../xsl/word-to-docbook/refactor-root.xsl"/>
-        </p:input>
-    </p:xslt>
+    <!-- Refactor converted xml into something more like DocBook-->
+    <corbas:refactor-document name="refactor">
+        <p:with-option name="href-root" select='$href-root'/>
+        <p:with-option name="log-step-output" select="$log-step-output"/>        
+    </corbas:refactor-document>
     
     
-    <!-- start refactoring - fix up epigraphs -->
-    <p:xslt name="refactor-epigraphs" version="2.0">
-        <p:input port="source">
-            <p:pipe port="result" step="refactor-root"/>
-        </p:input>
-        <p:input port="parameters"/>
-        <p:input port="stylesheet">
-            <p:document href="../xsl/word-to-docbook/refactor-epigraphs.xsl"/>
-        </p:input>
-       
-    </p:xslt>
+    <ccproc:store-identity href="refactored.xml" name="store-refactored">
+        <p:with-option name="href-root" select='$href-root'/>
+        <p:with-option name="execute-store" select="$log-step-output"/>        
+    </ccproc:store-identity>
     
-    <!-- continue refactoring - fix up blockquotes -->
-    <p:xslt name="refactor-blockquotes" version="2.0">
-        <p:input port="source">
-            <p:pipe port="result" step="refactor-epigraphs"/>
-        </p:input>
-        <p:input port="parameters"/>
-        <p:input port="stylesheet">
-            <p:document href="../xsl/word-to-docbook/refactor-blockquotes.xsl"/>
-        </p:input>
-        
-    </p:xslt> 
-    
-        <!-- continue refactoring - fix up lists -->
-        <p:xslt name="refactor-lists" version="2.0">
-        <p:input port="source">
-            <p:pipe port="result" step="refactor-blockquotes"/>
-        </p:input>
-        <p:input port="parameters"/>
-        <p:input port="stylesheet">
-            <p:document href="../xsl/word-to-docbook/word-lists.xsl"/>
-        </p:input>
-    </p:xslt>
 
-    
-    <!-- continue refactoring - fix up figures -->
-    <p:xslt name="refactor-figures" version="2.0">
-        <p:input port="source">
-            <p:pipe port="result" step="refactor-lists"/>
-        </p:input>
-        <p:input port="parameters"/>
-        <p:input port="stylesheet">
-            <p:document href="../xsl/word-to-docbook/refactor-figures.xsl"/>
-        </p:input>
-    </p:xslt>
-    
-    <p:store href="/tmp/refactor-figures.xml">
-        <p:input port="source">
-            <p:pipe port="result" step="refactor-figures"/>
-        </p:input>
-    </p:store>
-
-    <!-- continue refactoring - fix poetry -->
-    <p:xslt name="refactor-poetry" version="2.0">
-        <p:input port="source">
-            <p:pipe port="result" step="refactor-figures"/>
-        </p:input>
-        <p:input port="parameters"/>
-        <p:input port="stylesheet">
-            <p:document href="../xsl/word-to-docbook/refactor-poetry.xsl"/>
-        </p:input>        
-    </p:xslt>   
-        
-    <!-- continue refactoring - build book info -->
-    <p:xslt name="insert-book-info" version="2.0">
-        <p:input port="source">
-            <p:pipe port="result" step="refactor-poetry"/>
-        </p:input>
-        <p:input port="parameters"/>
-        <p:input port="stylesheet">
-            <p:document href="../xsl/word-to-docbook/insert-book-info.xsl"/>
-        </p:input>        
-    </p:xslt>
-    
-    <p:store href="/tmp/insert-book-info.xml">
-        <p:input port="source">
-            <p:pipe port="result" step="insert-book-info"/>
-        </p:input>
-    </p:store>
-    
     <!-- This step inserts DocBook structure -->
-    <corbas:insert-db-structures name="build-db-structures">
-        <p:input port="source">
-            <p:pipe port="result" step="insert-book-info"/>
-        </p:input>
-    </corbas:insert-db-structures>
+    <corbas:insert-db-structures name="build-db-structures"/>
+
+    <ccproc:store-identity href="structured.xml" name="store-structured">
+        <p:with-option name="href-root" select='$href-root'/>
+        <p:with-option name="execute-store" select="$log-step-output"/>        
+    </ccproc:store-identity>
     
  
     <!-- remove everything non docbook; done in xslt because it's a hassle
     to handle the sequence result otherwise -->
     <p:xslt name="filter-non-db" version="2.0">
-        <p:input port="source">
-            <p:pipe port="result" step="build-db-structures"/>
-        </p:input>
-        <p:input port="parameters"/>
         <p:input port="stylesheet">
             <p:document href="../xsl/word-to-docbook/strip-non-db.xsl"/>
          </p:input>        
     </p:xslt>
     
+    <ccproc:store-identity href="filtered.xml" name="store-filtered">
+        <p:with-option name="href-root" select='$href-root'/>
+        <p:with-option name="execute-store" select="$log-step-output"/>        
+    </ccproc:store-identity>
+    
     <!-- insert identifiers on any node which should have one and doesn't -->
     <p:xslt name="insert-identifiers" version="2.0">
-        <p:input port="source">
-            <p:pipe port="result" step="filter-non-db"/>
-        </p:input>
-        <p:input port="parameters"/>
         <p:input port="stylesheet">
             <p:document href="../xsl/word-to-docbook/insert-identifiers.xsl"/>
         </p:input>        
     </p:xslt>
-    
-    <p:identity>
-        <p:input port="source">
-            <p:pipe port="result" step="insert-identifiers"/>
-        </p:input>
-    </p:identity>
 
 </p:pipeline>

@@ -45,6 +45,9 @@
     <!-- suffix for xhtml files -->
     <p:option name="xhtml.suffix" select="'xhtml'"/>
     
+    <!-- file name for notes files -->
+    <p:option name="notes.file.name" select="'notes'"/>
+    
    
     <p:import href="create-epub-library.xpl"/>
     <p:import href="pstd-library.xpl"/>
@@ -77,6 +80,8 @@
         <p:with-option name="images-dir-name" select="$images-dir-name"/>
     </epub:create-paths>
     
+    
+    
     <epub:copy-images name="copy-image-files">  
         <p:input port="source">
             <p:pipe port="source" step="create-epub"/>
@@ -84,6 +89,7 @@
         <p:with-option name="image-source" select='$image-root'/>
         <p:with-option name="image-target" select="concat($root, $path-sep, $content-dir-name, $path-sep, $images-dir-name)"/> 
     </epub:copy-images>
+    
     
     
     <epub:copy-css name="copy-css-files">
@@ -119,6 +125,7 @@
         </p:input>
     </p:insert>
     
+    
     <epub:generate-html name="generate-html-data">
         <p:input port="source">
             <p:pipe port="source" step="create-epub"/>            
@@ -132,6 +139,7 @@
         <p:with-option name="xhtml.suffix" select="$xhtml.suffix"/>
     </epub:generate-html>
     
+   
     <p:insert name="insert-html-results" match="/c:result" position="last-child">
         <p:input port="source">
             <p:pipe port="result" step="insert-image-results"/>
@@ -169,7 +177,8 @@
             <p:pipe port="result" step="insert-ncx-results"/>
         </p:input>
         <p:with-option name="href" select="$opf-path"/>
-        <p:with-option name="xhtml.suffix" select="$xhtml.suffix"></p:with-option>
+        <p:with-option name="xhtml.suffix" select="$xhtml.suffix"/>
+        <p:with-option name="notes.file.name" select="$notes.file.name"/>
     </epub:create-opf>
     
     <p:load  dtd-validate="false" name="reload-opf">

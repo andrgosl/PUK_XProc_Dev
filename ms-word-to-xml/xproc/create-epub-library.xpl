@@ -438,6 +438,7 @@
         
         <p:option name="href" required="true"/>
         <p:option name="xhtml.suffix" select="'html'"/>
+        <p:option name="notes.file.name" select="'notes'"/>
 
         
         <p:xslt name="convert-opf">
@@ -448,6 +449,7 @@
                 <p:document href="../xsl/docbook-to-epub/create-opf.xsl"/>
             </p:input>
             <p:with-param name="xhtml.suffix" select="$xhtml.suffix"></p:with-param>
+            <p:with-param name="notes.file.name" select="$notes.file.name"/>
         </p:xslt>
                 
         <p:store name="store-opf" encoding="UTF-8" omit-xml-declaration="false" indent="true">

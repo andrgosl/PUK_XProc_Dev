@@ -6,6 +6,8 @@
      type="corbas:insert-db-structures"
     version="1.0">
     
+    <!-- step to insert DocBook structure into processed word documents -->
+    
     <p:input port="source" primary="true"/>
     <p:output port="result" primary="true">
         <p:pipe port="result" step="structure-done"/>
@@ -23,6 +25,14 @@
         </p:input>        
     </p:xslt>
     
+<!--    
+    <p:store href="/tmp/insert-parts.xml">
+        <p:input port="source">
+            <p:pipe port="result" step="insert-parts"/>
+        </p:input>
+    </p:store> 
+-->
+    
     <!-- continue refactoring - insert chapters -->
     <p:xslt name="insert-chapters" version="2.0">
         <p:input port="source">
@@ -33,11 +43,13 @@
         </p:input>        
     </p:xslt>
     
+<!--    
     <p:store href="/tmp/insert-chapters.xml">
         <p:input port="source">
             <p:pipe port="result" step="insert-chapters"/>
         </p:input>
     </p:store>
+ -->
     
     <!-- continue refactoring - insert sections -->
     <p:xslt name="insert-sections" version="2.0">
@@ -50,12 +62,13 @@
         </p:input>        
     </p:xslt>
     
-    
+<!--    
     <p:store href="/tmp/insert-sections.xml">
         <p:input port="source">
             <p:pipe port="result" step="insert-sections"/>
         </p:input>
     </p:store>
+-->
     
     <p:identity name="structure-done">
         <p:input port="source">

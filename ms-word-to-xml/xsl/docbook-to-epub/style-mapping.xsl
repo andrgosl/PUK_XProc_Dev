@@ -35,6 +35,7 @@
         <mapping role="11RecipeMethodSubhead" style="EB10SmallHead" element="h4"/>
         <mapping role="11RecipeServes" style="EB14CopyrightText" element="p"/>
         <mapping role="12Caption" style="EB28InlineCaption" element="p"/>
+        <mapping role="14FootnoteText" style="EB19ExtraFeatureFullOut" element="p"/>
         <mapping role="13EMBiblioFL" style="EB26SmallTextHangingIndent" element="p"/>
         <mapping role="15Italic" style="EB12SmallItalic"/>
         <mapping role="15Subscript" style="EBsub" element="sub"/>
