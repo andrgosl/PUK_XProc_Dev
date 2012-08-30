@@ -29,13 +29,9 @@
                     <xsl:apply-templates select="/book/info/cover[@role='cover']" mode="toc"/>
                     <xsl:apply-templates select="dedication" mode="toc"/>
                     <xsl:apply-templates select="/book/info/cover[@role='title']" mode="toc"/>
-                    <xsl:apply-templates
-                        select="preface[not(@role) or not(@role = ('author', 'books-by'))]"
-                        mode="toc"/>
                     <xsl:apply-templates select="part|acknowledgements|chapter|preface|personblurb|dedication|bibliography|appendix" mode="toc"/> 
                     <xsl:apply-templates select="author//personblurb" mode="toc"/>
-                    <xsl:apply-templates select="preface[@role = ('author', 'books-by')]" mode="toc"
-                    />
+
                 </body>
             </html>
         </xsl:result-document>

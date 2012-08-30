@@ -36,7 +36,7 @@
         </head>
         <docTitle>
             <text>
-                <xsl:value-of select="title/text()"/>
+                <xsl:apply-templates select="title/text()"/>
             </text>
         </docTitle>
         <docAuthor>
