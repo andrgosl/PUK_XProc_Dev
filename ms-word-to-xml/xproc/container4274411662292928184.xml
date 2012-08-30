@@ -1,5 +1,0 @@
-                <container xmlns="urn:oasis:names:tc:opendocument:xmlns:container" xmlns:epub="http://www.corbas.net/ns/epub" xmlns:cx="http://xmlcalabash.com/ns/extensions" xmlns:cxf="http://xmlcalabash.com/ns/extensions/fileutils" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:c="http://www.w3.org/ns/xproc-step" version="1.0">
-                    <rootfiles>
-                        <rootfile full-path="OPS/package.opf" media-type="application/oebps-package+xml"/>
-                    </rootfiles>
-                </container>
