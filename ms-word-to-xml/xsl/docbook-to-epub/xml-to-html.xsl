@@ -85,14 +85,17 @@
         bibliography[descendant::footnote[not(@role='endnote')]]|
         appendix[descendant::footnote[not(@role='endnote')]]" mode="notes">
         
-        <xsl:variable name="page-id"><xsl:call-template name="page.id"/></xsl:variable>
+        <xsl:variable name="page-id">
+            <xsl:call-template name="page.id">
+                <xsl:with-param name="prefix" select="concat($notes.file.name, '-')"/>
+            </xsl:call-template>
+        </xsl:variable>
         
         <xsl:call-template name="html-doc">
             <xsl:with-param name="title">
                 <title>Notes</title>
             </xsl:with-param>
-            <xsl:with-param name="page-id" select="concat($page-id, '-', $notes.file.name)"/>
-            <xsl:with-param name="filename" select="concat($page-id, '-', $notes.file.name, '.', $xhtml.suffix)"/>
+            <xsl:with-param name="page-id" select="$page-id"/>
             <xsl:with-param name="contents">
                 <xsl:apply-templates select="descendant::footnote[not(@role = 'endnote')]" mode="notes"/>
             </xsl:with-param>            
@@ -721,15 +724,6 @@
         </xsl:element>
     </xsl:template>
     
-    
-
-    
-    
-
-    <xsl:template name="create-body-id">
-        <xsl:variable name='with-id' select="ancestor-or-self::*[@xml:id][1]"/>
-        <xsl:attribute name="id" select="$with-id/@xml:id"/>
-    </xsl:template>
     
     <!-- Suppress -->
     <xsl:template match="remark"/>

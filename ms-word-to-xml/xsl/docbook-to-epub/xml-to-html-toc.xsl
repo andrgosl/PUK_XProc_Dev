@@ -32,7 +32,7 @@
                     <xsl:apply-templates
                         select="preface[not(@role) or not(@role = ('author', 'books-by'))]"
                         mode="toc"/>
-                    <xsl:apply-templates select="part|chapter" mode="toc"/>
+                    <xsl:apply-templates select="part|acknowledgements|chapter|preface|personblurb|dedication|bibliography|appendix" mode="toc"/> 
                     <xsl:apply-templates select="author//personblurb" mode="toc"/>
                     <xsl:apply-templates select="preface[@role = ('author', 'books-by')]" mode="toc"
                     />
@@ -41,15 +41,6 @@
         </xsl:result-document>
         
         
-    </xsl:template>
-    
-    <xsl:template match="preface" mode="toc">
-        <xsl:variable name="filename"><xsl:call-template name="page.href"/></xsl:variable>
-        <p class="EB15ContentsText">
-            <a href="{$filename}">
-                <xsl:apply-templates select="info/title|title" mode="toc"/>
-            </a>
-        </p>
     </xsl:template>
     
     <xsl:template match="cover" mode="toc">
@@ -70,6 +61,13 @@
         </p>
     </xsl:template>
     
+    <xsl:template match="acknowledgements" mode="toc">
+        <xsl:variable name="filename"><xsl:call-template name="page.href"/></xsl:variable>
+        <p class="EB15ContentsText">
+            <a href="{$filename}">Acknowledgements</a>
+        </p>
+    </xsl:template>
+    
     <xsl:template match="personblurb" mode="toc">
         <xsl:variable name="filename"><xsl:call-template name="page.href"/></xsl:variable>
         <p class="EB15ContentsText">
@@ -77,16 +75,30 @@
         </p>
     </xsl:template>
     
-    <xsl:template match="chapter|part" mode="toc">
+    <xsl:template match="chapter|appendix|preface|glossary|bibliography" mode="toc">
         <xsl:variable name="filename"><xsl:call-template name="page.href"/></xsl:variable>
         <p class="EB15ContentsText">
             <a href="{$filename}">
                 <xsl:apply-templates select="info/title|title" mode="toc"/>
             </a>
         </p>
-        <xsl:apply-templates select="chapter" mode="toc"/>
+        
+    </xsl:template>
+
+    <xsl:template match="toc[partintro]" mode="toc">
+        <xsl:variable name="filename"><xsl:call-template name="page.href"/></xsl:variable>
+        <p class="EB15ContentsText">
+            <a href="{$filename}">
+                <xsl:apply-templates select="info/title|title" mode="toc"/>
+            </a>
+        </p>
+        <xsl:apply-templates select="acknowledgements|chapter|preface|personblurb|dedication|bibliography|appendix" mode="toc"/>
     </xsl:template>
     
+    
+    <xsl:template match="part" mode="toc">
+        <xsl:apply-templates select="acknowledgements|chapter|preface|personblurb|dedication|bibliography|appendix" mode="toc"/>
+    </xsl:template>
     
     
     

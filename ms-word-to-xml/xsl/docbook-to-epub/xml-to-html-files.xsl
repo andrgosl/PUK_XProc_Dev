@@ -45,10 +45,11 @@
         <xsl:variable name="class" select="if (@role) then @role else local-name()"/>
         <xsl:result-document encoding="utf-8" exclude-result-prefixes="#all" method="xhtml" 
             href="{$filename}">
-            <html xml:id="{$page-id}">
+            <html>
                 <head>
                     <xsl:copy-of select="$title"/>
                     <link rel="stylesheet" type="text/css" href="../styles/stylesheet.css"/>
+                    <meta name="page-id" content="{$page-id}"/>
                 </head>
                 <body class="{$class}">
                     <xsl:call-template name="create-body-id"/>
@@ -64,5 +65,11 @@
         </xsl:if>
         
     </xsl:template>
+    
+    <xsl:template name="create-body-id">
+        <xsl:variable name='with-id' select="ancestor-or-self::*[@xml:id][1]"/>
+        <xsl:attribute name="id" select="$with-id/@xml:id"/>
+    </xsl:template>
+    
     
 </xsl:stylesheet>

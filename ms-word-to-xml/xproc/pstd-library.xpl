@@ -417,7 +417,7 @@
                 <p:pipe port="result" step="create-result"/>
             </p:output>
           
-            <p:variable name='page-id' select="/h:html/@xml:id"/>
+            <p:variable name='page-id' select="/h:html/h:head/h:meta[@name = 'page-id']/@content"/>
             <p:variable name="filename" select="concat($page-id, '.', $xhtml.suffix)"/>
             <p:variable name="href" select="concat($xhtml-path, '/', $filename)"/>
             
