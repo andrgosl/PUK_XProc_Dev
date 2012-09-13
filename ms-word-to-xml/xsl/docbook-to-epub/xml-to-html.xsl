@@ -36,7 +36,30 @@
         <xsl:apply-templates select="dedication|info/cover|//preface|acknowledgements|//appendix|//glossary|//bibliography|//chapter|part"/>
     </xsl:template>
 
-    <xsl:template match="part"/>
+    <xsl:template match="part">
+    	
+    	<xsl:variable name="page-id">
+    		<xsl:call-template name="page.id"/>
+    	</xsl:variable>
+    	
+    	<xsl:variable name="filename">
+    		<xsl:call-template name="page.href"/>
+    	</xsl:variable>
+    	
+    	<xsl:call-template name="html-doc">
+    		<xsl:with-param name="page-id" select="$page-id"/>
+    		<xsl:with-param name="filename" select="$filename"/>
+    		<xsl:with-param name="title">
+    			<xsl:apply-templates select="title" mode="as-title"/>
+    		</xsl:with-param>
+    		<xsl:with-param name="contents">
+    			<xsl:apply-templates select="title"/>
+    		</xsl:with-param>
+    	</xsl:call-template>
+
+    </xsl:template>
+	
+	
     <xsl:template match="part[partintro]">
 
         <xsl:variable name="page-id">
@@ -52,8 +75,10 @@
             <xsl:with-param name="filename" select="$filename"/>
             <xsl:with-param name="title">
                 <xsl:apply-templates select="title" mode="as-title"/>
-                <xsl:apply-templates select="partintro"/>
             </xsl:with-param>
+        	<xsl:with-param name="contents">
+        		<xsl:apply-templates select="partintro"/>
+        	</xsl:with-param>
         </xsl:call-template>
         
     </xsl:template>
@@ -167,7 +192,12 @@
             </xsl:with-param>
         </xsl:call-template>
     </xsl:template>
-    
+	
+	<xsl:template match="part/title|part/info/title" priority="1">
+		<h2 class="EB09SmallCapsLargeHead">
+			<xsl:apply-templates/>
+		</h2>
+	</xsl:template>
 
     <xsl:template match="title|info/title">
         <h2 class="EB04MainHead">
@@ -181,11 +211,6 @@
         </h5>
     </xsl:template>
 
-    <xsl:template match="part/title|part/info/title" priority="1">
-        <h2 class="EB04MainHead">
-            <xsl:apply-templates/>
-        </h2>
-    </xsl:template>
     
     <!-- titleabbrev is used in the fo but not the html -->
     <xsl:template match="titleabbrev"/>

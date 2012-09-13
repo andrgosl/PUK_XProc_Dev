@@ -120,11 +120,7 @@
 
     </xsl:template>
     
-    <xsl:template match="part" mode="manifest">
-        <xsl:apply-templates select='preface|chapter|glossary|bibliography|appendix' mode='manifest'/>
-    </xsl:template>
-    
-    <xsl:template match='part[partintro]' mode='manifest'>
+    <xsl:template match='part' mode='manifest'>
        <xsl:variable name="page-id"><xsl:call-template name="page.id"/></xsl:variable>
         <xsl:variable name="file-name"><xsl:call-template name="page.href"/></xsl:variable>        
         <item id="{$page-id}" href="{concat($xhtml-dir, '/', $file-name)}" media-type='application/xhtml+xml'/>
@@ -178,11 +174,7 @@
         <itemref idref="{$page-id}"/>
     </xsl:template>
 
-    <xsl:template match="part" mode="spine">
-        <xsl:apply-templates select='acknowledgements|chapter|preface|personblurb|dedication|bibliography|appendix' mode='spine'/>
-    </xsl:template>
-    
-    <xsl:template match='part[partintro]' mode='spine'>
+    <xsl:template match='part' mode='spine'>
        <xsl:variable name="page-id"><xsl:call-template name="page.id"/></xsl:variable>
         <itemref idref="{$page-id}"/>
         <xsl:apply-templates select='acknowledgements|chapter|preface|personblurb|dedication|bibliography|appendix' mode='spine'/>
