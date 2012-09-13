@@ -8,21 +8,23 @@
 
     <xsl:include href="identity.xsl"/>
 
-    <xsl:template match="book[descendant::dedication]">
-        <xsl:copy>
-            <xsl:apply-templates select="@*"/>
-            <xsl:apply-templates select="info"/>
-            <dedication>
-                <xsl:apply-templates select="dedication" mode="move-dedication"/>
-            </dedication>
-            <xsl:apply-templates select="*[not(self::dedication or self::info)]"/>
-        </xsl:copy>
-    </xsl:template>
+	<xsl:template match="*[dedication]">
+		<xsl:copy>
+			<xsl:apply-templates select="@*"/>
+			<xsl:apply-templates select="node()[not(self::dedication)]|dedication[1]"/>
+		</xsl:copy>
+	</xsl:template>
+		
 
-    <xsl:template match="dedication" mode="move-dedication">
-        <xsl:apply-templates/>
+    <xsl:template match="dedication[1]">
+    	<xsl:copy>
+    		<xsl:apply-templates select="@*|node()"/>
+    		<xsl:apply-templates select="following-sibling::dedication" mode="copy-content"/>
+    	</xsl:copy>
     </xsl:template>
-
-    <xsl:template match="dedication"/>
+	
+	<xsl:template match="dedication" mode="copy-content">
+		<xsl:apply-templates/>
+	</xsl:template>
 
 </xsl:stylesheet>
