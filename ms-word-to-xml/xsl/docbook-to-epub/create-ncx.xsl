@@ -148,7 +148,7 @@
 
     </xsl:template>
 
-    <xsl:template match="part[partintro]|dedication|chapter|preface|bibliography|appendix|acknowledgements"
+    <xsl:template match="part|dedication|chapter|preface|bibliography|appendix|acknowledgements"
         mode="book-content">
 
         <xsl:variable name="page-id">
@@ -162,27 +162,6 @@
 
     </xsl:template>
     
-    <xsl:template match="part[not(partintro)]" mode="book-content">
-        
-        <xsl:variable name="child-node" select="(chapter|preface|glossary|appendix|bibliography|dedication|acknowledgements)[1]"/>
-
-        <xsl:variable name="page-id">
-            <xsl:call-template name="page.id">
-                <xsl:with-param name="node" select="$child-node"/>
-            </xsl:call-template>
-        </xsl:variable>
-
-        <xsl:variable name="file-name">
-            <xsl:call-template name="page.href">
-                <xsl:with-param name="node" select="$child-node"/>
-            </xsl:call-template>
-        </xsl:variable>
-        
-        <content src="{concat($xhtml-dir, '/', $file-name)}"/>
-        
-    </xsl:template>
-
- 
 
     <xsl:template match="personblurb">
 
