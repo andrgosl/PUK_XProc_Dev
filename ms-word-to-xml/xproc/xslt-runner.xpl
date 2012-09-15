@@ -41,7 +41,7 @@
 				<code>href-written</code> port within a single <code>c:result</code>
 				element.</p>
 		</p:documentation>
-		<p:pipe port="result" step="store-result"/>
+		<p:pipe port="href-written" step="store-result"/>
 	</p:output>
 	
 	<p:option name="execute-store" select="'true'">
@@ -74,7 +74,9 @@
 	
 	<p:import href="store-identity.xpl"/>
 	
-	<p:load name="load-xslt" href="$xslt-href"/>
+	<p:load name="load-xslt">
+		<p:with-option name="href" select="$xslt-href"></p:with-option>
+	</p:load>
 	
 	<p:xslt name="xslt-processing">
 		<p:input port="stylesheet">
@@ -88,7 +90,7 @@
 		</p:input>
 	</p:xslt>
 		
-	<ccproc:store-identity>
+	<ccproc:store-identity name="store-result">
 		<p:with-option name="href-root" select="$href-root"/>
 		<p:with-option name="href" select="$href"/>
 		<p:with-option name="execute-store" select="$execute-store"/>		

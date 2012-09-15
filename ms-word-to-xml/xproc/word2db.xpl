@@ -128,7 +128,10 @@
     
 
     <!-- This step inserts DocBook structure -->
-    <corbas:insert-db-structures name="build-db-structures"/>
+    <corbas:insert-db-structures name="build-db-structures">
+    	<p:with-option name="href-root" select='$href-root'/>
+    	<p:with-option name="log-step-output" select="$log-step-output"/>        
+    </corbas:insert-db-structures>
 
     <ccproc:store-identity href="structured.xml" name="store-structured">
         <p:with-option name="href-root" select='$href-root'/>
@@ -148,9 +151,18 @@
         <p:with-option name="href-root" select='$href-root'/>
         <p:with-option name="execute-store" select="$log-step-output"/>        
     </ccproc:store-identity>
+	
+	<p:sink name="sink-log-name">
+		<p:input port="source">
+			<p:pipe port="result" step="store-filtered"/>
+		</p:input>
+	</p:sink>
     
     <!-- insert identifiers on any node which should have one and doesn't -->
     <p:xslt name="insert-identifiers" version="2.0">
+    	<p:input port="source">
+    		<p:pipe port="result" step="store-filtered"/>
+    	</p:input>
         <p:input port="stylesheet">
             <p:document href="../xsl/word-to-docbook/insert-identifiers.xsl"/>
         </p:input>        
