@@ -8,8 +8,6 @@ CSS=$BASE/css/
 SCRIPT=$BASE/xproc/create-epub.xpl
 ROOT=$BASE/tmp/
 
-rm -rf $ROOT/*
-rm $EPUB
 
 calabash --input source=$SOURCE $SCRIPT css-source=$CSS image-root=$IMAGES epub-path=$EPUB root=$ROOT
 

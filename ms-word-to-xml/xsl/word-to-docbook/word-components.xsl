@@ -10,14 +10,16 @@
     xmlns:dc="http://purl.org/dc/elements/1.1/"
     xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" 
     xmlns:xlink="http://www.w3.org/1999/xlink" exclude-result-prefixes="xs w cp r rp dc a">
-    <xsl:import href="word-tables.xsl"/>
-    
 
+	<xsl:import href="word-tables.xsl"/>
 
     <xsl:output encoding="UTF-8" indent="yes"/>
 
+	<!-- override to change the assumed dir for images -->
     <xsl:param name="image-uri-base" select="'images'"/>
-    <!-- override to change the assumed dir for images -->
+    
+	<!-- set to 'yes' to output the core properties from word into DocBook -->
+	<xsl:param name="transcribe.core.properties" select="'no'"/>
 
     <xsl:strip-space elements="*"/>
     <xsl:preserve-space elements="w:t"/>
@@ -57,11 +59,14 @@
 
         <book version="PBL1.0">
             <info>
-                <!--- Suppressed metadata from word properties -->
-                <!-- <xsl:apply-templates select="//cp:coreProperties/*"/> -->
-                <!-- <xsl:if test="not(normalize-space(//cp:coreProperties/dc:title))"> -->
-                    <title><xsl:comment> INSERT TITLE HERE </xsl:comment></title>
-                <!-- </xsl:if> -->
+            	<!-- not worth phrasing the following with predicates -->
+                <xsl:if test="$transcribe.core.properties = 'yes'">
+                	<xsl:apply-templates select="//cp:coreProperties/*"/>
+                </xsl:if>
+            	<xsl:if test="not(normalize-space(//cp:coreProperties/dc:title)) or $transcribe.core.properties = 'no'">
+            		<title><xsl:comment> INSERT TITLE HERE </xsl:comment></title>
+            	</xsl:if>
+            	
                 <author>
                    <personname><xsl:comment> INSERT AUTHOR NAME HERE </xsl:comment></personname>
                 </author>
