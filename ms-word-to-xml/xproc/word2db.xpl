@@ -5,7 +5,7 @@
     xmlns:db="http://docbook.org/ns/docbook" version="1.0"
     xmlns:corbas="http://www.corbas.co.uk/ns/xproc"
     xmlns:wprop="http://schemas.openxmlformats.org/officeDocument/2006/custom-properties"
-    xmlns:ccproc="http://www.corbas.co.uk/ns/xproc/extensions">
+    xmlns:ccproc="http://www.corbas.co.uk/ns/xproc/steps">
 
     <p:documentation>
         <section xmlns="http://docbook.org/ns/docbook">
@@ -62,9 +62,7 @@
     </p:documentation>
 
     <p:option name="package-url" required="true"/>
-    
-<!--    <p:input port="parameters" kind="parameter" primary="true"/> -->
-
+ 
     <p:option name="log-step-output" select="'true'">
         <p:documentation>
             <p xmlns="http://www.w3.org/1999/xhtml">Controls whether or not the output of the each transformation
@@ -82,6 +80,7 @@
     <p:import href="library-1.0.xpl"/>
     <p:import href="docx2xml.xpl"/>
     <p:import href="store-identity.xpl"/>
+	<p:import href="stylesheet-runner.xpl"/>
     <p:import href="insert-db-structures.xpl"/>
     <p:import href="refactor-document.xpl"/>
 
@@ -91,36 +90,23 @@
     </corbas:docx2xml>
     
     <!-- rewrite the numbering for lists to something more useable later -->   
-    <p:xslt name="refactor-numbering">
-        <p:input port="stylesheet">
-            <p:document href="../xsl/word-to-docbook/word-numbering.xsl"/>
-        </p:input>        
-    </p:xslt>
-
-    <ccproc:store-identity href="extracted.xml" name="store-extracted">
+	<ccproc:stylesheet-runner href="extracted.xml" name="store-extracted" stylesheet-href="../xsl/word-to-docbook/word-numbering.xsl">
         <p:with-option name="href-root" select='$href-root'/>
         <p:with-option name="execute-store" select="$log-step-output"/>
-    </ccproc:store-identity>
+    </ccproc:stylesheet-runner>
      
     <!-- convert word markup to docbook elements -->
-    <p:xslt name="initial-conversion" version="2.0">
-        <p:input port="stylesheet">
-            <p:document href="../xsl/word-to-docbook/word-components.xsl"/>
-        </p:input>
-    </p:xslt>
- 
-    <ccproc:store-identity href="converted.xml" name="store-converted">
+	<ccproc:stylesheet-runner href="converted.xml" name="store-converted" stylesheet-href="../xsl/word-to-docbook/word-components.xsl">
         <p:with-option name="href-root" select='$href-root'/>
         <p:with-option name="execute-store" select="$log-step-output"/>        
-    </ccproc:store-identity>
+    </ccproc:stylesheet-runner>
     
     <!-- Refactor converted xml into something more like DocBook-->
     <corbas:refactor-document name="refactor">
         <p:with-option name="href-root" select='$href-root'/>
         <p:with-option name="log-step-output" select="$log-step-output"/>        
     </corbas:refactor-document>
-    
-    
+        
     <ccproc:store-identity href="refactored.xml" name="store-refactored">
         <p:with-option name="href-root" select='$href-root'/>
         <p:with-option name="execute-store" select="$log-step-output"/>        
@@ -137,35 +123,29 @@
         <p:with-option name="href-root" select='$href-root'/>
         <p:with-option name="execute-store" select="$log-step-output"/>        
     </ccproc:store-identity>
-    
  
     <!-- remove everything non docbook; done in xslt because it's a hassle
     to handle the sequence result otherwise -->
-    <p:xslt name="filter-non-db" version="2.0">
-        <p:input port="stylesheet">
-            <p:document href="../xsl/word-to-docbook/strip-non-db.xsl"/>
-         </p:input>        
-    </p:xslt>
-    
-    <ccproc:store-identity href="filtered.xml" name="store-filtered">
+	<ccproc:stylesheet-runner href="filtered.xml" name="insert-filtered" stylesheet-href="../xsl/word-to-docbook/strip-non-db.xsl">
         <p:with-option name="href-root" select='$href-root'/>
         <p:with-option name="execute-store" select="$log-step-output"/>        
-    </ccproc:store-identity>
+    </ccproc:stylesheet-runner>
 	
-	<p:sink name="sink-log-name">
-		<p:input port="source">
-			<p:pipe port="result" step="store-filtered"/>
-		</p:input>
-	</p:sink>
-    
+   
     <!-- insert identifiers on any node which should have one and doesn't -->
-    <p:xslt name="insert-identifiers" version="2.0">
+   <p:xslt name="insert-identifiers" version="2.0">
     	<p:input port="source">
-    		<p:pipe port="result" step="store-filtered"/>
+    		<p:pipe port="result" step="insert-filtered"/>
     	</p:input>
         <p:input port="stylesheet">
             <p:document href="../xsl/word-to-docbook/insert-identifiers.xsl"/>
         </p:input>        
     </p:xslt>
+	
+	<p:identity>
+		<p:input port="source">
+			<p:pipe port="result" step="insert-identifiers"/>
+		</p:input>
+	</p:identity>
 
 </p:pipeline>

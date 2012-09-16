@@ -2,9 +2,9 @@
 <p:declare-step xmlns:p="http://www.w3.org/ns/xproc"
     xmlns:c="http://www.w3.org/ns/xproc-step"
     xmlns:corbas="http://www.corbas.co.uk/ns/xproc"
-    xmlns:ccproc="http://www.corbas.co.uk/ns/xproc/extensions"
+    xmlns:ccproc="http://www.corbas.co.uk/ns/xproc/steps"
     xmlns:cx="http://xmlcalabash.com/ns/extensions" name="insert-db-structures"
-     type="corbas:insert-db-structures"
+    type="corbas:insert-db-structures"
     version="1.0">
     
     <!-- step to insert DocBook structure into processed word documents -->
@@ -29,56 +29,34 @@
 		</p:documentation>
 	</p:option>
 	
-	<p:import href="store-identity.xpl"/>
-	<p:import  href="xslt-runner.xpl"/>
-	
+	<p:import  href="stylesheet-runner.xpl"/>
     
     <!-- continue refactoring - insert parts -->
-    <p:xslt name="insert-parts" version="2.0">
-        <p:input port="source">
-            <p:pipe port="source" step="insert-db-structures"/>
-        </p:input>
-        <p:input port="stylesheet">
-            <p:document href="../xsl/word-to-docbook/insert-parts.xsl"/>
-        </p:input>        
-    </p:xslt>
-    
-	<ccproc:store-identity href="parts.xml" name="store-parts">
+	<ccproc:stylesheet-runner href="parts.xml" name="store-parts" stylesheet-href="../xsl/word-to-docbook/insert-parts.xsl">
+		<p:input port="source">
+			<p:pipe port="source" step="insert-db-structures"/>
+		</p:input>
 		<p:with-option name="href-root" select='$href-root'/>
 		<p:with-option name="execute-store" select="$log-step-output"/>
-	</ccproc:store-identity>
-	
-    
+	</ccproc:stylesheet-runner>
+	    
     <!-- continue refactoring - insert chapters -->
-    <p:xslt name="insert-chapters" version="2.0">
-        <p:input port="stylesheet">
-            <p:document href="../xsl/word-to-docbook/insert-chapters.xsl"/>
-        </p:input>        
-    </p:xslt>
-    
-	<ccproc:store-identity href="chapters.xml" name="store-chapters">
+	<ccproc:stylesheet-runner href="chapters.xml" name="insert-chapters" stylesheet-href="../xsl/word-to-docbook/insert-chapters.xsl">
 		<p:with-option name="href-root" select='$href-root'/>
 		<p:with-option name="execute-store" select="$log-step-output"/>
-	</ccproc:store-identity>
-	
+	</ccproc:stylesheet-runner>
 	
     <!-- continue refactoring - insert sections -->
-    <p:xslt name="insert-sections" version="2.0">
-        <p:input port="stylesheet">
-            <p:document href="../xsl/word-to-docbook/insert-sections.xsl"/>
-        </p:input>        
-    </p:xslt>
-    
-	<ccproc:store-identity href="sections.xml" name="store-sections">
+	<ccproc:stylesheet-runner href="sections.xml" name="insert-sections"  stylesheet-href="../xsl/word-to-docbook/insert-sections.xsl">
 		<p:with-option name="href-root" select='$href-root'/>
 		<p:with-option name="execute-store" select="$log-step-output"/>
-	</ccproc:store-identity>
+	</ccproc:stylesheet-runner>
 	
 	<!-- process the dedication into the right location -->
-	<ccproc:xslt-runner href='dedications-2.xml' name="move-dedication" xslt-href="../xsl/word-to-docbook/move-dedication.xsl">
+	<ccproc:stylesheet-runner href='dedications2.xml' name="move-dedication" stylesheet-href="../xsl/word-to-docbook/move-dedication.xsl">
 		<p:with-option name="href-root" select='$href-root'/>
 		<p:with-option name="execute-store" select="$log-step-output"/>
-	</ccproc:xslt-runner>
+	</ccproc:stylesheet-runner>
 	
     <p:identity name="structure-done"/>
     

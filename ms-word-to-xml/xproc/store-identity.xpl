@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
     
 <p:declare-step xmlns:p="http://www.w3.org/ns/xproc" xmlns:c="http://www.w3.org/ns/xproc-step"
-	xmlns:ccproc="http://www.corbas.co.uk/ns/xproc/extensions"
+	xmlns:ccproc="http://www.corbas.co.uk/ns/xproc/steps"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.0" name="store-identity"
 	type="ccproc:store-identity">
 

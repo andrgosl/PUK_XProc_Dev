@@ -59,7 +59,7 @@
         <xsl:variable name="generic-id">
             <xsl:choose>
                 <xsl:when test="count($page-nodes[local-name() = $name]) lt 2">
-                    <xsl:value-of select="(@role, local-name())[1]"/>
+                    <xsl:value-of select="local-name()"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:call-template name="counted.page.id"/>

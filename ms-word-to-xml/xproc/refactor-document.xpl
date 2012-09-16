@@ -2,7 +2,7 @@
 <p:declare-step xmlns:p="http://www.w3.org/ns/xproc"
     xmlns:c="http://www.w3.org/ns/xproc-step"
     xmlns:corbas="http://www.corbas.co.uk/ns/xproc"
-    xmlns:ccproc="http://www.corbas.co.uk/ns/xproc/extensions"
+    xmlns:ccproc="http://www.corbas.co.uk/ns/xproc/steps"
     xmlns:cx="http://xmlcalabash.com/ns/extensions" name="refactor-document"
     type="corbas:refactor-document"
     version="1.0">
@@ -31,44 +31,25 @@
     <p:import  href="store-identity.xpl"/>
     
     <!-- rewrite paragraphs to appropriate elements -->
-    <p:xslt name="refactor-paragraphs" version="2.0">
-        <p:input port="source">
-            <p:pipe port="source" step="refactor-document"/>
-        </p:input>
-        <p:input port="stylesheet">
-            <p:document href="../xsl/word-to-docbook/refactor-paragraphs.xsl"/>
-        </p:input>
-    </p:xslt>
-    
-    <ccproc:store-identity href="paragraphs.xml" name="store-paragraphs">
+	<ccproc:stylesheet-runner href="paragraphs.xml" name="refactor-paragraphs" stylesheet-href="../xsl/word-to-docbook/refactor-paragraphs.xsl">
+		<p:input port="source">
+			<p:pipe port="source" step="refactor-document"/>
+		</p:input>		
         <p:with-option name="href-root" select='$href-root'/>
         <p:with-option name="execute-store" select="$log-step-output"/>
-    </ccproc:store-identity>
-    
+    </ccproc:stylesheet-runner>
     
     <!-- make sure we have the right db root element -->
-    <p:xslt name="refactor-root" version="2.0">
-        <p:input port="stylesheet">
-            <p:document href="../xsl/word-to-docbook/refactor-root.xsl"/>
-        </p:input>
-    </p:xslt>
-    
-    <ccproc:store-identity href="root.xml" name="store-root">
+	<ccproc:stylesheet-runner href="root.xml" name="refactor-root" stylesheet-href="../xsl/word-to-docbook/refactor-root.xsl">
         <p:with-option name="href-root" select='$href-root'/>
         <p:with-option name="execute-store" select="$log-step-output"/>
-    </ccproc:store-identity>
+    </ccproc:stylesheet-runner>
     
     <!-- fix up epigraphs -->
-    <p:xslt name="refactor-epigraphs" version="2.0">
-        <p:input port="stylesheet">
-            <p:document href="../xsl/word-to-docbook/refactor-epigraphs.xsl"/>
-        </p:input>
-    </p:xslt>
-    
-    <ccproc:store-identity href="epigraphs.xml" name="store-epigraphs">
+ 	<ccproc:stylesheet-runner href="epigraphs.xml" name="refactor-epigraphs" stylesheet-href="../xsl/word-to-docbook/refactor-epigraphs.xsl">
         <p:with-option name="href-root" select='$href-root'/>
         <p:with-option name="execute-store" select="$log-step-output"/>
-    </ccproc:store-identity>
+    </ccproc:stylesheet-runner>
     
     <!-- fix up blockquotes -->
     <p:xslt name="refactor-blockquotes" version="2.0">

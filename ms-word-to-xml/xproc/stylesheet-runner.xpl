@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <p:declare-step xmlns:p="http://www.w3.org/ns/xproc" xmlns:c="http://www.w3.org/ns/xproc-step"
-	xmlns:ccproc="http://www.corbas.co.uk/ns/xproc/extensions"
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.0" name="xslt-runner"
-	type="ccproc:xslt-runner">
+	xmlns:ccproc="http://www.corbas.co.uk/ns/xproc/steps"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.0" name="stylesheet-runner"
+	type="ccproc:stylesheet-runner">
 	
 	<p:documentation>
 		<p xmlns="http:/wwww.w3.org/1999/xhtml">Wrapper around an xslt pipeline. The xslt
@@ -65,7 +65,7 @@
 		</p:documentation>
 	</p:option>
 	
-	<p:option name="xslt-href" required="true" >
+	<p:option name="stylesheet-href" required="true" >
 		<p:documentation>
 			<p xmlns="http://www.w3.org/1999/xhtml">The XSLT file to be loaded.</p>
 		</p:documentation>
@@ -75,7 +75,7 @@
 	<p:import href="store-identity.xpl"/>
 	
 	<p:load name="load-xslt">
-		<p:with-option name="href" select="$xslt-href"></p:with-option>
+		<p:with-option name="href" select="$stylesheet-href"/>
 	</p:load>
 	
 	<p:xslt name="xslt-processing">
@@ -83,10 +83,10 @@
 			<p:pipe port="result" step="load-xslt"/>
 		</p:input>
 		<p:input port="parameters">
-			<p:pipe port="parameters" step="xslt-runner"/>
+			<p:pipe port="parameters" step="stylesheet-runner"/>
 		</p:input>
 		<p:input port="source">
-			<p:pipe port="source" step="xslt-runner"/>
+			<p:pipe port="source" step="stylesheet-runner"/>
 		</p:input>
 	</p:xslt>
 		

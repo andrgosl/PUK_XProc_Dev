@@ -13,9 +13,9 @@
 	
 	<p:output port="result"/>
 	
-	<p:import href="xslt-runner.xpl"/>
+	<p:import href="stylesheet-runner.xpl"/>
 
-	<ccproc:xslt-runner name="move-dedication" 
+	<ccproc:stylesheet-runner name="move-dedication" 
 		xslt-href="file:/Users/nicg/Projects/penguin/PUK_XProc_Dev/ms-word-to-xml/xsl/word-to-docbook/identity.xsl" 
 		href-root='file:/tmp/' 
 		href='test.xml' 
@@ -23,7 +23,7 @@
 		<p:input port="source">
 			<p:pipe port="source" step="test-script"></p:pipe>
 		</p:input>
-	</ccproc:xslt-runner>
+	</ccproc:stylesheet-runner>
 	
     
 </p:declare-step>
