@@ -58,6 +58,12 @@
 		<p:with-option name="execute-store" select="$log-step-output"/>
 	</ccproc:stylesheet-runner>
 	
+	<!-- if there are parts, move anything after the last chapter in the last part, outside of it -->
+	<ccproc:stylesheet-runner href="parts2.xml" name="restructure-last-part" stylesheet-href="../xsl/word-to-docbook/restructure-last-part.xsl">
+		<p:with-option name="href-root" select='$href-root'/>
+		<p:with-option name="execute-store" select="$log-step-output"/>
+	</ccproc:stylesheet-runner>
+	
     <p:identity name="structure-done"/>
     
 </p:declare-step>

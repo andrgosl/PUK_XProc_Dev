@@ -18,6 +18,7 @@
                             <xsl:apply-templates select="current-group()"/>
                         </part>
                     </xsl:when>
+                	
                     <xsl:otherwise>
                         <xsl:apply-templates select="current-group()"/>
                     </xsl:otherwise>
