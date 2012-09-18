@@ -19,8 +19,15 @@
 	
 	<!-- name of the default notes file -->
 	<xsl:param name="notes.file.name" select="'notes'"/>
+	
+	<!-- Title for Footnotes section -->
+	<xsl:param name="footnotes.title" select="'Footnotes'"/>
 
-    <xsl:output method="xml" doctype-public="-//NISO//DTD ncx 2005-1//EN"
+	<!-- Title for Endnotes section -->
+	<xsl:param name="endnotes.title" select="'Endnotes'"/>
+	
+	
+	<xsl:output method="xml" doctype-public="-//NISO//DTD ncx 2005-1//EN"
         doctype-system="http://www.daisy.org/z3986/2005/ncx-2005-1.dtd"/>
 
     <xsl:strip-space elements="*"/>
@@ -212,12 +219,12 @@
 	
 	<!-- generate notes (both foot and end) -->
 	<xsl:template match="book" mode="notes">
-		<xsl:apply-templates select="." mode="endnotes"/>
 		<xsl:apply-templates select="." mode="footnotes"/>
+		<xsl:apply-templates select="." mode="endnotes"/>
 	</xsl:template>
 	
 	<xsl:template match="book" mode="endnotes"/>
-	<xsl:template match="book[.//footnote[not(@role='endnote')]]" mode="endnotes">
+	<xsl:template match="book[.//footnote[@role='endnote']]" mode="endnotes">
 		
 		<xsl:variable name="notes-file">
 			<xsl:call-template name="page.href">
@@ -225,9 +232,9 @@
 			</xsl:call-template>
 		</xsl:variable>
 		
-		<navPoint id="{$notes.file.name}">
+		<navPoint id="endnotes">
 			<navLabel>
-				<text>Notes</text>
+				<text><xsl:value-of select="$endnotes.title"/></text>
 			</navLabel>
 			<content src="{concat($xhtml-dir, '/', $notes-file)}"/>
 		</navPoint>
@@ -236,16 +243,16 @@
 	
 	<xsl:template match="book" mode="footnotes"/>
 	<xsl:template match="book[.//footnote[not(@role='endnote')]]" mode="footnotes">
-		<xsl:variable name="first-node" select=".//footnote[not(@role='endnote')]/ancestor::*[local-name(.) = ('preface', 'chapter', 'appendix', 'bibliography', 'glossary')]"/>
+		<xsl:variable name="first-node" select="(.//footnote[not(@role='endnote')]/ancestor::*[local-name(.) = ('preface', 'chapter', 'appendix', 'bibliography', 'glossary')])[1]"/>
 		<xsl:variable name="notes-file">
 			<xsl:call-template name="page.href">
 				<xsl:with-param name="prefix" select="concat($notes.file.name, '-')"/>
 				<xsl:with-param name="node" select="$first-node"/>
 			</xsl:call-template>
 		</xsl:variable>
-		<navPoint id="{$notes.file.name}">
+		<navPoint id="footnotes">
 			<navLabel>
-				<text>Notes</text>
+				<text><xsl:value-of select="$footnotes.title"/></text>
 			</navLabel>
 			<content src="{concat($xhtml-dir, '/', $notes-file)}"/>
 		</navPoint>
