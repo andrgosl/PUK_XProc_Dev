@@ -81,7 +81,7 @@
         <xsl:variable name='anchor'>
             <xsl:call-template name="page.href">
                 <xsl:with-param name="node" select=".."/>
-                <xsl:with-param name="with.fragment" select="@xml:id"/>
+                <xsl:with-param name="with.fragment" select="../@xml:id"/>
             </xsl:call-template>
         </xsl:variable>        
         
