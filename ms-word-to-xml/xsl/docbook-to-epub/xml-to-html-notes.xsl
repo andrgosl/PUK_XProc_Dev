@@ -111,6 +111,10 @@
         <xsl:variable name='chapter-pos' select="count($container//footnote[. &lt;&lt; current()]) + 1"/>        
         <xsl:value-of select='$chapter-pos'/>
     </xsl:template>
+	
+	<xsl:template match="footnote[@role='endnote']"  mode="marker">
+		<xsl:value-of select="count(preceding::footnote[@role='endnote']) + 1"/>
+	</xsl:template>
     
     
     <!-- Templates to generate the notes pages. -->
