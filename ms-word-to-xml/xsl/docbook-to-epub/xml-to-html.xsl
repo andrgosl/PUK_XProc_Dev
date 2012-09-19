@@ -194,13 +194,13 @@
     </xsl:template>
 	
 	<xsl:template match="part/title|part/info/title" priority="1">
-		<h2 class="EB09SmallCapsLargeHead">
+		<h2 class="{@role}">
 			<xsl:apply-templates/>
 		</h2>
 	</xsl:template>
 
     <xsl:template match="title|info/title">
-        <h2 class="EB04MainHead">
+        <h2 class="{@role}">
             <xsl:apply-templates/>
         </h2>
     </xsl:template>
