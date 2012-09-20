@@ -19,6 +19,9 @@
         <mapping role="01FMTPAuthor " style="EB09SmallCapsLargeHead" element="h2"/>
         <mapping role="01FMTPSubtitle" style="EB11SmallItalicHeadSpaced" element="p"/>
         <mapping role="01FMTPTitle" style="EB04MainHead" element="h2"/>
+        <mapping role="01FMAcknowledgementsHead" style="EB04MainHead" element="h2"/>
+        <mapping role="01FMHead" style="EB04MainHead" element="h2"/>
+        <mapping role="03ChapterEpigraph" style="EB17Epigraph" element="p"/>
         <mapping role="03ChapterEpigraphSource" style="EB18EpigraphSource" element="p"/>
         <!-- NB need a way to map number and title separately at a later point -->
         <mapping role="03ChapterNumberandTitle" style="EB04MainHeadClosedTitle"
