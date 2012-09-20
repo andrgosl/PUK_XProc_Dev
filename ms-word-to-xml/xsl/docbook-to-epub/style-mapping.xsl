@@ -44,7 +44,7 @@
         <mapping role="normal" style="EB03BodyTextIndented" element="p"/>
         <mapping role="14FootnoteText" style="EB19ExtraFeatureFullOut" element="p"/>
     	<mapping role="01FMbythesameauthorHead" style="EB04MainHead" element="h2"/>
-        <mapping role="01FMbythesameauthorlist" style="EB02BodyTextFullOut" element="p"/>
+    	<mapping role="01FMbythesameauthorlist" style="EB02BodyTextFullOut" element="p"/>
         <mapping role="02PartTitle" style="EB04MainHead" element="h2"/>
     	<mapping role="13EMHead" style="EB13CopyrightHead" element="h5"/>
     	<mapping role="13EMEndNotesFL" style="EB14CopyrightText" element="p"/>
