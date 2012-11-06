@@ -29,8 +29,8 @@
                     <xsl:apply-templates select="/book/info/cover[@role='cover']" mode="toc"/>
                     <xsl:apply-templates select="dedication" mode="toc"/>
                     <xsl:apply-templates select="/book/info/cover[@role='title']" mode="toc"/>
-                    <xsl:apply-templates select="part|acknowledgements|chapter|preface|personblurb|dedication|bibliography|appendix" mode="toc"/> 
-                    <xsl:apply-templates select="author//personblurb" mode="toc"/>
+                	<xsl:apply-templates select="part|acknowledgements|chapter|dedication|bibliography|appendix[title[not(@role = '01FMbythesameauthorHead')]]" mode="toc"/> 
+                    
 
                 </body>
             </html>
