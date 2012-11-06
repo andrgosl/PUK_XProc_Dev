@@ -51,6 +51,8 @@
         <mapping role="02PartTitle" style="EB04MainHead" element="h2"/>
     	<mapping role="13EMHead" style="EB13CopyrightHead" element="h5"/>
     	<mapping role="13EMEndNotesFL" style="EB14CopyrightText" element="p"/>
+    	<mapping role="04SpaceBreak" style="specialsLastPara" element="p"/>
+    	<mapping role="01FMbythesameauthorname" style="OtherSpecialsAuthor" element="p"/>
     </map>
     
     
